@@ -134,3 +134,17 @@ Acceptance criteria:
 - Given materials exist, when the catalog is queried, then the API returns name, unit and category data.
 - Given valid catalog changes, when create/update/delete operations are executed, then the API persists the material catalog state.
 
+---
+
+### TS-SHARED-003 - Categories reference API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** reference catalog  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to provide category reference data for material classification and inventory filters.
+
+Acceptance criteria:
+- Given categories exist, when GET /api/v1/categories is called, then the API returns stable reference data.
+- Given an existing category id, when the detail endpoint is called, then the API returns the category resource.
+
