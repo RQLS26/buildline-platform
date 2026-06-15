@@ -59,4 +59,16 @@ public static class UsersActionResultAssembler
         var statusCode = ToStatusCodeFromIamError((IamError)result.Error!);
         return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
     }
+
+    public static IActionResult ToActionResultFromUpdateUserResult(
+        ControllerBase controller,
+        Result<User> result,
+        ProblemDetailsFactory problemDetailsFactory,
+        Func<User, IActionResult> successAction)
+    {
+        if (result.IsSuccess) return successAction(result.Value!);
+
+        var statusCode = ToStatusCodeFromIamError((IamError)result.Error!);
+        return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
+    }
 }

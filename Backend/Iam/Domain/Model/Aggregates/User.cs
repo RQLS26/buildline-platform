@@ -75,4 +75,23 @@ public partial class User : IAuditableEntity
         LastLogin = lastLogin;
         return this;
     }
+
+    public User UpdateAccountInformation(
+        string name,
+        string email,
+        string role,
+        string department,
+        string phone,
+        string avatarColor,
+        bool isActive)
+    {
+        Name = name;
+        Email = email;
+        Role = role;
+        Department = department;
+        Phone = phone;
+        AvatarColor = avatarColor;
+        IsActive = isActive;
+        return this;
+    }
 }

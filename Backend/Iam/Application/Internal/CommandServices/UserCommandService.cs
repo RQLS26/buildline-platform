@@ -64,6 +64,54 @@ public class UserCommandService(
         }
     }
 
+    public async Task<Result<User>> Handle(UpdateUserCommand command, CancellationToken cancellationToken = default)
+    {
+        var user = await userRepository.FindByIdAsync(command.UserId, cancellationToken);
+        if (user is null)
+            return Result<User>.Failure(
+                IamError.UserNotFound,
+                localizer[$"{nameof(IamError)}.{IamError.UserNotFound}"]);
+
+        var userWithSameEmail = await userRepository.FindByEmailAsync(command.Email, cancellationToken);
+        if (userWithSameEmail is not null && userWithSameEmail.Id != command.UserId)
+            return Result<User>.Failure(
+                IamError.EmailAlreadyTaken,
+                localizer[$"{nameof(IamError)}.{IamError.EmailAlreadyTaken}"]);
+
+        try
+        {
+            user.UpdateAccountInformation(
+                command.Name,
+                command.Email,
+                command.Role,
+                command.Department,
+                command.Phone,
+                command.AvatarColor,
+                command.IsActive);
+            userRepository.Update(user);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return Result<User>.Success(user);
+        }
+        catch (OperationCanceledException)
+        {
+            return Result<User>.Failure(
+                IamError.OperationCancelled,
+                localizer[$"{nameof(IamError)}.{IamError.OperationCancelled}"]);
+        }
+        catch (DbUpdateException)
+        {
+            return Result<User>.Failure(
+                IamError.DatabaseError,
+                localizer[$"{nameof(IamError)}.{IamError.DatabaseError}"]);
+        }
+        catch (Exception)
+        {
+            return Result<User>.Failure(
+                IamError.InternalServerError,
+                localizer[$"{nameof(IamError)}.{IamError.InternalServerError}"]);
+        }
+    }
+
     public async Task<Result<(User user, string token)>> Handle(SignInCommand command, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.FindByEmailAsync(command.Email, cancellationToken);

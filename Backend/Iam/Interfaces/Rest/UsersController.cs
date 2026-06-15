@@ -81,4 +81,36 @@ public class UsersController(
                 new { userId = createdUser.Id },
                 UserResourceFromEntityAssembler.ToResourceFromEntity(createdUser)));
     }
+
+    [HttpPatch("{userId:int}")]
+    [SwaggerOperation(
+        Summary = "Patch user by id",
+        Description = "Updates role, status or profile fields of a registered Buildline user.",
+        OperationId = "PatchUserById")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The user was updated.", typeof(UserResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "The user was not found.")]
+    public async Task<IActionResult> PatchUserById(
+        int userId,
+        [FromBody] UpdateUserResource resource,
+        CancellationToken cancellationToken)
+    {
+        var currentUser = await userQueryService.Handle(new GetUserByIdQuery(userId), cancellationToken);
+        var getCurrentUserResult = UsersActionResultAssembler.ToActionResultFromGetUserByIdResult(
+            this,
+            currentUser,
+            errorLocalizer,
+            problemDetailsFactory,
+            foundUser => Ok(foundUser));
+
+        if (currentUser is null) return getCurrentUserResult;
+
+        var command = UpdateUserCommandFromResourceAssembler.ToCommandFromResource(userId, currentUser, resource);
+        var result = await userCommandService.Handle(command, cancellationToken);
+
+        return UsersActionResultAssembler.ToActionResultFromUpdateUserResult(
+            this,
+            result,
+            problemDetailsFactory,
+            updatedUser => Ok(UserResourceFromEntityAssembler.ToResourceFromEntity(updatedUser)));
+    }
 }
