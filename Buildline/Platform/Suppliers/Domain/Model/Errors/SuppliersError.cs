@@ -1,4 +1,4 @@
-namespace Buildline.Platform.Suppliers.Domain.Model;
+namespace Buildline.Platform.Suppliers.Domain.Model.Errors;
 
 /// <summary>
 ///     Enumerates application-level failures emitted by command services in this bounded context.
@@ -20,3 +20,4 @@ public enum SuppliersError
     /// <summary>Indicates the InternalServerError application failure.</summary>
     InternalServerError
 }
+

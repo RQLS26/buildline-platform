@@ -1,4 +1,4 @@
-namespace Buildline.Platform.Profiles.Domain.Model;
+namespace Buildline.Platform.Profiles.Domain.Model.Errors;
 
 /// <summary>
 ///     Domain error codes emitted by the Profiles bounded context.
@@ -33,3 +33,4 @@ public enum ProfilesError
     /// </summary>
     InternalServerError
 }
+

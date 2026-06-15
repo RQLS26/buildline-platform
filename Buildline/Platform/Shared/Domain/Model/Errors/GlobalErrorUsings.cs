@@ -1,0 +1,9 @@
+global using Buildline.Platform.Analytics.Domain.Model.Errors;
+global using Buildline.Platform.Communication.Domain.Model.Errors;
+global using Buildline.Platform.Delivery.Domain.Model.Errors;
+global using Buildline.Platform.Iam.Domain.Model.Errors;
+global using Buildline.Platform.Inventory.Domain.Model.Errors;
+global using Buildline.Platform.Procurement.Domain.Model.Errors;
+global using Buildline.Platform.Profiles.Domain.Model.Errors;
+global using Buildline.Platform.Requisition.Domain.Model.Errors;
+global using Buildline.Platform.Suppliers.Domain.Model.Errors;

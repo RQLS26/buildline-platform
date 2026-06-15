@@ -1,4 +1,4 @@
-namespace Buildline.Platform.Procurement.Domain.Model;
+namespace Buildline.Platform.Procurement.Domain.Model.Errors;
 
 /// <summary>
 ///     Enumerates application-level failures emitted by command services in this bounded context.
@@ -22,3 +22,4 @@ public enum ProcurementError
     /// <summary>Indicates that an unexpected error occurred while handling a procurement command.</summary>
     InternalServerError
 }
+

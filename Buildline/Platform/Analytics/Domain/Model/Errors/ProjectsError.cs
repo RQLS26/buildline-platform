@@ -1,4 +1,4 @@
-namespace Buildline.Platform.Analytics.Domain.Model;
+namespace Buildline.Platform.Analytics.Domain.Model.Errors;
 
 /// <summary>
 ///     Domain error codes emitted by the Analytics reference data module.
@@ -34,4 +34,5 @@ public enum ProjectsError
     /// </summary>
     InternalServerError
 }
+
 

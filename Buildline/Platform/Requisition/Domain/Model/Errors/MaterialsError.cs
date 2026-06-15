@@ -1,4 +1,4 @@
-namespace Buildline.Platform.Requisition.Domain.Model;
+namespace Buildline.Platform.Requisition.Domain.Model.Errors;
 
 /// <summary>
 ///     Domain error codes emitted by the Requisition reference data module.
@@ -34,5 +34,6 @@ public enum MaterialsError
     /// </summary>
     InternalServerError
 }
+
 
 

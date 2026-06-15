@@ -1,4 +1,4 @@
-namespace Buildline.Platform.Delivery.Domain.Model;
+namespace Buildline.Platform.Delivery.Domain.Model.Errors;
 
 /// <summary>
 ///     Enumerates application-level failures emitted by command services in this bounded context.
@@ -18,3 +18,4 @@ public enum DeliveryError
     /// <summary>Indicates that an unexpected error occurred while handling a delivery command.</summary>
     InternalServerError
 }
+

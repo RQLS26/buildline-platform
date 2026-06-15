@@ -1,4 +1,4 @@
-namespace Buildline.Platform.Inventory.Domain.Model;
+namespace Buildline.Platform.Inventory.Domain.Model.Errors;
 
 /// <summary>
 ///     Domain error codes emitted by the Inventory reference data module.
@@ -34,6 +34,7 @@ public enum CategoriesError
     /// </summary>
     InternalServerError
 }
+
 
 
 

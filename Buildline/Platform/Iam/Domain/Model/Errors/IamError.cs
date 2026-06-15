@@ -1,4 +1,4 @@
-namespace Buildline.Platform.Iam.Domain.Model;
+namespace Buildline.Platform.Iam.Domain.Model.Errors;
 
 /// <summary>
 ///     Domain error codes emitted by the IAM bounded context.
@@ -38,3 +38,4 @@ public enum IamError
     /// </summary>
     InternalServerError
 }
+
