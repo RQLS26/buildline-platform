@@ -400,3 +400,17 @@ Acceptance criteria:
 - Given messages exist, when GET is called, then the API returns sender, subject, category, read and starred data.
 - Given a valid message payload, when POST is executed, then the API returns the created message.
 
+---
+
+### TS-COM-002 - Message state and delete API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** communication  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to mark messages as read/starred or remove them from the inbox.
+
+Acceptance criteria:
+- Given an existing message, when PATCH is executed, then the API updates read or starred state.
+- Given an existing message, when DELETE is executed, then the message no longer appears in the inbox.
+
