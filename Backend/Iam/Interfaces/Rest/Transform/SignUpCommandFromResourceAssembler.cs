@@ -3,8 +3,16 @@ using Buildline.Platform.Iam.Interfaces.Rest.Resources;
 
 namespace Buildline.Platform.Iam.Interfaces.Rest.Transform;
 
+/// <summary>
+///     Assembler that translates sign-up REST resources into IAM commands.
+/// </summary>
 public static class SignUpCommandFromResourceAssembler
 {
+    /// <summary>
+    ///     Builds a sign-up command from the registration request resource.
+    /// </summary>
+    /// <param name="resource">Resource received by the sign-up endpoint.</param>
+    /// <returns>A sign-up command ready for uniqueness validation and hashing.</returns>
     public static SignUpCommand ToCommandFromResource(SignUpResource resource)
     {
         return new SignUpCommand(

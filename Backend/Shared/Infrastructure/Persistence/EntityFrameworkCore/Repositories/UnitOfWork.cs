@@ -15,7 +15,7 @@ namespace Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCo
 /// </param>
 public class UnitOfWork(AppDbContext context) : IUnitOfWork
 {
-    // inheritedDoc
+    /// <inheritdoc />
     public async Task CompleteAsync(CancellationToken cancellationToken = default)
     {
         await context.SaveChangesAsync(cancellationToken);

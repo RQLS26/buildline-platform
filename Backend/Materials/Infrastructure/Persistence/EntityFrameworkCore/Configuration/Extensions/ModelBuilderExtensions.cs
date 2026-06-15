@@ -3,8 +3,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Buildline.Platform.Materials.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
+/// <summary>
+///     Entity Framework Core model configuration for the Materials bounded context.
+/// </summary>
 public static class ModelBuilderExtensions
 {
+    /// <summary>
+    ///     Applies table mapping, constraints and seed data for material catalog records.
+    /// </summary>
+    /// <param name="builder">Model builder used by the shared application database context.</param>
+    /// <remarks>
+    ///     Seed values mirror the Sprint 2 frontend mock so inventory and requisition screens can be
+    ///     validated against the .NET Web Services without changing their initial data assumptions.
+    /// </remarks>
     public static void ApplyMaterialsConfiguration(this ModelBuilder builder)
     {
         builder.Entity<Material>().HasKey(material => material.Id);

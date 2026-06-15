@@ -3,8 +3,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Buildline.Platform.Categories.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
+/// <summary>
+///     Entity Framework Core model configuration for the Categories bounded context.
+/// </summary>
 public static class ModelBuilderExtensions
 {
+    /// <summary>
+    ///     Applies table mapping, constraints and seed data for material categories.
+    /// </summary>
+    /// <param name="builder">Model builder used by the shared application database context.</param>
+    /// <remarks>
+    ///     Seed values mirror the material categories used by the Sprint 2 frontend and the Materials
+    ///     API seed data, ensuring `/api/v1/categories` can replace the json-server mock cleanly.
+    /// </remarks>
     public static void ApplyCategoriesConfiguration(this ModelBuilder builder)
     {
         builder.Entity<Category>().HasKey(category => category.Id);

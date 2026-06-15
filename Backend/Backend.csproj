@@ -8,6 +8,7 @@
         <LangVersion>14</LangVersion>
         <RootNamespace>Buildline.Platform</RootNamespace>
         <AssemblyName>Buildline.Platform</AssemblyName>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

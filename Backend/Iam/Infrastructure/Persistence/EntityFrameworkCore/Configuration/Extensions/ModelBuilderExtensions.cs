@@ -1,11 +1,22 @@
 using Buildline.Platform.Iam.Domain.Model.Aggregates;
 using Microsoft.EntityFrameworkCore;
-using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace Buildline.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
+/// <summary>
+///     Entity Framework Core model configuration for the IAM bounded context.
+/// </summary>
 public static class ModelBuilderExtensions
 {
+    /// <summary>
+    ///     Applies table mapping, constraints, indexes and seed users for IAM.
+    /// </summary>
+    /// <param name="builder">Model builder used by the shared application database context.</param>
+    /// <remarks>
+    ///     Seed users mirror the Sprint 2 frontend mock accounts so the first backend version can be
+    ///     validated with known credentials. Password hashes are fixed pre-generated BCrypt values so
+    ///     migrations remain deterministic.
+    /// </remarks>
     public static void ApplyIamConfiguration(this ModelBuilder builder)
     {
         builder.Entity<User>().HasKey(user => user.Id);
@@ -27,7 +38,7 @@ public static class ModelBuilderExtensions
                 Id = 1,
                 Name = "Nombre admin",
                 Email = "admin@buildline.com",
-                PasswordHash = BCryptNet.HashPassword("admin123"),
+                PasswordHash = "$2a$11$ZIgOUFd7cA0EDVQ7KXkxleNzW8rkPUHGbWp7PXuLyvOZxEWeVXQkm",
                 Role = "owner",
                 Department = "Management",
                 Phone = "+51 987 654 321",
@@ -40,7 +51,7 @@ public static class ModelBuilderExtensions
                 Id = 2,
                 Name = "Carlos Mendoza",
                 Email = "carlos@buildline.com",
-                PasswordHash = BCryptNet.HashPassword("viewer123"),
+                PasswordHash = "$2a$11$jpepzAUUxa.fRn8vJgBuQ.n4SDJFFeS/iEfg.7yjprthBADPSXbBy",
                 Role = "viewer",
                 Department = "Engineering",
                 Phone = "+51 912 345 678",

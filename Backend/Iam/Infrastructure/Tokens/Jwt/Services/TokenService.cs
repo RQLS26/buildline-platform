@@ -9,10 +9,19 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Buildline.Platform.Iam.Infrastructure.Tokens.Jwt.Services;
 
+/// <summary>
+///     JWT implementation of IAM token generation and validation.
+/// </summary>
+/// <param name="tokenSettings">Options containing the symmetric token signing secret.</param>
+/// <remarks>
+///     Generated tokens include the user id, email, display name and role claims required by the
+///     ASP.NET Core JWT Bearer middleware and the frontend session state.
+/// </remarks>
 public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
 {
     private readonly TokenSettings _tokenSettings = tokenSettings.Value;
 
+    /// <inheritdoc />
     public string GenerateToken(User user)
     {
         var key = Encoding.ASCII.GetBytes(_tokenSettings.Secret);
@@ -33,6 +42,7 @@ public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
         return tokenHandler.CreateToken(tokenDescriptor);
     }
 
+    /// <inheritdoc />
     public async Task<int?> ValidateToken(string token)
     {
         if (string.IsNullOrWhiteSpace(token)) return null;

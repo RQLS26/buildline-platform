@@ -33,6 +33,10 @@ public interface IBaseRepository<TEntity>
     /// </returns>
     Task<TEntity?> FindByIdAsync(int id, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    ///     Marks an entity as updated in the repository.
+    /// </summary>
+    /// <param name="entity">Entity instance with the desired state.</param>
     void Update(TEntity entity);
 
     /// <summary>

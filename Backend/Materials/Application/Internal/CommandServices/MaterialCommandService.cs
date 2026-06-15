@@ -11,12 +11,29 @@ using Microsoft.Extensions.Localization;
 
 namespace Buildline.Platform.Materials.Application.Internal.CommandServices;
 
+/// <summary>
+///     Application command service that coordinates material catalog writes.
+/// </summary>
+/// <remarks>
+///     The service follows the learning-center layered pattern: REST resources become commands,
+///     command handlers validate application rules, aggregates apply state changes, repositories
+///     persist them, and <see cref="IUnitOfWork"/> commits the transaction.
+/// </remarks>
 public class MaterialCommandService(
     IMaterialRepository materialRepository,
     IUnitOfWork unitOfWork,
     IStringLocalizer<ErrorMessages> localizer)
     : IMaterialCommandService
 {
+    /// <summary>
+    ///     Handles material creation for the catalog.
+    /// </summary>
+    /// <param name="command">Create-material command with catalog and stock fields.</param>
+    /// <param name="cancellationToken">Token used to cancel repository and unit-of-work operations.</param>
+    /// <returns>
+    ///     A successful result with the created material, or a material-domain error for invalid data,
+    ///     cancellation, database failure or unexpected server failure.
+    /// </returns>
     public async Task<Result<Material>> Handle(CreateMaterialCommand command, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(command.Name) || string.IsNullOrWhiteSpace(command.Unit))
@@ -52,6 +69,15 @@ public class MaterialCommandService(
         }
     }
 
+    /// <summary>
+    ///     Handles replacement of catalog and stock information for an existing material.
+    /// </summary>
+    /// <param name="command">Update command containing the material id and replacement values.</param>
+    /// <param name="cancellationToken">Token used to cancel lookup, mutation and persistence.</param>
+    /// <returns>
+    ///     A successful result with the updated material, or a material-domain error when validation
+    ///     fails, the material does not exist, persistence fails, or the operation is cancelled.
+    /// </returns>
     public async Task<Result<Material>> Handle(UpdateMaterialCommand command, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(command.Name) || string.IsNullOrWhiteSpace(command.Unit))
@@ -100,6 +126,15 @@ public class MaterialCommandService(
         }
     }
 
+    /// <summary>
+    ///     Handles removal of an existing material from the catalog.
+    /// </summary>
+    /// <param name="command">Delete command containing the material id.</param>
+    /// <param name="cancellationToken">Token used to cancel lookup and persistence.</param>
+    /// <returns>
+    ///     A successful empty result when the material is removed, or a material-domain error when the
+    ///     material does not exist or persistence fails.
+    /// </returns>
     public async Task<Result> Handle(DeleteMaterialCommand command, CancellationToken cancellationToken = default)
     {
         var material = await materialRepository.FindByIdAsync(command.MaterialId, cancellationToken);

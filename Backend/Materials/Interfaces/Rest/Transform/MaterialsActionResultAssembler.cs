@@ -8,8 +8,20 @@ using Microsoft.Extensions.Localization;
 
 namespace Buildline.Platform.Materials.Interfaces.Rest.Transform;
 
+/// <summary>
+///     Converts material application results into HTTP action results.
+/// </summary>
+/// <remarks>
+///     The assembler centralizes REST decisions for TS-04 through TS-08, including empty-list
+///     responses, not-found responses and command failure Problem Details.
+/// </remarks>
 public static class MaterialsActionResultAssembler
 {
+    /// <summary>
+    ///     Maps material bounded-context errors to HTTP status codes.
+    /// </summary>
+    /// <param name="error">Material error emitted by the application layer.</param>
+    /// <returns>The HTTP status code that represents the failure.</returns>
     private static int ToStatusCodeFromMaterialsError(MaterialsError error)
     {
         return error switch
@@ -23,6 +35,12 @@ public static class MaterialsActionResultAssembler
         };
     }
 
+    /// <summary>
+    ///     Converts the material listing result to either <c>200 OK</c> or <c>204 No Content</c>.
+    /// </summary>
+    /// <param name="materials">Materials returned by the query service.</param>
+    /// <param name="successAction">Action used by the controller to shape a successful response body.</param>
+    /// <returns>An HTTP action result for the material listing endpoint.</returns>
     public static IActionResult ToActionResultFromGetAllMaterialsResult(
         IEnumerable<Material> materials,
         Func<IEnumerable<Material>, IActionResult> successAction)
@@ -31,6 +49,14 @@ public static class MaterialsActionResultAssembler
         return materialList.Count == 0 ? new NoContentResult() : successAction(materialList);
     }
 
+    /// <summary>
+    ///     Converts a create-material command result into a REST response.
+    /// </summary>
+    /// <param name="controller">Controller instance used to create framework-compatible problem details.</param>
+    /// <param name="result">Application result returned by the material command service.</param>
+    /// <param name="problemDetailsFactory">Factory responsible for standardized Problem Details payloads.</param>
+    /// <param name="successAction">Action used by the controller to shape the created response.</param>
+    /// <returns>An HTTP action result for the create-material endpoint.</returns>
     public static IActionResult ToActionResultFromCreateMaterialResult(
         ControllerBase controller,
         Result<Material> result,
@@ -43,6 +69,14 @@ public static class MaterialsActionResultAssembler
         return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
     }
 
+    /// <summary>
+    ///     Converts an update-material command result into a REST response.
+    /// </summary>
+    /// <param name="controller">Controller instance used to create framework-compatible problem details.</param>
+    /// <param name="result">Application result returned by the material command service.</param>
+    /// <param name="problemDetailsFactory">Factory responsible for standardized Problem Details payloads.</param>
+    /// <param name="successAction">Action used by the controller to shape the updated response.</param>
+    /// <returns>An HTTP action result for the update-material endpoint.</returns>
     public static IActionResult ToActionResultFromUpdateMaterialResult(
         ControllerBase controller,
         Result<Material> result,
@@ -55,6 +89,14 @@ public static class MaterialsActionResultAssembler
         return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
     }
 
+    /// <summary>
+    ///     Converts a delete-material command result into a REST response.
+    /// </summary>
+    /// <param name="controller">Controller instance used to create framework-compatible problem details.</param>
+    /// <param name="result">Application result returned by the material command service.</param>
+    /// <param name="problemDetailsFactory">Factory responsible for standardized Problem Details payloads.</param>
+    /// <param name="successAction">Action used by the controller to shape the successful no-content response.</param>
+    /// <returns>An HTTP action result for the delete-material endpoint.</returns>
     public static IActionResult ToActionResultFromDeleteMaterialResult(
         ControllerBase controller,
         Result result,
@@ -67,6 +109,15 @@ public static class MaterialsActionResultAssembler
         return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
     }
 
+    /// <summary>
+    ///     Converts a nullable material lookup result into a REST response.
+    /// </summary>
+    /// <param name="controller">Controller instance used to create framework-compatible problem details.</param>
+    /// <param name="material">Material returned by the query service, or <c>null</c> when not found.</param>
+    /// <param name="errorLocalizer">Localizer used to produce the material-not-found message.</param>
+    /// <param name="problemDetailsFactory">Factory responsible for standardized Problem Details payloads.</param>
+    /// <param name="successAction">Action used by the controller to shape the successful response.</param>
+    /// <returns>An HTTP action result for the material lookup endpoint.</returns>
     public static IActionResult ToActionResultFromGetMaterialByIdResult(
         ControllerBase controller,
         Material? material,

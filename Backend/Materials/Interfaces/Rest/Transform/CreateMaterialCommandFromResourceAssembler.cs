@@ -3,8 +3,20 @@ using Buildline.Platform.Materials.Interfaces.Rest.Resources;
 
 namespace Buildline.Platform.Materials.Interfaces.Rest.Transform;
 
+/// <summary>
+///     Assembler that translates create-material REST resources into application commands.
+/// </summary>
+/// <remarks>
+///     The assembler keeps HTTP payload shape outside the command service and preserves the boundary
+///     between the interface layer and the Materials application layer.
+/// </remarks>
 public static class CreateMaterialCommandFromResourceAssembler
 {
+    /// <summary>
+    ///     Builds a create-material command from the request resource.
+    /// </summary>
+    /// <param name="resource">Resource received by the create-material endpoint.</param>
+    /// <returns>A command ready for validation and persistence by the command service.</returns>
     public static CreateMaterialCommand ToCommandFromResource(CreateMaterialResource resource)
     {
         return new CreateMaterialCommand(

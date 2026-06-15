@@ -7,13 +7,22 @@ using Buildline.Platform.Materials.Interfaces.Rest.Resources;
 using Buildline.Platform.Materials.Interfaces.Rest.Transform;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Buildline.Platform.Materials.Interfaces.Rest;
 
+/// <summary>
+///     REST controller that exposes the material catalog required by requisitions and inventory.
+/// </summary>
+/// <remarks>
+///     The controller satisfies TS-04 through TS-08, replacing the Sprint 2 mock material service with
+///     versioned .NET Web Services aligned to the current frontend fields.
+/// </remarks>
 [ApiController]
+[Authorize]
 [Route("api/v1/materials")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Material Catalog endpoints for requisitions and inventory.")]
@@ -24,6 +33,13 @@ public class MaterialsController(
     ProblemDetailsFactory problemDetailsFactory)
     : ControllerBase
 {
+    /// <summary>
+    ///     Gets every registered material.
+    /// </summary>
+    /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
+    /// <returns>
+    ///     <c>200 OK</c> with material resources when records exist; otherwise <c>204 No Content</c>.
+    /// </returns>
     [HttpGet]
     [SwaggerOperation(
         Summary = "Get all materials",
@@ -41,6 +57,14 @@ public class MaterialsController(
             foundMaterials => Ok(foundMaterials.Select(MaterialResourceFromEntityAssembler.ToResourceFromEntity)));
     }
 
+    /// <summary>
+    ///     Gets one material by identifier.
+    /// </summary>
+    /// <param name="materialId">Identifier of the material requested by the API client.</param>
+    /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
+    /// <returns>
+    ///     <c>200 OK</c> with the material resource when found; otherwise <c>404 Not Found</c> Problem Details.
+    /// </returns>
     [HttpGet("{materialId:int}")]
     [SwaggerOperation(
         Summary = "Get material by id",
@@ -61,6 +85,14 @@ public class MaterialsController(
             foundMaterial => Ok(MaterialResourceFromEntityAssembler.ToResourceFromEntity(foundMaterial)));
     }
 
+    /// <summary>
+    ///     Creates a new material catalog record.
+    /// </summary>
+    /// <param name="resource">Request body containing catalog and stock fields.</param>
+    /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
+    /// <returns>
+    ///     <c>201 Created</c> with the created material resource when successful; otherwise a Problem Details response.
+    /// </returns>
     [HttpPost]
     [SwaggerOperation(
         Summary = "Create material",
@@ -85,6 +117,15 @@ public class MaterialsController(
                 MaterialResourceFromEntityAssembler.ToResourceFromEntity(createdMaterial)));
     }
 
+    /// <summary>
+    ///     Replaces catalog and stock information for an existing material.
+    /// </summary>
+    /// <param name="materialId">Identifier of the material that must be updated.</param>
+    /// <param name="resource">Request body containing replacement catalog and stock values.</param>
+    /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
+    /// <returns>
+    ///     <c>200 OK</c> with the updated material resource when successful; otherwise a Problem Details response.
+    /// </returns>
     [HttpPut("{materialId:int}")]
     [SwaggerOperation(
         Summary = "Update material by id",
@@ -107,6 +148,19 @@ public class MaterialsController(
             updatedMaterial => Ok(MaterialResourceFromEntityAssembler.ToResourceFromEntity(updatedMaterial)));
     }
 
+    /// <summary>
+    ///     Provides PATCH-compatible material updates for the frontend contract.
+    /// </summary>
+    /// <param name="materialId">Identifier of the material that must be updated.</param>
+    /// <param name="resource">Request body containing the material values sent by the frontend form.</param>
+    /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
+    /// <returns>
+    ///     <c>200 OK</c> with the updated material resource when successful; otherwise a Problem Details response.
+    /// </returns>
+    /// <remarks>
+    ///     The current frontend sends complete material payloads, so PATCH delegates to the PUT
+    ///     implementation while preserving the endpoint expected by the mock-service contract.
+    /// </remarks>
     [HttpPatch("{materialId:int}")]
     [SwaggerOperation(
         Summary = "Patch material by id",
@@ -122,6 +176,14 @@ public class MaterialsController(
         return await UpdateMaterialById(materialId, resource, cancellationToken);
     }
 
+    /// <summary>
+    ///     Deletes an existing material by identifier.
+    /// </summary>
+    /// <param name="materialId">Identifier of the material that must be removed.</param>
+    /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
+    /// <returns>
+    ///     <c>204 No Content</c> when deletion succeeds; otherwise a Problem Details response.
+    /// </returns>
     [HttpDelete("{materialId:int}")]
     [SwaggerOperation(
         Summary = "Delete material by id",

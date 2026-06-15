@@ -5,13 +5,22 @@ using Buildline.Platform.Categories.Interfaces.Rest.Resources;
 using Buildline.Platform.Categories.Interfaces.Rest.Transform;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Buildline.Platform.Categories.Interfaces.Rest;
 
+/// <summary>
+///     REST controller that exposes material categories for catalog and inventory workflows.
+/// </summary>
+/// <remarks>
+///     The controller satisfies TS-09 and TS-10 by providing read-only category endpoints aligned
+///     with the Sprint 2 frontend filters and the Materials bounded context.
+/// </remarks>
 [ApiController]
+[Authorize]
 [Route("api/v1/categories")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Material Category endpoints.")]
@@ -21,6 +30,13 @@ public class CategoriesController(
     ProblemDetailsFactory problemDetailsFactory)
     : ControllerBase
 {
+    /// <summary>
+    ///     Gets every material category available for catalog filters.
+    /// </summary>
+    /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
+    /// <returns>
+    ///     <c>200 OK</c> with category resources when records exist; otherwise <c>204 No Content</c>.
+    /// </returns>
     [HttpGet]
     [SwaggerOperation(
         Summary = "Get all material categories",
@@ -38,6 +54,14 @@ public class CategoriesController(
             foundCategories => Ok(foundCategories.Select(CategoryResourceFromEntityAssembler.ToResourceFromEntity)));
     }
 
+    /// <summary>
+    ///     Gets one material category by identifier.
+    /// </summary>
+    /// <param name="categoryId">Identifier of the category requested by the API client.</param>
+    /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
+    /// <returns>
+    ///     <c>200 OK</c> with the category resource when found; otherwise <c>404 Not Found</c> Problem Details.
+    /// </returns>
     [HttpGet("{categoryId:int}")]
     [SwaggerOperation(
         Summary = "Get material category by id",
