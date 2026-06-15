@@ -330,3 +330,17 @@ Acceptance criteria:
 - Given valid supplier changes, when PATCH is executed, then the API returns the updated supplier.
 - Given an existing supplier, when DELETE is executed, then the supplier is removed or deactivated from active listings.
 
+---
+
+### TS-SUP-003 - Incidents list and create API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** suppliers  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to record operational problems related to suppliers or deliveries.
+
+Acceptance criteria:
+- Given supplier, order, severity and description, when POST is executed, then the API creates an open incident.
+- Given incidents exist, when GET is called, then the API returns severity, supplier and state data.
+
