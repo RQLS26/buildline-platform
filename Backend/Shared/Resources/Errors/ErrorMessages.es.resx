@@ -6,28 +6,6 @@
     <data name="OperationCancelled" xml:space="preserve">
     <value>La operación fue cancelada.</value>
   </data>
-    <data name="IamError.UserNotFound" xml:space="preserve">
-    <value>Usuario no encontrado.</value>
-  </data>
-    <data name="IamError.UsernameAlreadyTaken" xml:space="preserve">
-    <value>El nombre de usuario {0} ya está en uso.</value>
-  </data>
-    <data name="IamError.InvalidCredentials" xml:space="preserve">
-    <value>Nombre de usuario o contraseña inválidos.</value>
-  </data>
-    <data name="IamError.OperationCancelled" xml:space="preserve">
-    <value>La operación de usuario fue cancelada.</value>
-  </data>
-    <data name="IamError.DatabaseError" xml:space="preserve">
-    <value>Ocurrió un error de base de datos durante la operación IAM.</value>
-  </data>
-    <data name="IamError.InternalServerError" xml:space="preserve">
-    <value>Ocurrió un error interno inesperado en IAM.</value>
-  </data>
-    <data name="IamError.ExternalServiceError" xml:space="preserve">
-    <value>Ocurrió un error de servicio externo en IAM.</value>
-  </data>
-
     <data name="ProfilesError.ProfileNotFound" xml:space="preserve">
     <value>Perfil no encontrado.</value>
   </data>
@@ -75,5 +53,23 @@
   </data>
     <data name="CategoriesError.InternalServerError" xml:space="preserve">
     <value>Ocurrió un error interno inesperado en Categorías.</value>
+  </data>
+    <data name="IamError.UserNotFound" xml:space="preserve">
+    <value>Usuario no encontrado.</value>
+  </data>
+    <data name="IamError.EmailAlreadyTaken" xml:space="preserve">
+    <value>La dirección de correo electrónico ya está registrada.</value>
+  </data>
+    <data name="IamError.InvalidCredentials" xml:space="preserve">
+    <value>Correo electrónico o contraseña inválidos.</value>
+  </data>
+    <data name="IamError.OperationCancelled" xml:space="preserve">
+    <value>La operación de usuario fue cancelada.</value>
+  </data>
+    <data name="IamError.DatabaseError" xml:space="preserve">
+    <value>Ocurrió un error de base de datos durante la operación IAM.</value>
+  </data>
+    <data name="IamError.InternalServerError" xml:space="preserve">
+    <value>Ocurrió un error interno inesperado en IAM.</value>
   </data>
 </root>
