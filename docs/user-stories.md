@@ -3,18 +3,18 @@
 This document contains API-focused technical stories and backend improvements for the Buildline Platform REST API. It follows the same endpoint-oriented style used by the Learning Center Platform reference project while preserving Buildline bounded contexts and frontend contracts.
 
 Common conventions:
-- Base path: /api/v1.
+- Base path: `/api/v1`.
 - API implementation: ASP.NET Core / C#.
-- Frontend contexts: iam, profiles, shared, requisition, procurement, inventory, delivery, suppliers, analytics-budgeting and communication.
-- Projects, materials and categories are documented as reference catalog modules, not as independent frontend bounded contexts.
+- Frontend contexts: `iam`, `profiles`, `shared`, `requisition`, `procurement`, `inventory`, `delivery`, `suppliers`, `analytics-budgeting` and `communication`.
+- `Projects`, `Materials` and `Categories` are documented as reference catalog modules, not as independent frontend bounded contexts and not as part of the technical `Shared` kernel.
 
 ---
 
 ### IMP-BE-001 - Backend foundations
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/backend-foundations`  
 **Context / module:** shared / platform  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/health, Swagger/OpenAPI, JWT Bearer, Problem Details`
 
 As a frontend developer, I want to configure the ASP.NET Core platform foundation so every bounded context exposes secure, documented, versioned contracts.
 
@@ -26,9 +26,9 @@ Acceptance criteria:
 
 ### IMP-BE-002 - Persistence, migrations and seed data
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/backend-persistence-migrations`  
 **Context / module:** shared persistence  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `EF Core DbContext, migrations, seed data`
 
 As a frontend developer, I want to configure transactional persistence, audit metadata, constraints and initial data compatible with the frontend mock contracts.
 
@@ -40,9 +40,9 @@ Acceptance criteria:
 
 ### TS-IAM-001 - Sign-in API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-IAM-001-sign-in-api`  
 **Context / module:** iam  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `POST /api/v1/auth/sign-in`
 
 As a frontend developer, I want to authenticate users, obtain a JWT token and initialize the client session.
 
@@ -54,9 +54,9 @@ Acceptance criteria:
 
 ### TS-IAM-002 - Sign-up API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-IAM-002-sign-up-api`  
 **Context / module:** iam  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `POST /api/v1/auth/sign-up`
 
 As a frontend developer, I want to register new users for controlled platform access.
 
@@ -68,9 +68,9 @@ Acceptance criteria:
 
 ### TS-IAM-003 - Users directory API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-IAM-003-users-directory-api`  
 **Context / module:** iam  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/users, POST /api/v1/users`
 
 As a frontend developer, I want to list and create administrative users from the web application.
 
@@ -82,9 +82,9 @@ Acceptance criteria:
 
 ### TS-IAM-004 - User detail and update API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-IAM-004-user-detail-update-api`  
 **Context / module:** iam  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/users/{id}, PATCH /api/v1/users/{id}`
 
 As a frontend developer, I want to show user details and update editable role or status information.
 
@@ -96,9 +96,9 @@ Acceptance criteria:
 
 ### TS-PROF-001 - Profile read and update API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-PROF-001-profile-api`  
 **Context / module:** profiles  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/profiles, GET /api/v1/profiles/{id}, PUT/PATCH /api/v1/profiles/{id}`
 
 As a frontend developer, I want to display and update company or user profile information.
 
@@ -110,9 +110,9 @@ Acceptance criteria:
 
 ### TS-SHARED-001 - Projects reference API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-SHARED-001-projects-reference-api`  
 **Context / module:** reference catalog  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/projects, GET /api/v1/projects/{id}`
 
 As a frontend developer, I want to provide project reference data for requisitions, inventory and dashboards.
 
@@ -124,9 +124,9 @@ Acceptance criteria:
 
 ### TS-SHARED-002 - Materials catalog API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-SHARED-002-materials-catalog-api`  
 **Context / module:** reference catalog  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET/POST /api/v1/materials, GET/PUT/PATCH/DELETE /api/v1/materials/{id}`
 
 As a frontend developer, I want to provide material catalog data for requisitions, procurement and inventory.
 
@@ -138,9 +138,9 @@ Acceptance criteria:
 
 ### TS-SHARED-003 - Categories reference API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-SHARED-003-categories-reference-api`  
 **Context / module:** reference catalog  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/categories, GET /api/v1/categories/{id}`
 
 As a frontend developer, I want to provide category reference data for material classification and inventory filters.
 
@@ -152,9 +152,9 @@ Acceptance criteria:
 
 ### TS-REQ-001 - Create requisition API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-REQ-001-create-requisition-api`  
 **Context / module:** requisition  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `POST /api/v1/requisitions`
 
 As a frontend developer, I want to register material requests from construction sites.
 
@@ -166,9 +166,9 @@ Acceptance criteria:
 
 ### TS-REQ-002 - List and detail requisitions API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-REQ-002-list-detail-requisitions-api`  
 **Context / module:** requisition  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/requisitions, GET /api/v1/requisitions/{id}`
 
 As a frontend developer, I want to implement requisition list and detail screens.
 
@@ -180,9 +180,9 @@ Acceptance criteria:
 
 ### TS-REQ-003 - Update requisition API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-REQ-003-update-requisition-api`  
 **Context / module:** requisition  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `PATCH /api/v1/requisitions/{id}`
 
 As a frontend developer, I want to reflect status, priority and operational updates for material requests.
 
@@ -194,9 +194,9 @@ Acceptance criteria:
 
 ### TS-PROC-001 - Quotations list and create API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-PROC-001-quotations-api`  
 **Context / module:** procurement  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/quotations, POST /api/v1/quotations`
 
 As a frontend developer, I want to register and compare supplier quotations.
 
@@ -208,9 +208,9 @@ Acceptance criteria:
 
 ### TS-PROC-002 - Quotation detail and update API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-PROC-002-quotation-detail-update-api`  
 **Context / module:** procurement  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/quotations/{id}, PATCH /api/v1/quotations/{id}`
 
 As a frontend developer, I want to review quotation details and update quotation state.
 
@@ -222,9 +222,9 @@ Acceptance criteria:
 
 ### TS-PROC-003 - Purchase orders list and create API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-PROC-003-purchase-orders-api`  
 **Context / module:** procurement  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/purchaseOrders, POST /api/v1/purchaseOrders`
 
 As a frontend developer, I want to formalize approved purchases and show purchase history.
 
@@ -236,9 +236,9 @@ Acceptance criteria:
 
 ### TS-PROC-004 - Purchase order detail and update API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-PROC-004-purchase-order-update-api`  
 **Context / module:** procurement  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/purchaseOrders/{id}, PATCH /api/v1/purchaseOrders/{id}`
 
 As a frontend developer, I want to query purchase order details and approve or reject orders.
 
@@ -250,9 +250,9 @@ Acceptance criteria:
 
 ### TS-INV-001 - Inventory list and create API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-INV-001-inventory-api`  
 **Context / module:** inventory  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/inventory, POST /api/v1/inventory`
 
 As a frontend developer, I want to visualize and register stock per project.
 
@@ -264,9 +264,9 @@ Acceptance criteria:
 
 ### TS-INV-002 - Inventory stock update API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-INV-002-inventory-stock-update-api`  
 **Context / module:** inventory  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `PATCH /api/v1/inventory/{id}`
 
 As a frontend developer, I want to reflect warehouse movements in stock values.
 
@@ -278,9 +278,9 @@ Acceptance criteria:
 
 ### TS-DEL-001 - Delivery tracking list and create API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-DEL-001-delivery-tracking-api`  
 **Context / module:** delivery  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/deliveries, POST /api/v1/deliveries`
 
 As a frontend developer, I want to register and track deliveries linked to purchase orders.
 
@@ -292,9 +292,9 @@ Acceptance criteria:
 
 ### TS-DEL-002 - Delivery status update API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-DEL-002-delivery-status-update-api`  
 **Context / module:** delivery  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `PATCH /api/v1/deliveries/{id}`
 
 As a frontend developer, I want to reflect dispatched, delayed, in-transit or delivered states.
 
@@ -306,9 +306,9 @@ Acceptance criteria:
 
 ### TS-SUP-001 - Suppliers directory API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-SUP-001-suppliers-directory-api`  
 **Context / module:** suppliers  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/suppliers, POST /api/v1/suppliers`
 
 As a frontend developer, I want to maintain the supplier directory used by procurement and incidents.
 
@@ -320,9 +320,9 @@ Acceptance criteria:
 
 ### TS-SUP-002 - Supplier update and delete API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-SUP-002-supplier-update-delete-api`  
 **Context / module:** suppliers  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `PATCH /api/v1/suppliers/{id}, DELETE /api/v1/suppliers/{id}`
 
 As a frontend developer, I want to update supplier information and remove inactive suppliers from operational views.
 
@@ -334,9 +334,9 @@ Acceptance criteria:
 
 ### TS-SUP-003 - Incidents list and create API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-SUP-003-incidents-api`  
 **Context / module:** suppliers  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/incidents, POST /api/v1/incidents`
 
 As a frontend developer, I want to record operational problems related to suppliers or deliveries.
 
@@ -348,9 +348,9 @@ Acceptance criteria:
 
 ### TS-SUP-004 - Incident status update API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-SUP-004-incident-status-update-api`  
 **Context / module:** suppliers  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `PATCH /api/v1/incidents/{id}`
 
 As a frontend developer, I want to close, escalate or update incident status.
 
@@ -362,9 +362,9 @@ Acceptance criteria:
 
 ### TS-ANB-001 - Budget dashboard API
 
-**Branch:** $(System.Collections.Hashtable.Branch)  
+**Branch:** `feature/TS-ANB-001-budget-dashboard-api`  
 **Context / module:** analytics-budgeting  
-**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+**Endpoint(s):** `GET /api/v1/budgets, POST /api/v1/budgets`
 
 As a frontend developer, I want to feed analytics-budgeting dashboards with budget and spending indicators.
 
@@ -372,3 +372,58 @@ Acceptance criteria:
 - Given project budgets exist, when GET is called, then the API returns totalBudget, spent, allocated and status.
 - Given a valid budget payload, when POST is executed, then the API creates the budget record for dashboard consumption.
 
+---
+
+### TS-ANB-002 - Budget update API
+
+**Branch:** `feature/TS-ANB-002-budget-update-api`  
+**Context / module:** analytics-budgeting  
+**Endpoint(s):** `PATCH /api/v1/budgets/{id}`
+
+As a frontend developer, I want to update financial values used to calculate budget deviation states.
+
+Acceptance criteria:
+- Given valid spent or allocated changes, when PATCH is executed, then the API returns the updated budget.
+- Given a non-existent budget id, when PATCH is called, then the API returns 404 Not Found.
+
+---
+
+### TS-COM-001 - Messages inbox API
+
+**Branch:** `feature/TS-COM-001-messages-inbox-api`  
+**Context / module:** communication  
+**Endpoint(s):** `GET /api/v1/messages, POST /api/v1/messages`
+
+As a frontend developer, I want to show the internal inbox and create operational notifications.
+
+Acceptance criteria:
+- Given messages exist, when GET is called, then the API returns sender, subject, category, read and starred data.
+- Given a valid message payload, when POST is executed, then the API returns the created message.
+
+---
+
+### TS-COM-002 - Message state and delete API
+
+**Branch:** `feature/TS-COM-002-message-state-delete-api`  
+**Context / module:** communication  
+**Endpoint(s):** `PATCH /api/v1/messages/{id}, DELETE /api/v1/messages/{id}`
+
+As a frontend developer, I want to mark messages as read/starred or remove them from the inbox.
+
+Acceptance criteria:
+- Given an existing message, when PATCH is executed, then the API updates read or starred state.
+- Given an existing message, when DELETE is executed, then the message no longer appears in the inbox.
+
+---
+
+### IMP-BE-003 - Deployment and integration readiness
+
+**Branch:** `feature/backend-deployment-readiness`  
+**Context / module:** deployment  
+**Endpoint(s):** `Dockerfile, appsettings.Production.json, Backend.http smoke requests`
+
+As a frontend developer, I want to prepare the Web Services for deployment and frontend integration smoke testing.
+
+Acceptance criteria:
+- Given production variables are provided, when the API is built or containerized, then it starts with production-safe configuration.
+- Given the frontend replaces json-server, when smoke requests are executed, then the prioritized endpoints respond with the documented contracts.
