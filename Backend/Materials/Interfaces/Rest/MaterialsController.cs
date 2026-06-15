@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Buildline.Platform.Materials.Application.CommandServices;
 using Buildline.Platform.Materials.Application.QueryServices;
+using Buildline.Platform.Materials.Domain.Model.Commands;
 using Buildline.Platform.Materials.Domain.Model.Queries;
 using Buildline.Platform.Materials.Interfaces.Rest.Resources;
 using Buildline.Platform.Materials.Interfaces.Rest.Transform;
@@ -119,5 +120,24 @@ public class MaterialsController(
         CancellationToken cancellationToken)
     {
         return await UpdateMaterialById(materialId, resource, cancellationToken);
+    }
+
+    [HttpDelete("{materialId:int}")]
+    [SwaggerOperation(
+        Summary = "Delete material by id",
+        Description = "Deletes a material from the Buildline catalog by its unique identifier.",
+        OperationId = "DeleteMaterialById")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "The material was deleted.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
+    public async Task<IActionResult> DeleteMaterialById(int materialId, CancellationToken cancellationToken)
+    {
+        var command = new DeleteMaterialCommand(materialId);
+        var result = await materialCommandService.Handle(command, cancellationToken);
+
+        return MaterialsActionResultAssembler.ToActionResultFromDeleteMaterialResult(
+            this,
+            result,
+            problemDetailsFactory,
+            NoContent);
     }
 }
