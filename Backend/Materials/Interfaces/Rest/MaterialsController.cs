@@ -4,8 +4,10 @@ using Buildline.Platform.Materials.Application.QueryServices;
 using Buildline.Platform.Materials.Domain.Model.Queries;
 using Buildline.Platform.Materials.Interfaces.Rest.Resources;
 using Buildline.Platform.Materials.Interfaces.Rest.Transform;
+using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Buildline.Platform.Materials.Interfaces.Rest;
@@ -17,6 +19,7 @@ namespace Buildline.Platform.Materials.Interfaces.Rest;
 public class MaterialsController(
     IMaterialCommandService materialCommandService,
     IMaterialQueryService materialQueryService,
+    IStringLocalizer<ErrorMessages> errorLocalizer,
     ProblemDetailsFactory problemDetailsFactory)
     : ControllerBase
 {
@@ -35,6 +38,26 @@ public class MaterialsController(
         return MaterialsActionResultAssembler.ToActionResultFromGetAllMaterialsResult(
             materials,
             foundMaterials => Ok(foundMaterials.Select(MaterialResourceFromEntityAssembler.ToResourceFromEntity)));
+    }
+
+    [HttpGet("{materialId:int}")]
+    [SwaggerOperation(
+        Summary = "Get material by id",
+        Description = "Gets a material from the Buildline catalog by its unique identifier.",
+        OperationId = "GetMaterialById")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The material was found and returned.", typeof(MaterialResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
+    public async Task<IActionResult> GetMaterialById(int materialId, CancellationToken cancellationToken)
+    {
+        var query = new GetMaterialByIdQuery(materialId);
+        var material = await materialQueryService.Handle(query, cancellationToken);
+
+        return MaterialsActionResultAssembler.ToActionResultFromGetMaterialByIdResult(
+            this,
+            material,
+            errorLocalizer,
+            problemDetailsFactory,
+            foundMaterial => Ok(MaterialResourceFromEntityAssembler.ToResourceFromEntity(foundMaterial)));
     }
 
     [HttpPost]
@@ -56,7 +79,7 @@ public class MaterialsController(
             result,
             problemDetailsFactory,
             createdMaterial => CreatedAtAction(
-                nameof(GetAllMaterials),
+                nameof(GetMaterialById),
                 new { materialId = createdMaterial.Id },
                 MaterialResourceFromEntityAssembler.ToResourceFromEntity(createdMaterial)));
     }
