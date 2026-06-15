@@ -162,3 +162,17 @@ Acceptance criteria:
 - Given material, project, quantity, unit, priority and requested date, when POST is executed, then the API returns 201 Created.
 - Given missing required data, when the payload is validated, then the API returns a validation error.
 
+---
+
+### TS-REQ-002 - List and detail requisitions API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** requisition  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to implement requisition list and detail screens.
+
+Acceptance criteria:
+- Given requisitions exist, when the list endpoint is called, then the API returns status, priority, requester and project data.
+- Given a non-existent id, when the detail endpoint is called, then the API returns 404 Not Found.
+
