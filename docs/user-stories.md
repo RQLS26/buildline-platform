@@ -120,3 +120,17 @@ Acceptance criteria:
 - Given seeded projects exist, when GET /api/v1/projects is called, then the API returns a collection usable by frontend filters.
 - Given an existing project id, when the detail endpoint is called, then the API returns the project reference resource.
 
+---
+
+### TS-SHARED-002 - Materials catalog API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** reference catalog  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to provide material catalog data for requisitions, procurement and inventory.
+
+Acceptance criteria:
+- Given materials exist, when the catalog is queried, then the API returns name, unit and category data.
+- Given valid catalog changes, when create/update/delete operations are executed, then the API persists the material catalog state.
+
