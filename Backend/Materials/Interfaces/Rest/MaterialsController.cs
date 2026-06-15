@@ -7,6 +7,7 @@ using Buildline.Platform.Materials.Interfaces.Rest.Resources;
 using Buildline.Platform.Materials.Interfaces.Rest.Transform;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -21,6 +22,7 @@ namespace Buildline.Platform.Materials.Interfaces.Rest;
 ///     versioned .NET Web Services aligned to the current frontend fields.
 /// </remarks>
 [ApiController]
+[Authorize]
 [Route("api/v1/materials")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Material Catalog endpoints for requisitions and inventory.")]

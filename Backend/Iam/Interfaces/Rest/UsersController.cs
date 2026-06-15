@@ -6,6 +6,7 @@ using Buildline.Platform.Iam.Interfaces.Rest.Resources;
 using Buildline.Platform.Iam.Interfaces.Rest.Transform;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,6 +23,7 @@ namespace Buildline.Platform.Iam.Interfaces.Rest;
 ///     profiles, materials, categories and authentication.
 /// </remarks>
 [ApiController]
+[Authorize]
 [Route("api/v1/users")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available User Management endpoints.")]

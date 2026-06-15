@@ -14,12 +14,24 @@ namespace Buildline.Platform.Profiles.Application.Internal.CommandServices;
 /// <summary>
 ///     Application command service for profile write use cases.
 /// </summary>
+/// <param name="profileRepository">Repository used to retrieve and persist company profiles.</param>
+/// <param name="unitOfWork">Unit of work used to commit profile changes transactionally.</param>
+/// <param name="localizer">Localizer used to resolve profile error messages.</param>
 public class ProfileCommandService(
     IProfileRepository profileRepository,
     IUnitOfWork unitOfWork,
     IStringLocalizer<ErrorMessages> localizer)
     : IProfileCommandService
 {
+    /// <summary>
+    ///     Handles company profile update.
+    /// </summary>
+    /// <param name="command">Update command containing profile id and replacement company data.</param>
+    /// <param name="cancellationToken">Token used to cancel lookup, mutation and persistence.</param>
+    /// <returns>
+    ///     A successful result with the updated profile, or a profile-domain error when the profile
+    ///     does not exist, persistence fails, or the operation is cancelled.
+    /// </returns>
     public async Task<Result<Profile>> Handle(UpdateProfileCommand command, CancellationToken cancellationToken = default)
     {
         var profile = await profileRepository.FindByIdAsync(command.ProfileId, cancellationToken);

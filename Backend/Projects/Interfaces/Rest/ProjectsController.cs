@@ -5,6 +5,7 @@ using Buildline.Platform.Projects.Interfaces.Rest.Resources;
 using Buildline.Platform.Projects.Interfaces.Rest.Transform;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,6 +20,7 @@ namespace Buildline.Platform.Projects.Interfaces.Rest;
 ///     is used by requisition filters, material/inventory views and analytics-budgeting dashboards.
 /// </remarks>
 [ApiController]
+[Authorize]
 [Route("api/v1/projects")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Project reference endpoints.")]

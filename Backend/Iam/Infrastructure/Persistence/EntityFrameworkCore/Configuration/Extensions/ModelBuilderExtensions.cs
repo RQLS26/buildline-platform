@@ -4,8 +4,20 @@ using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace Buildline.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
+/// <summary>
+///     Entity Framework Core model configuration for the IAM bounded context.
+/// </summary>
 public static class ModelBuilderExtensions
 {
+    /// <summary>
+    ///     Applies table mapping, constraints, indexes and seed users for IAM.
+    /// </summary>
+    /// <param name="builder">Model builder used by the shared application database context.</param>
+    /// <remarks>
+    ///     Seed users mirror the Sprint 2 frontend mock accounts so the first backend version can be
+    ///     validated with known credentials. Before creating production migrations, BCrypt hashes in
+    ///     seed data should be replaced by fixed pre-generated hashes to avoid migration churn.
+    /// </remarks>
     public static void ApplyIamConfiguration(this ModelBuilder builder)
     {
         builder.Entity<User>().HasKey(user => user.Id);

@@ -3,8 +3,20 @@ using Buildline.Platform.Iam.Interfaces.Rest.Resources;
 
 namespace Buildline.Platform.Iam.Interfaces.Rest.Transform;
 
+/// <summary>
+///     Assembler that translates create-user REST resources into IAM commands.
+/// </summary>
+/// <remarks>
+///     This assembler supports the users-management module and keeps frontend-specific payload shape
+///     outside the IAM command service.
+/// </remarks>
 public static class CreateUserCommandFromResourceAssembler
 {
+    /// <summary>
+    ///     Builds a create-user command from the administration request resource.
+    /// </summary>
+    /// <param name="resource">Resource received by the create-user endpoint.</param>
+    /// <returns>A create-user command ready for validation, hashing and persistence.</returns>
     public static CreateUserCommand ToCommandFromResource(CreateUserResource resource)
     {
         return new CreateUserCommand(

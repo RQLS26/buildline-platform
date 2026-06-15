@@ -5,6 +5,7 @@ using Buildline.Platform.Categories.Interfaces.Rest.Resources;
 using Buildline.Platform.Categories.Interfaces.Rest.Transform;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,6 +20,7 @@ namespace Buildline.Platform.Categories.Interfaces.Rest;
 ///     with the Sprint 2 frontend filters and the Materials bounded context.
 /// </remarks>
 [ApiController]
+[Authorize]
 [Route("api/v1/categories")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Material Category endpoints.")]
