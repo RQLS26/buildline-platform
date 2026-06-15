@@ -246,3 +246,17 @@ Acceptance criteria:
 - Given an existing purchase order id, when GET is called, then the API returns supplier, amount and state.
 - Given a valid transition, when PATCH is executed, then the API updates state without losing traceability.
 
+---
+
+### TS-INV-001 - Inventory list and create API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** inventory  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to visualize and register stock per project.
+
+Acceptance criteria:
+- Given inventory items exist, when GET is called, then the API returns current, minimum and maximum stock.
+- Given a valid item payload, when POST is executed, then the API creates the inventory item.
+
