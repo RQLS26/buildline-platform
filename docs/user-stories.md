@@ -204,3 +204,17 @@ Acceptance criteria:
 - Given a valid quotation payload, when POST is executed, then the API returns 201 Created.
 - Given quotations exist, when GET is called, then the API returns comparable supplier offer data.
 
+---
+
+### TS-PROC-002 - Quotation detail and update API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** procurement  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to review quotation details and update quotation state.
+
+Acceptance criteria:
+- Given an existing quotation id, when GET is called, then the API returns supplier, material and amount data.
+- Given a valid state change, when PATCH is executed, then the API persists the decision.
+
