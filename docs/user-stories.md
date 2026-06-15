@@ -64,3 +64,17 @@ Acceptance criteria:
 - Given a valid registration payload, when the endpoint is called, then the API creates the user and returns confirmation data.
 - Given missing or duplicated data, when the command is validated, then the API returns 400 Bad Request.
 
+---
+
+### TS-IAM-003 - Users directory API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** iam  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to list and create administrative users from the web application.
+
+Acceptance criteria:
+- Given users exist, when GET /api/v1/users is called, then the API returns a user collection.
+- Given a valid user payload, when POST /api/v1/users is called, then the API persists and returns the created resource.
+
