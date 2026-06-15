@@ -69,4 +69,10 @@ public partial class User : IAuditableEntity
     public string LastLogin { get; private set; }
     public DateTimeOffset? CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
+
+    public User UpdateLastLogin(string lastLogin)
+    {
+        LastLogin = lastLogin;
+        return this;
+    }
 }
