@@ -50,3 +50,17 @@ Acceptance criteria:
 - Given valid credentials, when the sign-in endpoint is called, then the API returns 200 OK with user data and token.
 - Given invalid credentials, when the endpoint is called, then the API returns a controlled error without issuing a token.
 
+---
+
+### TS-IAM-002 - Sign-up API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** iam  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to register new users for controlled platform access.
+
+Acceptance criteria:
+- Given a valid registration payload, when the endpoint is called, then the API creates the user and returns confirmation data.
+- Given missing or duplicated data, when the command is validated, then the API returns 400 Bad Request.
+
