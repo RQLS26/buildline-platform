@@ -344,3 +344,17 @@ Acceptance criteria:
 - Given supplier, order, severity and description, when POST is executed, then the API creates an open incident.
 - Given incidents exist, when GET is called, then the API returns severity, supplier and state data.
 
+---
+
+### TS-SUP-004 - Incident status update API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** suppliers  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to close, escalate or update incident status.
+
+Acceptance criteria:
+- Given an existing incident and valid changes, when PATCH is executed, then the API returns the updated incident.
+- Given an invalid id, when PATCH is called, then the API returns 404 Not Found.
+
