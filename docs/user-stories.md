@@ -316,3 +316,17 @@ Acceptance criteria:
 - Given a valid supplier payload, when POST is executed, then the API returns the created supplier.
 - Given suppliers exist, when GET is called, then the API returns rating, category and delivery performance data.
 
+---
+
+### TS-SUP-002 - Supplier update and delete API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** suppliers  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to update supplier information and remove inactive suppliers from operational views.
+
+Acceptance criteria:
+- Given valid supplier changes, when PATCH is executed, then the API returns the updated supplier.
+- Given an existing supplier, when DELETE is executed, then the supplier is removed or deactivated from active listings.
+
