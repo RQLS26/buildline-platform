@@ -1,4 +1,5 @@
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using Buildline.Platform.Materials.Domain.Model.Commands;
 
 namespace Buildline.Platform.Materials.Domain.Model.Aggregates;
 
@@ -34,6 +35,19 @@ public partial class Material : IAuditableEntity
         CurrentStock = currentStock;
         MinStock = minStock;
         MaxStock = maxStock;
+    }
+
+    public Material(CreateMaterialCommand command)
+        : this(
+            command.Sku,
+            command.Name,
+            command.Category,
+            command.Unit,
+            command.Project,
+            command.CurrentStock,
+            command.MinStock,
+            command.MaxStock)
+    {
     }
 
     public int Id { get; private set; }

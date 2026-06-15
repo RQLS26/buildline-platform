@@ -1,3 +1,5 @@
+using Buildline.Platform.Materials.Application.CommandServices;
+using Buildline.Platform.Materials.Application.Internal.CommandServices;
 using Buildline.Platform.Materials.Application.Internal.QueryServices;
 using Buildline.Platform.Materials.Application.QueryServices;
 using Buildline.Platform.Materials.Domain.Repositories;
@@ -75,6 +77,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<IMaterialCommandService, MaterialCommandService>();
 builder.Services.AddScoped<IMaterialQueryService, MaterialQueryService>();
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
