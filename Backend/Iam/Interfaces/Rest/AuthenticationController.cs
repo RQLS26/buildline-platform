@@ -37,4 +37,27 @@ public class AuthenticationController(
                 authenticatedUser.user,
                 authenticatedUser.token)));
     }
+
+    [HttpPost("sign-up")]
+    [SwaggerOperation(
+        Summary = "Sign up",
+        Description = "Registers a Buildline user and returns an authenticated session token.",
+        OperationId = "SignUp")]
+    [SwaggerResponse(StatusCodes.Status201Created, "The user was registered and authenticated.", typeof(AuthenticatedUserResource))]
+    [SwaggerResponse(StatusCodes.Status409Conflict, "The email address is already registered.")]
+    public async Task<IActionResult> SignUp([FromBody] SignUpResource resource, CancellationToken cancellationToken)
+    {
+        var command = SignUpCommandFromResourceAssembler.ToCommandFromResource(resource);
+        var result = await userCommandService.Handle(command, cancellationToken);
+
+        return IamActionResultAssembler.ToActionResultFromSignUpResult(
+            this,
+            result,
+            problemDetailsFactory,
+            authenticatedUser => Created(
+                $"/api/v1/users/{authenticatedUser.user.Id}",
+                AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(
+                    authenticatedUser.user,
+                    authenticatedUser.token)));
+    }
 }

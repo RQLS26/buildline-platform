@@ -6,6 +6,8 @@ using Buildline.Platform.Iam.Domain.Model.Commands;
 using Buildline.Platform.Iam.Domain.Repositories;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Application.Model;
+using Buildline.Platform.Shared.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
 namespace Buildline.Platform.Iam.Application.Internal.CommandServices;
@@ -14,6 +16,7 @@ public class UserCommandService(
     IUserRepository userRepository,
     IHashingService hashingService,
     ITokenService tokenService,
+    IUnitOfWork unitOfWork,
     IStringLocalizer<ErrorMessages> localizer)
     : IUserCommandService
 {
@@ -28,5 +31,42 @@ public class UserCommandService(
 
         var token = tokenService.GenerateToken(user);
         return Result<(User user, string token)>.Success((user, token));
+    }
+
+    public async Task<Result<(User user, string token)>> Handle(SignUpCommand command, CancellationToken cancellationToken = default)
+    {
+        if (await userRepository.ExistsByEmailAsync(command.Email, cancellationToken))
+            return Result<(User user, string token)>.Failure(
+                IamError.EmailAlreadyTaken,
+                localizer[$"{nameof(IamError)}.{IamError.EmailAlreadyTaken}"]);
+
+        var passwordHash = hashingService.HashPassword(command.Password);
+        var user = new User(command, passwordHash);
+
+        try
+        {
+            await userRepository.AddAsync(user, cancellationToken);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            var token = tokenService.GenerateToken(user);
+            return Result<(User user, string token)>.Success((user, token));
+        }
+        catch (OperationCanceledException)
+        {
+            return Result<(User user, string token)>.Failure(
+                IamError.OperationCancelled,
+                localizer[$"{nameof(IamError)}.{IamError.OperationCancelled}"]);
+        }
+        catch (DbUpdateException)
+        {
+            return Result<(User user, string token)>.Failure(
+                IamError.DatabaseError,
+                localizer[$"{nameof(IamError)}.{IamError.DatabaseError}"]);
+        }
+        catch (Exception)
+        {
+            return Result<(User user, string token)>.Failure(
+                IamError.InternalServerError,
+                localizer[$"{nameof(IamError)}.{IamError.InternalServerError}"]);
+        }
     }
 }

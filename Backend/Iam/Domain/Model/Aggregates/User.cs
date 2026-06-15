@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Buildline.Platform.Iam.Domain.Model.Commands;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Iam.Domain.Model.Aggregates;
@@ -40,6 +41,20 @@ public partial class User : IAuditableEntity
         AvatarColor = avatarColor;
         IsActive = isActive;
         LastLogin = lastLogin;
+    }
+
+    public User(SignUpCommand command, string passwordHash)
+        : this(
+            command.Name,
+            command.Email,
+            passwordHash,
+            command.Role,
+            command.Department,
+            command.Phone,
+            command.AvatarColor,
+            true,
+            "Never")
+    {
     }
 
     public int Id { get; private set; }
