@@ -386,3 +386,17 @@ Acceptance criteria:
 - Given valid spent or allocated changes, when PATCH is executed, then the API returns the updated budget.
 - Given a non-existent budget id, when PATCH is called, then the API returns 404 Not Found.
 
+---
+
+### TS-COM-001 - Messages inbox API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** communication  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to show the internal inbox and create operational notifications.
+
+Acceptance criteria:
+- Given messages exist, when GET is called, then the API returns sender, subject, category, read and starred data.
+- Given a valid message payload, when POST is executed, then the API returns the created message.
+
