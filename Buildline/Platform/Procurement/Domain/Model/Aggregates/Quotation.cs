@@ -1,4 +1,4 @@
-using Buildline.Platform.Procurement.Interfaces.Rest.Resources;
+using Buildline.Platform.Procurement.Domain.Model.Commands;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Procurement.Domain.Model.Aggregates;
@@ -22,16 +22,16 @@ public partial class Quotation : IAuditableEntity
     /// <summary>
     ///     Creates a quotation from the procurement quotation contract.
     /// </summary>
-    /// <param name="resource">Quotation payload entered by logistics staff.</param>
-    public Quotation(QuotationWriteResource resource)
+    /// <param name="command">Quotation payload entered by logistics staff.</param>
+    public Quotation(CreateQuotationCommand command)
     {
-        QuotationId = string.IsNullOrWhiteSpace(resource.QuotationId) ? $"QT-{DateTime.UtcNow:yyyyMMddHHmmss}" : resource.QuotationId.Trim();
-        Supplier = resource.Supplier?.Trim() ?? string.Empty;
-        Material = resource.Material?.Trim() ?? string.Empty;
-        Project = resource.Project?.Trim() ?? string.Empty;
-        Amount = resource.Amount ?? 0m;
-        Status = resource.Status?.Trim() ?? "Pending";
-        Date = resource.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+        QuotationId = string.IsNullOrWhiteSpace(command.QuotationId) ? $"QT-{DateTime.UtcNow:yyyyMMddHHmmss}" : command.QuotationId.Trim();
+        Supplier = command.Supplier?.Trim() ?? string.Empty;
+        Material = command.Material?.Trim() ?? string.Empty;
+        Project = command.Project?.Trim() ?? string.Empty;
+        Amount = command.Amount ?? 0m;
+        Status = command.Status?.Trim() ?? "Pending";
+        Date = command.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
     }
 
     /// <summary>Gets the database-generated quotation identifier.</summary>
@@ -67,15 +67,18 @@ public partial class Quotation : IAuditableEntity
     /// <summary>
     ///     Applies a partial quotation update, including accepted/rejected transitions.
     /// </summary>
-    /// <param name="resource">Quotation fields to replace.</param>
-    public void Apply(QuotationWriteResource resource)
+    /// <param name="command">Quotation fields to replace.</param>
+    public void Apply(UpdateQuotationCommand command)
     {
-        QuotationId = resource.QuotationId is null ? QuotationId : resource.QuotationId.Trim();
-        Supplier = resource.Supplier is null ? Supplier : resource.Supplier.Trim();
-        Material = resource.Material is null ? Material : resource.Material.Trim();
-        Project = resource.Project is null ? Project : resource.Project.Trim();
-        Amount = resource.Amount ?? Amount;
-        Status = resource.Status is null ? Status : resource.Status.Trim();
-        Date = resource.Date is null ? Date : resource.Date.Trim();
+        QuotationId = command.QuotationId is null ? QuotationId : command.QuotationId.Trim();
+        Supplier = command.Supplier is null ? Supplier : command.Supplier.Trim();
+        Material = command.Material is null ? Material : command.Material.Trim();
+        Project = command.Project is null ? Project : command.Project.Trim();
+        Amount = command.Amount ?? Amount;
+        Status = command.Status is null ? Status : command.Status.Trim();
+        Date = command.Date is null ? Date : command.Date.Trim();
     }
 }
+
+
+

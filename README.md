@@ -6,7 +6,9 @@ Buildline Platform API is the Sprint 3 Web Services implementation for the Build
 
 - `Iam`: authentication, JWT token issuing, users management and identity ACL.
 - `Profiles`: company profile lookup/update and profile ACL.
-- `Requisition` owns material reference data used by field material requests.\r\n- `Inventory` owns category reference data used by stock filters and material classification.\r\n- `Analytics` owns project reference data used by budget and dashboard views.
+- `Requisition` owns material reference data used by field material requests.
+- `Inventory` owns category reference data used by stock filters and material classification.
+- `Analytics` owns project reference data used by budget and dashboard views.
 - `Requisition`: field material requests, priority, approval status and requested delivery date.
 - `Procurement`: purchase orders, quotations and approval-status transitions.
 - `Inventory`: project stock, minimum/maximum thresholds and stock update dates.
@@ -76,5 +78,4 @@ Health check:
 ```http
 GET http://localhost:8080/api/v1/health
 ```
-
 

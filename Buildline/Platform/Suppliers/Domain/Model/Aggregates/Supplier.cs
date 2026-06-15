@@ -1,5 +1,5 @@
 using Buildline.Platform.Shared.Domain.Model.Entities;
-using Buildline.Platform.Suppliers.Interfaces.Rest.Resources;
+using Buildline.Platform.Suppliers.Domain.Model.Commands;
 
 namespace Buildline.Platform.Suppliers.Domain.Model.Aggregates;
 
@@ -27,20 +27,20 @@ public partial class Supplier : IAuditableEntity
     }
 
     /// <summary>
-    ///     Creates a supplier aggregate from the frontend supplier resource contract.
+    ///     Creates a supplier aggregate from the frontend supplier command contract.
     /// </summary>
-    /// <param name="resource">Supplier payload submitted from the supplier directory screen.</param>
-    public Supplier(SupplierWriteResource resource)
+    /// <param name="command">Supplier payload submitted from the supplier directory screen.</param>
+    public Supplier(CreateSupplierCommand command)
     {
-        Ruc = resource.Ruc?.Trim() ?? string.Empty;
-        CompanyName = resource.CompanyName?.Trim() ?? string.Empty;
-        ContactName = resource.ContactName?.Trim() ?? string.Empty;
-        Email = resource.Email?.Trim() ?? string.Empty;
-        Phone = resource.Phone?.Trim() ?? string.Empty;
-        Rating = resource.Rating ?? 3;
-        IsActive = resource.IsActive ?? true;
-        Category = resource.Category?.Trim() ?? "General";
-        DeliveryRate = resource.DeliveryRate ?? 80;
+        Ruc = command.Ruc?.Trim() ?? string.Empty;
+        CompanyName = command.CompanyName?.Trim() ?? string.Empty;
+        ContactName = command.ContactName?.Trim() ?? string.Empty;
+        Email = command.Email?.Trim() ?? string.Empty;
+        Phone = command.Phone?.Trim() ?? string.Empty;
+        Rating = command.Rating ?? 3;
+        IsActive = command.IsActive ?? true;
+        Category = command.Category?.Trim() ?? "General";
+        DeliveryRate = command.DeliveryRate ?? 80;
     }
 
     /// <summary>
@@ -106,17 +106,20 @@ public partial class Supplier : IAuditableEntity
     /// <summary>
     ///     Applies a partial supplier update received from the supplier directory workflow.
     /// </summary>
-    /// <param name="resource">Resource containing only the fields that must change.</param>
-    public void Apply(SupplierWriteResource resource)
+    /// <param name="command">Command containing only the fields that must change.</param>
+    public void Apply(UpdateSupplierCommand command)
     {
-        Ruc = string.IsNullOrWhiteSpace(resource.Ruc) ? Ruc : resource.Ruc.Trim();
-        CompanyName = string.IsNullOrWhiteSpace(resource.CompanyName) ? CompanyName : resource.CompanyName.Trim();
-        ContactName = resource.ContactName is null ? ContactName : resource.ContactName.Trim();
-        Email = resource.Email is null ? Email : resource.Email.Trim();
-        Phone = resource.Phone is null ? Phone : resource.Phone.Trim();
-        Rating = resource.Rating ?? Rating;
-        IsActive = resource.IsActive ?? IsActive;
-        Category = resource.Category is null ? Category : resource.Category.Trim();
-        DeliveryRate = resource.DeliveryRate ?? DeliveryRate;
+        Ruc = string.IsNullOrWhiteSpace(command.Ruc) ? Ruc : command.Ruc.Trim();
+        CompanyName = string.IsNullOrWhiteSpace(command.CompanyName) ? CompanyName : command.CompanyName.Trim();
+        ContactName = command.ContactName is null ? ContactName : command.ContactName.Trim();
+        Email = command.Email is null ? Email : command.Email.Trim();
+        Phone = command.Phone is null ? Phone : command.Phone.Trim();
+        Rating = command.Rating ?? Rating;
+        IsActive = command.IsActive ?? IsActive;
+        Category = command.Category is null ? Category : command.Category.Trim();
+        DeliveryRate = command.DeliveryRate ?? DeliveryRate;
     }
 }
+
+
+
