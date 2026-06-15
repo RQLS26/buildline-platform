@@ -260,3 +260,17 @@ Acceptance criteria:
 - Given inventory items exist, when GET is called, then the API returns current, minimum and maximum stock.
 - Given a valid item payload, when POST is executed, then the API creates the inventory item.
 
+---
+
+### TS-INV-002 - Inventory stock update API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** inventory  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to reflect warehouse movements in stock values.
+
+Acceptance criteria:
+- Given a valid stock update, when PATCH is executed, then the API updates stock and last updated date.
+- Given an invalid inventory id, when PATCH is called, then the API returns 404 Not Found.
+
