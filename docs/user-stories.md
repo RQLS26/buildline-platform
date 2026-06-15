@@ -92,3 +92,17 @@ Acceptance criteria:
 - Given an existing user id, when the detail endpoint is called, then the API returns 200 OK with the user resource.
 - Given valid changes, when PATCH is executed, then the API persists the update and returns the modified user.
 
+---
+
+### TS-PROF-001 - Profile read and update API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** profiles  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to display and update company or user profile information.
+
+Acceptance criteria:
+- Given a profile exists, when it is requested by id, then the API returns ProfileResource.
+- Given valid profile changes, when PUT or PATCH is executed, then the API returns the updated profile.
+
