@@ -148,3 +148,17 @@ Acceptance criteria:
 - Given categories exist, when GET /api/v1/categories is called, then the API returns stable reference data.
 - Given an existing category id, when the detail endpoint is called, then the API returns the category resource.
 
+---
+
+### TS-REQ-001 - Create requisition API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** requisition  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to register material requests from construction sites.
+
+Acceptance criteria:
+- Given material, project, quantity, unit, priority and requested date, when POST is executed, then the API returns 201 Created.
+- Given missing required data, when the payload is validated, then the API returns a validation error.
+
