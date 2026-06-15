@@ -20,6 +20,50 @@ public class UserCommandService(
     IStringLocalizer<ErrorMessages> localizer)
     : IUserCommandService
 {
+    public async Task<Result<User>> Handle(CreateUserCommand command, CancellationToken cancellationToken = default)
+    {
+        if (await userRepository.ExistsByEmailAsync(command.Email, cancellationToken))
+            return Result<User>.Failure(
+                IamError.EmailAlreadyTaken,
+                localizer[$"{nameof(IamError)}.{IamError.EmailAlreadyTaken}"]);
+
+        var user = new User(
+            command.Name,
+            command.Email,
+            hashingService.HashPassword(command.Password),
+            command.Role,
+            command.Department,
+            command.Phone,
+            command.AvatarColor,
+            command.IsActive,
+            command.LastLogin);
+
+        try
+        {
+            await userRepository.AddAsync(user, cancellationToken);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return Result<User>.Success(user);
+        }
+        catch (OperationCanceledException)
+        {
+            return Result<User>.Failure(
+                IamError.OperationCancelled,
+                localizer[$"{nameof(IamError)}.{IamError.OperationCancelled}"]);
+        }
+        catch (DbUpdateException)
+        {
+            return Result<User>.Failure(
+                IamError.DatabaseError,
+                localizer[$"{nameof(IamError)}.{IamError.DatabaseError}"]);
+        }
+        catch (Exception)
+        {
+            return Result<User>.Failure(
+                IamError.InternalServerError,
+                localizer[$"{nameof(IamError)}.{IamError.InternalServerError}"]);
+        }
+    }
+
     public async Task<Result<(User user, string token)>> Handle(SignInCommand command, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.FindByEmailAsync(command.Email, cancellationToken);
