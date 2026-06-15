@@ -49,4 +49,12 @@ public static class ProfilesActionResultAssembler
         var statusCode = ToStatusCodeFromProfilesError((ProfilesError)result.Error!);
         return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
     }
+
+    public static IActionResult ToActionResultFromGetAllProfilesResult(
+        IEnumerable<Profile> profiles,
+        Func<IEnumerable<Profile>, IActionResult> successAction)
+    {
+        var profileList = profiles.ToList();
+        return profileList.Count == 0 ? new NoContentResult() : successAction(profileList);
+    }
 }

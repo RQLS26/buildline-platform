@@ -86,11 +86,14 @@ public class ProfilesController(
         Description = "Gets the available Buildline company profiles.",
         OperationId = "GetAllProfiles")]
     [SwaggerResponse(StatusCodes.Status200OK, "The profiles were found and returned.", typeof(IEnumerable<ProfileResource>))]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "No profiles are currently registered.")]
     public async Task<IActionResult> GetAllProfiles(CancellationToken cancellationToken)
     {
         var getAllProfilesQuery = new GetAllProfilesQuery();
         var profiles = await profileQueryService.Handle(getAllProfilesQuery, cancellationToken);
-        var resources = profiles.Select(ProfileResourceFromEntityAssembler.ToResourceFromEntity);
-        return Ok(resources);
+
+        return ProfilesActionResultAssembler.ToActionResultFromGetAllProfilesResult(
+            profiles,
+            foundProfiles => Ok(foundProfiles.Select(ProfileResourceFromEntityAssembler.ToResourceFromEntity)));
     }
 }
