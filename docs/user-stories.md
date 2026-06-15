@@ -288,3 +288,17 @@ Acceptance criteria:
 - Given purchase order, supplier, origin, destination and ETA, when POST is executed, then the API creates a delivery with tracking id.
 - Given deliveries exist, when GET is called, then the API returns tracking information for field and logistics users.
 
+---
+
+### TS-DEL-002 - Delivery status update API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** delivery  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to reflect dispatched, delayed, in-transit or delivered states.
+
+Acceptance criteria:
+- Given a valid delivery state transition, when PATCH is executed, then the API returns the updated delivery.
+- Given a non-existent delivery id, when PATCH is called, then the API returns 404 Not Found.
+
