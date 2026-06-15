@@ -1,4 +1,4 @@
-using Buildline.Platform.Procurement.Interfaces.Rest.Resources;
+using Buildline.Platform.Procurement.Domain.Model.Commands;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Procurement.Domain.Model.Aggregates;
@@ -25,18 +25,18 @@ public partial class PurchaseOrder : IAuditableEntity
     }
 
     /// <summary>
-    ///     Creates a purchase order from the procurement frontend contract.
+    ///     Creates a purchase order from the procurement application command contract.
     /// </summary>
-    /// <param name="resource">Purchase order payload submitted by procurement staff.</param>
-    public PurchaseOrder(PurchaseOrderWriteResource resource)
+    /// <param name="command">Purchase order payload submitted by procurement staff.</param>
+    public PurchaseOrder(CreatePurchaseOrderCommand command)
     {
-        OrderId = string.IsNullOrWhiteSpace(resource.OrderId) ? $"PO-{DateTime.UtcNow:yyyyMMddHHmmss}" : resource.OrderId.Trim();
-        Date = resource.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
-        SupplierName = resource.SupplierName?.Trim() ?? string.Empty;
-        Material = resource.Material?.Trim() ?? string.Empty;
-        Project = resource.Project?.Trim() ?? string.Empty;
-        TotalAmount = resource.TotalAmount ?? 0m;
-        Status = resource.Status?.Trim() ?? "Pending";
+        OrderId = string.IsNullOrWhiteSpace(command.OrderId) ? $"PO-{DateTime.UtcNow:yyyyMMddHHmmss}" : command.OrderId.Trim();
+        Date = command.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+        SupplierName = command.SupplierName?.Trim() ?? string.Empty;
+        Material = command.Material?.Trim() ?? string.Empty;
+        Project = command.Project?.Trim() ?? string.Empty;
+        TotalAmount = command.TotalAmount ?? 0m;
+        Status = command.Status?.Trim() ?? "Pending";
     }
 
     /// <summary>Gets the database-generated purchase order identifier.</summary>
@@ -72,15 +72,18 @@ public partial class PurchaseOrder : IAuditableEntity
     /// <summary>
     ///     Applies a partial purchase order update, most commonly an approval status transition.
     /// </summary>
-    /// <param name="resource">Purchase order fields to replace.</param>
-    public void Apply(PurchaseOrderWriteResource resource)
+    /// <param name="command">Purchase order fields to replace.</param>
+    public void Apply(UpdatePurchaseOrderCommand command)
     {
-        OrderId = resource.OrderId is null ? OrderId : resource.OrderId.Trim();
-        Date = resource.Date is null ? Date : resource.Date.Trim();
-        SupplierName = resource.SupplierName is null ? SupplierName : resource.SupplierName.Trim();
-        Material = resource.Material is null ? Material : resource.Material.Trim();
-        Project = resource.Project is null ? Project : resource.Project.Trim();
-        TotalAmount = resource.TotalAmount ?? TotalAmount;
-        Status = resource.Status is null ? Status : resource.Status.Trim();
+        OrderId = command.OrderId is null ? OrderId : command.OrderId.Trim();
+        Date = command.Date is null ? Date : command.Date.Trim();
+        SupplierName = command.SupplierName is null ? SupplierName : command.SupplierName.Trim();
+        Material = command.Material is null ? Material : command.Material.Trim();
+        Project = command.Project is null ? Project : command.Project.Trim();
+        TotalAmount = command.TotalAmount ?? TotalAmount;
+        Status = command.Status is null ? Status : command.Status.Trim();
     }
 }
+
+
+

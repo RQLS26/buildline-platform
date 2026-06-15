@@ -1,4 +1,4 @@
-using Buildline.Platform.Analytics.Interfaces.Rest.Resources;
+using Buildline.Platform.Analytics.Domain.Model.Commands;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Analytics.Domain.Model.Aggregates;
@@ -21,14 +21,14 @@ public partial class Budget : IAuditableEntity
     }
 
     /// <summary>Creates a budget aggregate from the frontend budgeting contract.</summary>
-    /// <param name="resource">Budget payload submitted by management or seed import workflows.</param>
-    public Budget(BudgetWriteResource resource)
+    /// <param name="command">Budget payload submitted by management or seed import workflows.</param>
+    public Budget(CreateBudgetCommand command)
     {
-        Project = resource.Project?.Trim() ?? string.Empty;
-        TotalBudget = resource.TotalBudget ?? 0m;
-        Spent = resource.Spent ?? 0m;
-        Allocated = resource.Allocated ?? 0m;
-        Status = resource.Status?.Trim() ?? "On Track";
+        Project = command.Project?.Trim() ?? string.Empty;
+        TotalBudget = command.TotalBudget ?? 0m;
+        Spent = command.Spent ?? 0m;
+        Allocated = command.Allocated ?? 0m;
+        Status = command.Status?.Trim() ?? "On Track";
     }
 
     /// <summary>Gets the database-generated budget identifier.</summary>
@@ -56,13 +56,16 @@ public partial class Budget : IAuditableEntity
     public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>Applies a partial budget update.</summary>
-    /// <param name="resource">Budget fields to replace.</param>
-    public void Apply(BudgetWriteResource resource)
+    /// <param name="command">Budget fields to replace.</param>
+    public void Apply(UpdateBudgetCommand command)
     {
-        Project = resource.Project is null ? Project : resource.Project.Trim();
-        TotalBudget = resource.TotalBudget ?? TotalBudget;
-        Spent = resource.Spent ?? Spent;
-        Allocated = resource.Allocated ?? Allocated;
-        Status = resource.Status is null ? Status : resource.Status.Trim();
+        Project = command.Project is null ? Project : command.Project.Trim();
+        TotalBudget = command.TotalBudget ?? TotalBudget;
+        Spent = command.Spent ?? Spent;
+        Allocated = command.Allocated ?? Allocated;
+        Status = command.Status is null ? Status : command.Status.Trim();
     }
 }
+
+
+

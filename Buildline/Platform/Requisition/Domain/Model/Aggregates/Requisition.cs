@@ -1,4 +1,4 @@
-using Buildline.Platform.Requisition.Interfaces.Rest.Resources;
+using Buildline.Platform.Requisition.Domain.Model.Commands;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Requisition.Domain.Model.Aggregates;
@@ -31,21 +31,21 @@ public partial class Requisition : IAuditableEntity
     }
 
     /// <summary>
-    ///     Creates a requisition aggregate from the frontend material request contract.
+    ///     Creates a requisition aggregate from the material requisition command contract.
     /// </summary>
-    /// <param name="resource">Material requisition payload submitted by the resident engineer workflow.</param>
-    public Requisition(RequisitionWriteResource resource)
+    /// <param name="command">Material requisition payload submitted by the resident engineer workflow.</param>
+    public Requisition(CreateRequisitionCommand command)
     {
-        ReqId = string.IsNullOrWhiteSpace(resource.ReqId) ? $"MR-{DateTime.UtcNow:yyyyMMddHHmmss}" : resource.ReqId.Trim();
-        Material = resource.Material?.Trim() ?? string.Empty;
-        Project = resource.Project?.Trim() ?? string.Empty;
-        Quantity = resource.Quantity ?? 0;
-        Unit = resource.Unit?.Trim() ?? string.Empty;
-        Priority = resource.Priority?.Trim() ?? "Medium";
-        Status = resource.Status?.Trim() ?? "Pending";
-        RequestedOn = resource.RequestedOn?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
-        DeliveryDate = resource.DeliveryDate?.Trim() ?? string.Empty;
-        RequestedBy = resource.RequestedBy?.Trim() ?? string.Empty;
+        ReqId = string.IsNullOrWhiteSpace(command.ReqId) ? $"MR-{DateTime.UtcNow:yyyyMMddHHmmss}" : command.ReqId.Trim();
+        Material = command.Material?.Trim() ?? string.Empty;
+        Project = command.Project?.Trim() ?? string.Empty;
+        Quantity = command.Quantity ?? 0;
+        Unit = command.Unit?.Trim() ?? string.Empty;
+        Priority = command.Priority?.Trim() ?? "Medium";
+        Status = command.Status?.Trim() ?? "Pending";
+        RequestedOn = command.RequestedOn?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+        DeliveryDate = command.DeliveryDate?.Trim() ?? string.Empty;
+        RequestedBy = command.RequestedBy?.Trim() ?? string.Empty;
     }
 
     /// <summary>Gets the database-generated requisition identifier.</summary>
@@ -90,18 +90,21 @@ public partial class Requisition : IAuditableEntity
     /// <summary>
     ///     Applies a partial requisition update, including status transitions made by logistics staff.
     /// </summary>
-    /// <param name="resource">Resource containing only the fields that must change.</param>
-    public void Apply(RequisitionWriteResource resource)
+    /// <param name="command">Command containing only the fields that must change.</param>
+    public void Apply(UpdateRequisitionCommand command)
     {
-        ReqId = resource.ReqId is null ? ReqId : resource.ReqId.Trim();
-        Material = resource.Material is null ? Material : resource.Material.Trim();
-        Project = resource.Project is null ? Project : resource.Project.Trim();
-        Quantity = resource.Quantity ?? Quantity;
-        Unit = resource.Unit is null ? Unit : resource.Unit.Trim();
-        Priority = resource.Priority is null ? Priority : resource.Priority.Trim();
-        Status = resource.Status is null ? Status : resource.Status.Trim();
-        RequestedOn = resource.RequestedOn is null ? RequestedOn : resource.RequestedOn.Trim();
-        DeliveryDate = resource.DeliveryDate is null ? DeliveryDate : resource.DeliveryDate.Trim();
-        RequestedBy = resource.RequestedBy is null ? RequestedBy : resource.RequestedBy.Trim();
+        ReqId = command.ReqId is null ? ReqId : command.ReqId.Trim();
+        Material = command.Material is null ? Material : command.Material.Trim();
+        Project = command.Project is null ? Project : command.Project.Trim();
+        Quantity = command.Quantity ?? Quantity;
+        Unit = command.Unit is null ? Unit : command.Unit.Trim();
+        Priority = command.Priority is null ? Priority : command.Priority.Trim();
+        Status = command.Status is null ? Status : command.Status.Trim();
+        RequestedOn = command.RequestedOn is null ? RequestedOn : command.RequestedOn.Trim();
+        DeliveryDate = command.DeliveryDate is null ? DeliveryDate : command.DeliveryDate.Trim();
+        RequestedBy = command.RequestedBy is null ? RequestedBy : command.RequestedBy.Trim();
     }
 }
+
+
+

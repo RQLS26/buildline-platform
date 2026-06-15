@@ -1,4 +1,4 @@
-using Buildline.Platform.Communication.Interfaces.Rest.Resources;
+using Buildline.Platform.Communication.Domain.Model.Commands;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Communication.Domain.Model.Aggregates;
@@ -27,22 +27,22 @@ public partial class Message : IAuditableEntity
         Date = string.Empty;
     }
 
-    /// <summary>Creates a message aggregate from the communication frontend contract.</summary>
-    /// <param name="resource">Message payload submitted by an internal notification workflow.</param>
-    public Message(MessageWriteResource resource)
+    /// <summary>Creates a message aggregate from the communication application command contract.</summary>
+    /// <param name="command">Message payload submitted by an internal notification workflow.</param>
+    public Message(CreateMessageCommand command)
     {
-        Sender = resource.Sender?.Trim() ?? "System";
-        Subject = resource.Subject?.Trim() ?? string.Empty;
-        Preview = resource.Preview?.Trim() ?? string.Empty;
-        Icon = resource.Icon?.Trim() ?? "pi-inbox";
-        IconClass = resource.IconClass?.Trim() ?? "icon-neutral";
-        Label = resource.Label?.Trim() ?? string.Empty;
-        LabelClass = resource.LabelClass?.Trim() ?? string.Empty;
-        IsRead = resource.IsRead ?? false;
-        Starred = resource.Starred ?? false;
-        Category = resource.Category?.Trim() ?? "updates";
-        Time = resource.Time?.Trim() ?? "now";
-        Date = resource.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+        Sender = command.Sender?.Trim() ?? "System";
+        Subject = command.Subject?.Trim() ?? string.Empty;
+        Preview = command.Preview?.Trim() ?? string.Empty;
+        Icon = command.Icon?.Trim() ?? "pi-inbox";
+        IconClass = command.IconClass?.Trim() ?? "icon-neutral";
+        Label = command.Label?.Trim() ?? string.Empty;
+        LabelClass = command.LabelClass?.Trim() ?? string.Empty;
+        IsRead = command.IsRead ?? false;
+        Starred = command.Starred ?? false;
+        Category = command.Category?.Trim() ?? "updates";
+        Time = command.Time?.Trim() ?? "now";
+        Date = command.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
     }
 
     /// <summary>Gets the database-generated message identifier.</summary>
@@ -91,20 +91,23 @@ public partial class Message : IAuditableEntity
     public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>Applies a partial inbox update such as mark-as-read or toggle-star.</summary>
-    /// <param name="resource">Message fields to replace.</param>
-    public void Apply(MessageWriteResource resource)
+    /// <param name="command">Message fields to replace.</param>
+    public void Apply(UpdateMessageCommand command)
     {
-        Sender = resource.Sender is null ? Sender : resource.Sender.Trim();
-        Subject = resource.Subject is null ? Subject : resource.Subject.Trim();
-        Preview = resource.Preview is null ? Preview : resource.Preview.Trim();
-        Icon = resource.Icon is null ? Icon : resource.Icon.Trim();
-        IconClass = resource.IconClass is null ? IconClass : resource.IconClass.Trim();
-        Label = resource.Label is null ? Label : resource.Label.Trim();
-        LabelClass = resource.LabelClass is null ? LabelClass : resource.LabelClass.Trim();
-        IsRead = resource.IsRead ?? IsRead;
-        Starred = resource.Starred ?? Starred;
-        Category = resource.Category is null ? Category : resource.Category.Trim();
-        Time = resource.Time is null ? Time : resource.Time.Trim();
-        Date = resource.Date is null ? Date : resource.Date.Trim();
+        Sender = command.Sender is null ? Sender : command.Sender.Trim();
+        Subject = command.Subject is null ? Subject : command.Subject.Trim();
+        Preview = command.Preview is null ? Preview : command.Preview.Trim();
+        Icon = command.Icon is null ? Icon : command.Icon.Trim();
+        IconClass = command.IconClass is null ? IconClass : command.IconClass.Trim();
+        Label = command.Label is null ? Label : command.Label.Trim();
+        LabelClass = command.LabelClass is null ? LabelClass : command.LabelClass.Trim();
+        IsRead = command.IsRead ?? IsRead;
+        Starred = command.Starred ?? Starred;
+        Category = command.Category is null ? Category : command.Category.Trim();
+        Time = command.Time is null ? Time : command.Time.Trim();
+        Date = command.Date is null ? Date : command.Date.Trim();
     }
 }
+
+
+

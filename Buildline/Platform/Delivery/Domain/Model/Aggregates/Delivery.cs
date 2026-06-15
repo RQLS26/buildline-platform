@@ -1,4 +1,4 @@
-using Buildline.Platform.Delivery.Interfaces.Rest.Resources;
+using Buildline.Platform.Delivery.Domain.Model.Commands;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Delivery.Domain.Model.Aggregates;
@@ -28,18 +28,18 @@ public partial class Delivery : IAuditableEntity
     }
 
     /// <summary>Creates a delivery aggregate from the frontend tracking contract.</summary>
-    /// <param name="resource">Delivery payload submitted by the tracking workflow.</param>
-    public Delivery(DeliveryWriteResource resource)
+    /// <param name="command">Delivery payload submitted by the tracking workflow.</param>
+    public Delivery(CreateDeliveryCommand command)
     {
-        TrackingId = string.IsNullOrWhiteSpace(resource.TrackingId) ? $"TRK-{DateTime.UtcNow:HHmmss}" : resource.TrackingId.Trim();
-        PurchaseOrder = resource.PurchaseOrder?.Trim() ?? string.Empty;
-        Supplier = resource.Supplier?.Trim() ?? string.Empty;
-        Origin = resource.Origin?.Trim() ?? string.Empty;
-        Destination = resource.Destination?.Trim() ?? string.Empty;
-        Status = resource.Status?.Trim() ?? "Shipped";
-        Eta = resource.Eta?.Trim() ?? string.Empty;
-        DispatchDate = resource.DispatchDate?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
-        Items = resource.Items?.Trim() ?? resource.Material?.Trim() ?? string.Empty;
+        TrackingId = string.IsNullOrWhiteSpace(command.TrackingId) ? $"TRK-{DateTime.UtcNow:HHmmss}" : command.TrackingId.Trim();
+        PurchaseOrder = command.PurchaseOrder?.Trim() ?? string.Empty;
+        Supplier = command.Supplier?.Trim() ?? string.Empty;
+        Origin = command.Origin?.Trim() ?? string.Empty;
+        Destination = command.Destination?.Trim() ?? string.Empty;
+        Status = command.Status?.Trim() ?? "Shipped";
+        Eta = command.Eta?.Trim() ?? string.Empty;
+        DispatchDate = command.DispatchDate?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+        Items = command.Items?.Trim() ?? command.Material?.Trim() ?? string.Empty;
     }
 
     /// <summary>Gets the database-generated delivery identifier.</summary>
@@ -79,17 +79,20 @@ public partial class Delivery : IAuditableEntity
     public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>Applies a partial delivery update, especially status changes.</summary>
-    /// <param name="resource">Delivery fields to replace.</param>
-    public void Apply(DeliveryWriteResource resource)
+    /// <param name="command">Delivery fields to replace.</param>
+    public void Apply(UpdateDeliveryCommand command)
     {
-        TrackingId = resource.TrackingId is null ? TrackingId : resource.TrackingId.Trim();
-        PurchaseOrder = resource.PurchaseOrder is null ? PurchaseOrder : resource.PurchaseOrder.Trim();
-        Supplier = resource.Supplier is null ? Supplier : resource.Supplier.Trim();
-        Origin = resource.Origin is null ? Origin : resource.Origin.Trim();
-        Destination = resource.Destination is null ? Destination : resource.Destination.Trim();
-        Status = resource.Status is null ? Status : resource.Status.Trim();
-        Eta = resource.Eta is null ? Eta : resource.Eta.Trim();
-        DispatchDate = resource.DispatchDate is null ? DispatchDate : resource.DispatchDate.Trim();
-        Items = resource.Items is null ? Items : resource.Items.Trim();
+        TrackingId = command.TrackingId is null ? TrackingId : command.TrackingId.Trim();
+        PurchaseOrder = command.PurchaseOrder is null ? PurchaseOrder : command.PurchaseOrder.Trim();
+        Supplier = command.Supplier is null ? Supplier : command.Supplier.Trim();
+        Origin = command.Origin is null ? Origin : command.Origin.Trim();
+        Destination = command.Destination is null ? Destination : command.Destination.Trim();
+        Status = command.Status is null ? Status : command.Status.Trim();
+        Eta = command.Eta is null ? Eta : command.Eta.Trim();
+        DispatchDate = command.DispatchDate is null ? DispatchDate : command.DispatchDate.Trim();
+        Items = command.Items is null ? Items : command.Items.Trim();
     }
 }
+
+
+

@@ -1,5 +1,5 @@
 using Buildline.Platform.Shared.Domain.Model.Entities;
-using Buildline.Platform.Suppliers.Interfaces.Rest.Resources;
+using Buildline.Platform.Suppliers.Domain.Model.Commands;
 
 namespace Buildline.Platform.Suppliers.Domain.Model.Aggregates;
 
@@ -31,21 +31,21 @@ public partial class SupplierIncident : IAuditableEntity
     }
 
     /// <summary>
-    ///     Creates an incident aggregate from the supplier incident frontend contract.
+    ///     Creates an incident aggregate from the supplier incident application command contract.
     /// </summary>
-    /// <param name="resource">Incident payload submitted by the supplier incidents screen.</param>
-    public SupplierIncident(IncidentWriteResource resource)
+    /// <param name="command">Incident payload submitted by the supplier incidents screen.</param>
+    public SupplierIncident(CreateSupplierIncidentCommand command)
     {
-        IncidentId = string.IsNullOrWhiteSpace(resource.IncidentId) ? "INC-DRAFT" : resource.IncidentId.Trim();
-        Title = resource.Title?.Trim() ?? string.Empty;
-        Description = resource.Description?.Trim() ?? string.Empty;
-        Supplier = resource.Supplier?.Trim() ?? string.Empty;
-        PurchaseOrder = resource.PurchaseOrder?.Trim() ?? string.Empty;
-        ReportedBy = resource.ReportedBy?.Trim() ?? string.Empty;
-        Severity = resource.Severity?.Trim() ?? "Medium";
-        Status = resource.Status?.Trim() ?? "Open";
-        Date = resource.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
-        Time = resource.Time?.Trim() ?? DateTime.UtcNow.ToString("HH:mm");
+        IncidentId = string.IsNullOrWhiteSpace(command.IncidentId) ? "INC-DRAFT" : command.IncidentId.Trim();
+        Title = command.Title?.Trim() ?? string.Empty;
+        Description = command.Description?.Trim() ?? string.Empty;
+        Supplier = command.Supplier?.Trim() ?? string.Empty;
+        PurchaseOrder = command.PurchaseOrder?.Trim() ?? string.Empty;
+        ReportedBy = command.ReportedBy?.Trim() ?? string.Empty;
+        Severity = command.Severity?.Trim() ?? "Medium";
+        Status = command.Status?.Trim() ?? "Open";
+        Date = command.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+        Time = command.Time?.Trim() ?? DateTime.UtcNow.ToString("HH:mm");
     }
 
     /// <summary>Gets the database-generated incident identifier.</summary>
@@ -90,18 +90,21 @@ public partial class SupplierIncident : IAuditableEntity
     /// <summary>
     ///     Applies a partial incident update, including status transitions from the incidents board.
     /// </summary>
-    /// <param name="resource">Resource containing the incident fields to change.</param>
-    public void Apply(IncidentWriteResource resource)
+    /// <param name="command">Command containing the incident fields to change.</param>
+    public void Apply(UpdateSupplierIncidentCommand command)
     {
-        IncidentId = resource.IncidentId is null ? IncidentId : resource.IncidentId.Trim();
-        Title = resource.Title is null ? Title : resource.Title.Trim();
-        Description = resource.Description is null ? Description : resource.Description.Trim();
-        Supplier = resource.Supplier is null ? Supplier : resource.Supplier.Trim();
-        PurchaseOrder = resource.PurchaseOrder is null ? PurchaseOrder : resource.PurchaseOrder.Trim();
-        ReportedBy = resource.ReportedBy is null ? ReportedBy : resource.ReportedBy.Trim();
-        Severity = resource.Severity is null ? Severity : resource.Severity.Trim();
-        Status = resource.Status is null ? Status : resource.Status.Trim();
-        Date = resource.Date is null ? Date : resource.Date.Trim();
-        Time = resource.Time is null ? Time : resource.Time.Trim();
+        IncidentId = command.IncidentId is null ? IncidentId : command.IncidentId.Trim();
+        Title = command.Title is null ? Title : command.Title.Trim();
+        Description = command.Description is null ? Description : command.Description.Trim();
+        Supplier = command.Supplier is null ? Supplier : command.Supplier.Trim();
+        PurchaseOrder = command.PurchaseOrder is null ? PurchaseOrder : command.PurchaseOrder.Trim();
+        ReportedBy = command.ReportedBy is null ? ReportedBy : command.ReportedBy.Trim();
+        Severity = command.Severity is null ? Severity : command.Severity.Trim();
+        Status = command.Status is null ? Status : command.Status.Trim();
+        Date = command.Date is null ? Date : command.Date.Trim();
+        Time = command.Time is null ? Time : command.Time.Trim();
     }
 }
+
+
+

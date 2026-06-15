@@ -1,4 +1,4 @@
-using Buildline.Platform.Inventory.Interfaces.Rest.Resources;
+using Buildline.Platform.Inventory.Domain.Model.Commands;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Inventory.Domain.Model.Aggregates;
@@ -23,17 +23,17 @@ public partial class InventoryItem : IAuditableEntity
     }
 
     /// <summary>Creates an inventory item from the frontend inventory contract.</summary>
-    /// <param name="resource">Inventory payload submitted by the stock management screen.</param>
-    public InventoryItem(InventoryItemWriteResource resource)
+    /// <param name="command">Inventory payload submitted by the stock management screen.</param>
+    public InventoryItem(CreateInventoryItemCommand command)
     {
-        Sku = resource.Sku?.Trim() ?? string.Empty;
-        Name = resource.Name?.Trim() ?? string.Empty;
-        Project = resource.Project?.Trim() ?? string.Empty;
-        Category = resource.Category?.Trim() ?? string.Empty;
-        CurrentStock = resource.CurrentStock ?? 0;
-        MaxStock = resource.MaxStock ?? 0;
-        MinStock = resource.MinStock ?? 0;
-        LastUpdated = resource.LastUpdated?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+        Sku = command.Sku?.Trim() ?? string.Empty;
+        Name = command.Name?.Trim() ?? string.Empty;
+        Project = command.Project?.Trim() ?? string.Empty;
+        Category = command.Category?.Trim() ?? string.Empty;
+        CurrentStock = command.CurrentStock ?? 0;
+        MaxStock = command.MaxStock ?? 0;
+        MinStock = command.MinStock ?? 0;
+        LastUpdated = command.LastUpdated?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
     }
 
     /// <summary>Gets the database-generated inventory item identifier.</summary>
@@ -70,16 +70,19 @@ public partial class InventoryItem : IAuditableEntity
     public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>Applies a partial stock update.</summary>
-    /// <param name="resource">Inventory fields to replace.</param>
-    public void Apply(InventoryItemWriteResource resource)
+    /// <param name="command">Inventory fields to replace.</param>
+    public void Apply(UpdateInventoryItemCommand command)
     {
-        Sku = resource.Sku is null ? Sku : resource.Sku.Trim();
-        Name = resource.Name is null ? Name : resource.Name.Trim();
-        Project = resource.Project is null ? Project : resource.Project.Trim();
-        Category = resource.Category is null ? Category : resource.Category.Trim();
-        CurrentStock = resource.CurrentStock ?? CurrentStock;
-        MaxStock = resource.MaxStock ?? MaxStock;
-        MinStock = resource.MinStock ?? MinStock;
-        LastUpdated = resource.LastUpdated is null ? LastUpdated : resource.LastUpdated.Trim();
+        Sku = command.Sku is null ? Sku : command.Sku.Trim();
+        Name = command.Name is null ? Name : command.Name.Trim();
+        Project = command.Project is null ? Project : command.Project.Trim();
+        Category = command.Category is null ? Category : command.Category.Trim();
+        CurrentStock = command.CurrentStock ?? CurrentStock;
+        MaxStock = command.MaxStock ?? MaxStock;
+        MinStock = command.MinStock ?? MinStock;
+        LastUpdated = command.LastUpdated is null ? LastUpdated : command.LastUpdated.Trim();
     }
 }
+
+
+

@@ -1,11 +1,10 @@
 using System.Net.Mime;
+using Buildline.Platform.Inventory.Application.CommandServices;
 using Buildline.Platform.Inventory.Application.QueryServices;
-using Buildline.Platform.Inventory.Domain.Model.Aggregates;
-using Buildline.Platform.Inventory.Domain.Repositories;
 using Buildline.Platform.Inventory.Interfaces.Rest.Resources;
 using Buildline.Platform.Inventory.Interfaces.Rest.Transform;
-using Buildline.Platform.Shared.Domain.Repositories;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Buildline.Platform.Shared.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,13 +18,11 @@ namespace Buildline.Platform.Inventory.Interfaces.Rest;
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Inventory endpoints for stock control and low-stock dashboard workflows.")]
 public class InventoryController(
+    IInventoryItemCommandService inventoryItemCommandService,
     IInventoryItemQueryService inventoryItemQueryService,
-    IInventoryItemRepository inventoryItemRepository,
-    IUnitOfWork unitOfWork) : ControllerBase
+    ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
     /// <summary>Gets every inventory item.</summary>
-    /// <param name="cancellationToken">Token used to cancel the query.</param>
-    /// <returns><c>200 OK</c> with inventory item resources.</returns>
     [HttpGet]
     public async Task<IActionResult> GetAllInventoryItems(CancellationToken cancellationToken)
     {
@@ -34,52 +31,30 @@ public class InventoryController(
     }
 
     /// <summary>Gets one inventory item by identifier.</summary>
-    /// <param name="inventoryItemId">Inventory item identifier.</param>
-    /// <param name="cancellationToken">Token used to cancel the query.</param>
-    /// <returns><c>200 OK</c> when found; otherwise <c>404 Not Found</c>.</returns>
     [HttpGet("{inventoryItemId:int}")]
     public async Task<IActionResult> GetInventoryItemById(int inventoryItemId, CancellationToken cancellationToken)
     {
         var item = await inventoryItemQueryService.FindByIdAsync(inventoryItemId, cancellationToken);
-        return item is null
-            ? this.NotFoundProblem("Inventory item", inventoryItemId)
-            : Ok(InventoryItemResourceFromEntityAssembler.ToResourceFromEntity(item));
+        return item is null ? this.NotFoundProblem("Inventory item", inventoryItemId) : Ok(InventoryItemResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
 
-    /// <summary>Creates an inventory item.</summary>
-    /// <param name="resource">Inventory item payload.</param>
-    /// <param name="cancellationToken">Token used to cancel persistence.</param>
-    /// <returns><c>201 Created</c> with the created item.</returns>
+    /// <summary>Creates an inventory item through the application command service.</summary>
     [HttpPost]
     public async Task<IActionResult> CreateInventoryItem([FromBody] InventoryItemWriteResource resource, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(resource.Name) || string.IsNullOrWhiteSpace(resource.Project))
-            return this.BadRequestProblem("Inventory item", "Name and Project are required.");
-
-        var item = new InventoryItem(resource);
-        await inventoryItemRepository.AddAsync(item, cancellationToken);
-        await unitOfWork.CompleteAsync(cancellationToken);
-        return CreatedAtAction(nameof(GetInventoryItemById), new { inventoryItemId = item.Id },
-            InventoryItemResourceFromEntityAssembler.ToResourceFromEntity(item));
+        var command = CreateInventoryItemCommandFromResourceAssembler.ToCommandFromResource(resource);
+        var result = await inventoryItemCommandService.Handle(command, cancellationToken);
+        return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+            item => CreatedAtAction(nameof(GetInventoryItemById), new { inventoryItemId = item.Id }, InventoryItemResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 
-    /// <summary>Applies a partial inventory item update.</summary>
-    /// <param name="inventoryItemId">Inventory item identifier.</param>
-    /// <param name="resource">Inventory fields to replace.</param>
-    /// <param name="cancellationToken">Token used to cancel persistence.</param>
-    /// <returns><c>200 OK</c> with the updated item.</returns>
+    /// <summary>Applies a partial inventory item update through the application command service.</summary>
     [HttpPatch("{inventoryItemId:int}")]
-    public async Task<IActionResult> PatchInventoryItemById(
-        int inventoryItemId,
-        [FromBody] InventoryItemWriteResource resource,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> PatchInventoryItemById(int inventoryItemId, [FromBody] InventoryItemWriteResource resource, CancellationToken cancellationToken)
     {
-        var item = await inventoryItemQueryService.FindByIdAsync(inventoryItemId, cancellationToken);
-        if (item is null) return this.NotFoundProblem("Inventory item", inventoryItemId);
-
-        item.Apply(resource);
-        inventoryItemRepository.Update(item);
-        await unitOfWork.CompleteAsync(cancellationToken);
-        return Ok(InventoryItemResourceFromEntityAssembler.ToResourceFromEntity(item));
+        var command = UpdateInventoryItemCommandFromResourceAssembler.ToCommandFromResource(inventoryItemId, resource);
+        var result = await inventoryItemCommandService.Handle(command, cancellationToken);
+        return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+            item => Ok(InventoryItemResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 }

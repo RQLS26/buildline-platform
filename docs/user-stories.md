@@ -108,10 +108,10 @@ Acceptance criteria:
 
 ---
 
-### TS-SHARED-001 - Projects reference API
+### TS-ANB-003 - Projects reference API
 
-**Branch:** `feature/TS-SHARED-001-projects-reference-api`  
-**Context / module:** reference catalog  
+**Branch:** `feature/TS-ANB-003-projects-reference-api`  
+**Context / module:** analytics-budgeting / projects reference data  
 **Endpoint(s):** `GET /api/v1/projects, GET /api/v1/projects/{id}`
 
 As a frontend developer, I want to provide project reference data for requisitions, inventory and dashboards.
@@ -122,10 +122,10 @@ Acceptance criteria:
 
 ---
 
-### TS-SHARED-002 - Materials catalog API
+### TS-REQ-004 - Materials catalog API
 
-**Branch:** `feature/TS-SHARED-002-materials-catalog-api`  
-**Context / module:** reference catalog  
+**Branch:** `feature/TS-REQ-004-materials-catalog-api`  
+**Context / module:** requisition / materials reference data  
 **Endpoint(s):** `GET/POST /api/v1/materials, GET/PUT/PATCH/DELETE /api/v1/materials/{id}`
 
 As a frontend developer, I want to provide material catalog data for requisitions, procurement and inventory.
@@ -136,10 +136,10 @@ Acceptance criteria:
 
 ---
 
-### TS-SHARED-003 - Categories reference API
+### TS-INV-003 - Categories reference API
 
-**Branch:** `feature/TS-SHARED-003-categories-reference-api`  
-**Context / module:** reference catalog  
+**Branch:** `feature/TS-INV-003-categories-reference-api`  
+**Context / module:** inventory / categories reference data  
 **Endpoint(s):** `GET /api/v1/categories, GET /api/v1/categories/{id}`
 
 As a frontend developer, I want to provide category reference data for material classification and inventory filters.
