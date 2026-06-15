@@ -1,3 +1,5 @@
+using Buildline.Platform.Profiles.Application.CommandServices;
+using Buildline.Platform.Profiles.Application.Internal.CommandServices;
 using Buildline.Platform.Profiles.Application.Internal.QueryServices;
 using Buildline.Platform.Profiles.Application.QueryServices;
 using Buildline.Platform.Profiles.Domain.Repositories;
@@ -69,6 +71,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
 builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
 
 var app = builder.Build();

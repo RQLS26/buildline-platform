@@ -38,4 +38,13 @@ public partial class Profile : IAuditableEntity
     public string Email { get; private set; }
     public DateTimeOffset? CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
+
+    public void UpdateCompanyInformation(string companyName, string ruc, string address, string phone, string email)
+    {
+        CompanyName = companyName;
+        Ruc = ruc;
+        Address = address;
+        Phone = phone;
+        Email = email;
+    }
 }

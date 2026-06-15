@@ -1,6 +1,7 @@
 using Buildline.Platform.Profiles.Domain.Model;
 using Buildline.Platform.Profiles.Domain.Model.Aggregates;
 using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -35,5 +36,17 @@ public static class ProfilesActionResultAssembler
             ToStatusCodeFromProfilesError(ProfilesError.ProfileNotFound),
             ProfilesError.ProfileNotFound,
             errorLocalizer[$"{nameof(ProfilesError)}.{ProfilesError.ProfileNotFound}"]);
+    }
+
+    public static IActionResult ToActionResultFromUpdateProfileResult(
+        ControllerBase controller,
+        Result<Profile> result,
+        ProblemDetailsFactory problemDetailsFactory,
+        Func<Profile, IActionResult> successAction)
+    {
+        if (result.IsSuccess) return successAction(result.Value!);
+
+        var statusCode = ToStatusCodeFromProfilesError((ProfilesError)result.Error!);
+        return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
     }
 }
