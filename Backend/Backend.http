@@ -1,6 +1,54 @@
 @Backend_HostAddress = http://localhost:5163
+@AccessToken = paste-jwt-token-here
 
-GET {{Backend_HostAddress}}/weatherforecast/
+### Health
+GET {{Backend_HostAddress}}/api/v1/health
 Accept: application/json
 
-###
+### Sign in
+POST {{Backend_HostAddress}}/api/v1/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "admin@buildline.com",
+  "password": "admin123"
+}
+
+### Sign up
+POST {{Backend_HostAddress}}/api/v1/auth/sign-up
+Content-Type: application/json
+
+{
+  "name": "Operations User",
+  "email": "operations@buildline.com",
+  "password": "viewer123",
+  "role": "viewer",
+  "department": "Operations",
+  "phone": "+51 900 000 000",
+  "avatarColor": "#3D9F7D"
+}
+
+### Users
+GET {{Backend_HostAddress}}/api/v1/users
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Profiles
+GET {{Backend_HostAddress}}/api/v1/profiles
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Projects
+GET {{Backend_HostAddress}}/api/v1/projects
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Categories
+GET {{Backend_HostAddress}}/api/v1/categories
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Materials
+GET {{Backend_HostAddress}}/api/v1/materials
+Accept: application/json
+Authorization: Bearer {{AccessToken}}

@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+.git/
+.idea/
+.vs/
+.tools/
+*.user
+*.suo
+*.rsuser
+appsettings.Local.json
+Backend/appsettings.Development.json
