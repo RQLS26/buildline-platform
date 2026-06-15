@@ -106,3 +106,17 @@ Acceptance criteria:
 - Given a profile exists, when it is requested by id, then the API returns ProfileResource.
 - Given valid profile changes, when PUT or PATCH is executed, then the API returns the updated profile.
 
+---
+
+### TS-SHARED-001 - Projects reference API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** reference catalog  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to provide project reference data for requisitions, inventory and dashboards.
+
+Acceptance criteria:
+- Given seeded projects exist, when GET /api/v1/projects is called, then the API returns a collection usable by frontend filters.
+- Given an existing project id, when the detail endpoint is called, then the API returns the project reference resource.
+
