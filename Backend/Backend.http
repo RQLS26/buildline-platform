@@ -52,3 +52,91 @@ Authorization: Bearer {{AccessToken}}
 GET {{Backend_HostAddress}}/api/v1/materials
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
+
+### Requisitions
+GET {{Backend_HostAddress}}/api/v1/requisitions
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Create requisition
+POST {{Backend_HostAddress}}/api/v1/requisitions
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "material": "Steel Rebar 1/2\"",
+  "project": "Skyline Tower",
+  "quantity": 250,
+  "unit": "PCS",
+  "priority": "High",
+  "requestedBy": "Carlos Mendoza",
+  "deliveryDate": "2026-05-30"
+}
+
+### Purchase orders
+GET {{Backend_HostAddress}}/api/v1/purchaseOrders
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Patch purchase order status
+PATCH {{Backend_HostAddress}}/api/v1/purchaseOrders/2
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "status": "Approved"
+}
+
+### Quotations
+GET {{Backend_HostAddress}}/api/v1/quotations
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Inventory
+GET {{Backend_HostAddress}}/api/v1/inventory
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Patch inventory stock
+PATCH {{Backend_HostAddress}}/api/v1/inventory/1
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "currentStock": 120,
+  "lastUpdated": "2026-06-15"
+}
+
+### Deliveries
+GET {{Backend_HostAddress}}/api/v1/deliveries
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Suppliers
+GET {{Backend_HostAddress}}/api/v1/suppliers
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Incidents
+GET {{Backend_HostAddress}}/api/v1/incidents
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Budgets
+GET {{Backend_HostAddress}}/api/v1/budgets
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Messages
+GET {{Backend_HostAddress}}/api/v1/messages
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+### Mark message as read
+PATCH {{Backend_HostAddress}}/api/v1/messages/2
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "isRead": true
+}

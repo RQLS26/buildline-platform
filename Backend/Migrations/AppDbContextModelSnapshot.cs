@@ -19,6 +19,83 @@ namespace Buildline.Platform.Migrations
                 .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Buildline.Platform.Analytics.Domain.Model.Aggregates.Budget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Allocated")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)")
+                        .HasColumnName("allocated");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Project")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("project");
+
+                    b.Property<decimal>("Spent")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)")
+                        .HasColumnName("spent");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("status");
+
+                    b.Property<decimal>("TotalBudget")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)")
+                        .HasColumnName("total_budget");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_budgets");
+
+                    b.ToTable("budgets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Allocated = 350000m,
+                            Project = "Skyline Tower",
+                            Spent = 120000m,
+                            Status = "On Track",
+                            TotalBudget = 500000m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Allocated = 240000m,
+                            Project = "Coastal Bridge",
+                            Spent = 210000m,
+                            Status = "At Risk",
+                            TotalBudget = 250000m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Allocated = 100000m,
+                            Project = "Grand Park",
+                            Spent = 105000m,
+                            Status = "Over Budget",
+                            TotalBudget = 100000m
+                        });
+                });
+
             modelBuilder.Entity("Buildline.Platform.Categories.Domain.Model.Aggregates.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -99,6 +176,261 @@ namespace Buildline.Platform.Migrations
                             Id = 8,
                             Description = "General construction supplies.",
                             Name = "General"
+                        });
+                });
+
+            modelBuilder.Entity("Buildline.Platform.Communication.Domain.Model.Aggregates.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("category");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("date");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("icon");
+
+                    b.Property<string>("IconClass")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)")
+                        .HasColumnName("icon_class");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_read");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)")
+                        .HasColumnName("label");
+
+                    b.Property<string>("LabelClass")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)")
+                        .HasColumnName("label_class");
+
+                    b.Property<string>("Preview")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("preview");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("sender");
+
+                    b.Property<bool>("Starred")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("starred");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("varchar(180)")
+                        .HasColumnName("subject");
+
+                    b.Property<string>("Time")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("time");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_messages");
+
+                    b.ToTable("messages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = "updates",
+                            Date = "2026-05-19",
+                            Icon = "pi-check-circle",
+                            IconClass = "icon-success",
+                            IsRead = true,
+                            Label = "",
+                            LabelClass = "",
+                            Preview = "The purchase order for ABC Supplies has been approved and is ready for dispatch.",
+                            Sender = "System",
+                            Starred = false,
+                            Subject = "PO-2026-0015 Approved",
+                            Time = "2 min"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = "alerts",
+                            Date = "2026-05-19",
+                            Icon = "pi-exclamation-triangle",
+                            IconClass = "icon-warning",
+                            IsRead = false,
+                            Label = "Critical",
+                            LabelClass = "label-critical",
+                            Preview = "Inventory at Skyline Tower dropped below minimum threshold.",
+                            Sender = "Inventory System",
+                            Starred = false,
+                            Subject = "Low Stock: Concrete 3000 PSI",
+                            Time = "15 min"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = "updates",
+                            Date = "2026-05-19",
+                            Icon = "pi-truck",
+                            IconClass = "icon-info",
+                            IsRead = false,
+                            Label = "",
+                            LabelClass = "",
+                            Preview = "Shipment from ABC Supplies has departed Lima warehouse.",
+                            Sender = "Logistics",
+                            Starred = false,
+                            Subject = "Delivery TRK-0048 In Transit",
+                            Time = "1 hr"
+                        });
+                });
+
+            modelBuilder.Entity("Buildline.Platform.Delivery.Domain.Model.Aggregates.Delivery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Destination")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("destination");
+
+                    b.Property<string>("DispatchDate")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("dispatch_date");
+
+                    b.Property<string>("Eta")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("eta");
+
+                    b.Property<string>("Items")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("varchar(240)")
+                        .HasColumnName("items");
+
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("origin");
+
+                    b.Property<string>("PurchaseOrder")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("purchase_order");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Supplier")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("supplier");
+
+                    b.Property<string>("TrackingId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("tracking_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_deliveries");
+
+                    b.ToTable("deliveries");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Destination = "Skyline Tower Site",
+                            DispatchDate = "May 19, 2026",
+                            Eta = "May 21, 2026",
+                            Items = "Steel Rebar 1/2\" (500 PCS)",
+                            Origin = "Lima Warehouse",
+                            PurchaseOrder = "PO-2026-0015",
+                            Status = "In Transit",
+                            Supplier = "ABC Supplies Inc.",
+                            TrackingId = "TRK-0048"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Destination = "Coastal Bridge Site",
+                            DispatchDate = "May 16, 2026",
+                            Eta = "May 18, 2026",
+                            Items = "Concrete 3000 PSI (200 Bags)",
+                            Origin = "Arequipa Plant",
+                            PurchaseOrder = "PO-2026-0013",
+                            Status = "Delivered",
+                            Supplier = "BuildMore Materials",
+                            TrackingId = "TRK-0047"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Destination = "Grand Park Site",
+                            DispatchDate = "May 14, 2026",
+                            Eta = "May 17, 2026",
+                            Items = "Steel Beams W8 (120 PCS)",
+                            Origin = "Callao Port",
+                            PurchaseOrder = "PO-2026-0012",
+                            Status = "Delayed",
+                            Supplier = "Steel House Ltd.",
+                            TrackingId = "TRK-0046"
                         });
                 });
 
@@ -204,6 +536,119 @@ namespace Buildline.Platform.Migrations
                             PasswordHash = "$2a$11$jpepzAUUxa.fRn8vJgBuQ.n4SDJFFeS/iEfg.7yjprthBADPSXbBy",
                             Phone = "+51 912 345 678",
                             Role = "viewer"
+                        });
+                });
+
+            modelBuilder.Entity("Buildline.Platform.Inventory.Domain.Model.Aggregates.InventoryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("category");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CurrentStock")
+                        .HasColumnType("int")
+                        .HasColumnName("current_stock");
+
+                    b.Property<string>("LastUpdated")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("last_updated");
+
+                    b.Property<int>("MaxStock")
+                        .HasColumnType("int")
+                        .HasColumnName("max_stock");
+
+                    b.Property<int>("MinStock")
+                        .HasColumnType("int")
+                        .HasColumnName("min_stock");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Project")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("project");
+
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("sku");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_inventory_items");
+
+                    b.ToTable("inventory_items");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = "Steel",
+                            CurrentStock = 99,
+                            LastUpdated = "2026-05-16",
+                            MaxStock = 800,
+                            MinStock = 100,
+                            Name = "Steel Rebar 1/2\"",
+                            Project = "Skyline Tower",
+                            Sku = "INV-001"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = "Concrete",
+                            CurrentStock = 0,
+                            LastUpdated = "2026-05-16",
+                            MaxStock = 500,
+                            MinStock = 100,
+                            Name = "Concrete 3000 PSI",
+                            Project = "Skyline Tower",
+                            Sku = "INV-002"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = "Concrete",
+                            CurrentStock = 200,
+                            LastUpdated = "2026-05-17",
+                            MaxStock = 400,
+                            MinStock = 50,
+                            Name = "Cement Type I",
+                            Project = "Coastal Bridge",
+                            Sku = "INV-003"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = "Aggregate",
+                            CurrentStock = 0,
+                            LastUpdated = "2026-05-17",
+                            MaxStock = 300,
+                            MinStock = 50,
+                            Name = "Sand Fine",
+                            Project = "Grand Park",
+                            Sku = "INV-004"
                         });
                 });
 
@@ -341,6 +786,222 @@ namespace Buildline.Platform.Migrations
                             Project = "Coastal Bridge",
                             Sku = "MAT-006",
                             Unit = "PCS"
+                        });
+                });
+
+            modelBuilder.Entity("Buildline.Platform.Procurement.Domain.Model.Aggregates.PurchaseOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("date");
+
+                    b.Property<string>("Material")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("material");
+
+                    b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("order_id");
+
+                    b.Property<string>("Project")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("project");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("supplier_name");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)")
+                        .HasColumnName("total_amount");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_purchase_orders");
+
+                    b.ToTable("purchase_orders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Date = "May 19, 2026",
+                            Material = "Steel Rebar 1/2\"",
+                            OrderId = "PO-2026-0015",
+                            Project = "Skyline Tower",
+                            Status = "Approved",
+                            SupplierName = "ABC Supplies Inc.",
+                            TotalAmount = 125000m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Date = "May 18, 2026",
+                            Material = "Cement Type I",
+                            OrderId = "PO-2026-0014",
+                            Project = "Skyline Tower",
+                            Status = "Pending",
+                            SupplierName = "BuildMore Materials",
+                            TotalAmount = 85200m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Date = "May 18, 2026",
+                            Material = "Concrete 3000 PSI",
+                            OrderId = "PO-2026-0013",
+                            Project = "Coastal Bridge",
+                            Status = "Approved",
+                            SupplierName = "BuildMore Materials",
+                            TotalAmount = 42500m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Date = "May 17, 2026",
+                            Material = "Steel Beams W8",
+                            OrderId = "PO-2026-0012",
+                            Project = "Grand Park",
+                            Status = "Pending",
+                            SupplierName = "Steel House Ltd.",
+                            TotalAmount = 67800m
+                        });
+                });
+
+            modelBuilder.Entity("Buildline.Platform.Procurement.Domain.Model.Aggregates.Quotation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("date");
+
+                    b.Property<string>("Material")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("material");
+
+                    b.Property<string>("Project")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("project");
+
+                    b.Property<string>("QuotationId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("quotation_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Supplier")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("supplier");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_quotations");
+
+                    b.ToTable("quotations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Amount = 12500m,
+                            Date = "May 19, 2026",
+                            Material = "Steel Rebar 1/2\"",
+                            Project = "Skyline Tower",
+                            QuotationId = "QT-2026-0018",
+                            Status = "Pending",
+                            Supplier = "ABC Supplies Inc."
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Amount = 8300m,
+                            Date = "May 18, 2026",
+                            Material = "Concrete 3000 PSI",
+                            Project = "Skyline Tower",
+                            QuotationId = "QT-2026-0017",
+                            Status = "Accepted",
+                            Supplier = "Cement Plus"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Amount = 3450m,
+                            Date = "May 17, 2026",
+                            Material = "Power Drill Set",
+                            Project = "Coastal Bridge",
+                            QuotationId = "QT-2026-0016",
+                            Status = "Accepted",
+                            Supplier = "Global Construction"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Amount = 15800m,
+                            Date = "May 17, 2026",
+                            Material = "Cement Type I",
+                            Project = "Skyline Tower",
+                            QuotationId = "QT-2026-0015",
+                            Status = "Pending",
+                            Supplier = "BuildMore Materials"
                         });
                 });
 
@@ -497,6 +1158,404 @@ namespace Buildline.Platform.Migrations
                             Progress = 90,
                             Spent = 105000m,
                             Status = "At Risk"
+                        });
+                });
+
+            modelBuilder.Entity("Buildline.Platform.Requisition.Domain.Model.Aggregates.Requisition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("DeliveryDate")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("delivery_date");
+
+                    b.Property<string>("Material")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("material");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("priority");
+
+                    b.Property<string>("Project")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("project");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int")
+                        .HasColumnName("quantity");
+
+                    b.Property<string>("ReqId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("req_id");
+
+                    b.Property<string>("RequestedBy")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("requested_by");
+
+                    b.Property<string>("RequestedOn")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("requested_on");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("unit");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_requisitions");
+
+                    b.ToTable("requisitions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DeliveryDate = "2026-05-25",
+                            Material = "Steel Rebar 1/2\"",
+                            Priority = "High",
+                            Project = "Skyline Tower",
+                            Quantity = 500,
+                            ReqId = "MR-2026-00024",
+                            RequestedBy = "Carlos Mendoza",
+                            RequestedOn = "May 19, 2026",
+                            Status = "Pending",
+                            Unit = "PCS"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DeliveryDate = "2026-05-24",
+                            Material = "Concrete 3000 PSI",
+                            Priority = "Medium",
+                            Project = "Skyline Tower",
+                            Quantity = 200,
+                            ReqId = "MR-2026-00023",
+                            RequestedBy = "Ana Garcia",
+                            RequestedOn = "May 18, 2026",
+                            Status = "Approved",
+                            Unit = "Bags"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DeliveryDate = "2026-05-23",
+                            Material = "Sand Fine",
+                            Priority = "Low",
+                            Project = "Coastal Bridge",
+                            Quantity = 50,
+                            ReqId = "MR-2026-00022",
+                            RequestedBy = "James Wilson",
+                            RequestedOn = "May 17, 2026",
+                            Status = "Approved",
+                            Unit = "m3"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DeliveryDate = "2026-05-22",
+                            Material = "Cement Type I",
+                            Priority = "High",
+                            Project = "Skyline Tower",
+                            Quantity = 300,
+                            ReqId = "MR-2026-00021",
+                            RequestedBy = "Carlos Mendoza",
+                            RequestedOn = "May 17, 2026",
+                            Status = "Pending",
+                            Unit = "Bags"
+                        });
+                });
+
+            modelBuilder.Entity("Buildline.Platform.Suppliers.Domain.Model.Aggregates.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("category");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("company_name");
+
+                    b.Property<string>("ContactName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("contact_name");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("DeliveryRate")
+                        .HasColumnType("int")
+                        .HasColumnName("delivery_rate");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("email");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("phone");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int")
+                        .HasColumnName("rating");
+
+                    b.Property<string>("Ruc")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("varchar(11)")
+                        .HasColumnName("ruc");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_suppliers");
+
+                    b.ToTable("suppliers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = "Steel",
+                            CompanyName = "ABC Supplies Inc.",
+                            ContactName = "Roberto Sanchez",
+                            DeliveryRate = 95,
+                            Email = "ventas@abcsupplies.com",
+                            IsActive = true,
+                            Phone = "+51 987 111 222",
+                            Rating = 5,
+                            Ruc = "20100055237"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = "Concrete",
+                            CompanyName = "BuildMore Materials",
+                            ContactName = "Maria Lopez",
+                            DeliveryRate = 88,
+                            Email = "contacto@buildmore.com",
+                            IsActive = true,
+                            Phone = "+51 987 333 444",
+                            Rating = 4,
+                            Ruc = "20419381272"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = "Steel",
+                            CompanyName = "Steel House Ltd.",
+                            ContactName = "Pedro Rojas",
+                            DeliveryRate = 78,
+                            Email = "info@steelhouse.com",
+                            IsActive = true,
+                            Phone = "+51 987 555 666",
+                            Rating = 4,
+                            Ruc = "20555555555"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = "General",
+                            CompanyName = "Global Construction",
+                            ContactName = "Lucia Vargas",
+                            DeliveryRate = 82,
+                            Email = "global@construction.com",
+                            IsActive = true,
+                            Phone = "+51 987 777 888",
+                            Rating = 3,
+                            Ruc = "10777777777"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Category = "Concrete",
+                            CompanyName = "Cement Plus",
+                            ContactName = "Jorge Diaz",
+                            DeliveryRate = 70,
+                            Email = "ventas@cementplus.com",
+                            IsActive = false,
+                            Phone = "+51 987 999 000",
+                            Rating = 3,
+                            Ruc = "20888888888"
+                        });
+                });
+
+            modelBuilder.Entity("Buildline.Platform.Suppliers.Domain.Model.Aggregates.SupplierIncident", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("date");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(800)
+                        .HasColumnType("varchar(800)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("IncidentId")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("incident_id");
+
+                    b.Property<string>("PurchaseOrder")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("purchase_order");
+
+                    b.Property<string>("ReportedBy")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("reported_by");
+
+                    b.Property<string>("Severity")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("severity");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Supplier")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("supplier");
+
+                    b.Property<string>("Time")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("time");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_supplier_incidents");
+
+                    b.ToTable("supplier_incidents");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Date = "May 15, 2026",
+                            Description = "Steel rebar shipment from Steel House Ltd. is 3 days overdue.",
+                            IncidentId = "INC-015",
+                            PurchaseOrder = "PO-2026-0012",
+                            ReportedBy = "Carlos Mendoza",
+                            Severity = "High",
+                            Status = "Open",
+                            Supplier = "Steel House Ltd.",
+                            Time = "10:45 AM",
+                            Title = "Delayed delivery of steel rebar"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Date = "May 15, 2026",
+                            Description = "Received Type II cement instead of Type I as specified in the PO.",
+                            IncidentId = "INC-014",
+                            PurchaseOrder = "PO-2026-0013",
+                            ReportedBy = "Ana Garcia",
+                            Severity = "High",
+                            Status = "In Progress",
+                            Supplier = "BuildMore Materials",
+                            Time = "08:30 AM",
+                            Title = "Wrong cement type delivered"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Date = "May 16, 2026",
+                            Description = "Several bags arrived with torn packaging.",
+                            IncidentId = "INC-013",
+                            PurchaseOrder = "PO-2026-0010",
+                            ReportedBy = "James Wilson",
+                            Severity = "Medium",
+                            Status = "Resolved",
+                            Supplier = "ABC Supplies Inc.",
+                            Time = "04:15 PM",
+                            Title = "Damaged packaging on arrival"
                         });
                 });
 #pragma warning restore 612, 618

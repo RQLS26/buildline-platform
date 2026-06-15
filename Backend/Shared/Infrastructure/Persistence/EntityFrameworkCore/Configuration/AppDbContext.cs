@@ -1,10 +1,17 @@
+using Buildline.Platform.Analytics.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Categories.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Buildline.Platform.Communication.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Buildline.Platform.Delivery.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Buildline.Platform.Inventory.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Materials.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Buildline.Platform.Procurement.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Projects.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Buildline.Platform.Requisition.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
+using Buildline.Platform.Suppliers.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
@@ -49,6 +56,27 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Projects Context
         builder.ApplyProjectsConfiguration();
+
+        // Requisition Context
+        builder.ApplyRequisitionConfiguration();
+
+        // Procurement Context
+        builder.ApplyProcurementConfiguration();
+
+        // Inventory Context
+        builder.ApplyInventoryConfiguration();
+
+        // Delivery & Tracking Context
+        builder.ApplyDeliveryConfiguration();
+
+        // Suppliers Context
+        builder.ApplySuppliersConfiguration();
+
+        // Analytics & Budgeting Context
+        builder.ApplyAnalyticsConfiguration();
+
+        // Communication Context
+        builder.ApplyCommunicationConfiguration();
 
         // IAM Context
         builder.ApplyIamConfiguration();

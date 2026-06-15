@@ -1,0 +1,26 @@
+namespace Buildline.Platform.Requisition.Interfaces.Rest.Resources;
+
+/// <summary>
+///     Resource accepted by requisition create and partial update endpoints.
+/// </summary>
+/// <param name="ReqId">Business requisition code.</param>
+/// <param name="Material">Requested material name.</param>
+/// <param name="Project">Project requesting the material.</param>
+/// <param name="Quantity">Requested quantity.</param>
+/// <param name="Unit">Measurement unit.</param>
+/// <param name="Priority">Operational priority.</param>
+/// <param name="Status">Workflow status.</param>
+/// <param name="RequestedOn">Creation display date.</param>
+/// <param name="DeliveryDate">Requested delivery date.</param>
+/// <param name="RequestedBy">Employee who created the requisition.</param>
+public record RequisitionWriteResource(
+    string? ReqId,
+    string? Material,
+    string? Project,
+    int? Quantity,
+    string? Unit,
+    string? Priority,
+    string? Status,
+    string? RequestedOn,
+    string? DeliveryDate,
+    string? RequestedBy);

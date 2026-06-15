@@ -9,9 +9,37 @@ Buildline Platform Backend is the Sprint 3 Web Services implementation for the B
 - `Projects`: shared project reference data and project ACL.
 - `Materials`: material catalog commands and queries for requisitions/inventory.
 - `Categories`: read-only material category reference data.
+- `Requisition`: field material requests, priority, approval status and requested delivery date.
+- `Procurement`: purchase orders, quotations and approval-status transitions.
+- `Inventory`: project stock, minimum/maximum thresholds and stock update dates.
+- `Delivery`: purchase-order delivery tracking, dispatch state, origin, destination and ETA.
+- `Suppliers`: supplier directory, operational incidents and supplier performance fields.
+- `Analytics`: project budgets, spent amount, allocations and overrun status.
+- `Communication`: inbox messages, alerts, read state and starred messages.
 - `Shared`: Result model, repositories, unit of work, audit interceptor, route conventions, middleware, Problem Details and localization resources.
 
 Public REST contracts use `/api/v1`. Operational controllers require JWT Bearer authentication. `POST /api/v1/auth/sign-in`, `POST /api/v1/auth/sign-up` and `GET /api/v1/health` remain public.
+
+## Frontend Contract Coverage
+
+The API currently covers the Sprint 2 Vue frontend mock resources with versioned endpoints:
+
+| Frontend resource | Backend endpoint | Bounded context |
+| --- | --- | --- |
+| `users` | `/api/v1/users` | IAM |
+| `profiles` | `/api/v1/profiles` | Profiles |
+| `projects` | `/api/v1/projects` | Projects / Shared |
+| `materials` | `/api/v1/materials` | Materials / Shared |
+| `categories` | `/api/v1/categories` | Categories / Shared |
+| `requisitions` | `/api/v1/requisitions` | Requisition |
+| `purchaseOrders` | `/api/v1/purchaseOrders` | Procurement |
+| `quotations` | `/api/v1/quotations` | Procurement |
+| `inventory` | `/api/v1/inventory` | Inventory |
+| `deliveries` | `/api/v1/deliveries` | Delivery |
+| `suppliers` | `/api/v1/suppliers` | Suppliers |
+| `incidents` | `/api/v1/incidents` | Suppliers |
+| `budgets` | `/api/v1/budgets` | Analytics |
+| `messages` | `/api/v1/messages` | Communication |
 
 ## Verification
 
@@ -29,7 +57,7 @@ The backend uses EF Core with MySQL:
 .\.tools\dotnet-ef database update --project Backend --startup-project Backend
 ```
 
-The initial migration creates `users`, `profiles`, `projects`, `materials` and `categories`, including seed data aligned with the Sprint 2 frontend mock contracts.
+The migrations create `users`, `profiles`, `projects`, `materials`, `categories`, `requisitions`, `purchase_orders`, `quotations`, `inventory_items`, `deliveries`, `suppliers`, `supplier_incidents`, `budgets` and `messages`, including seed data aligned with the Sprint 2 frontend mock contracts.
 
 ## Docker
 
