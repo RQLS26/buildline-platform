@@ -11,4 +11,9 @@ public class MaterialQueryService(IMaterialRepository materialRepository) : IMat
     {
         return await materialRepository.ListAsync(cancellationToken);
     }
+
+    public async Task<Material?> Handle(GetMaterialByIdQuery query, CancellationToken cancellationToken = default)
+    {
+        return await materialRepository.FindByIdAsync(query.MaterialId, cancellationToken);
+    }
 }

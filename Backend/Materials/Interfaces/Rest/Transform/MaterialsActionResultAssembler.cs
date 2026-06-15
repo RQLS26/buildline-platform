@@ -1,8 +1,10 @@
 using Buildline.Platform.Materials.Domain.Model;
 using Buildline.Platform.Materials.Domain.Model.Aggregates;
+using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace Buildline.Platform.Materials.Interfaces.Rest.Transform;
 
@@ -39,5 +41,21 @@ public static class MaterialsActionResultAssembler
 
         var statusCode = ToStatusCodeFromMaterialsError((MaterialsError)result.Error!);
         return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
+    }
+
+    public static IActionResult ToActionResultFromGetMaterialByIdResult(
+        ControllerBase controller,
+        Material? material,
+        IStringLocalizer<ErrorMessages> errorLocalizer,
+        ProblemDetailsFactory problemDetailsFactory,
+        Func<Material, IActionResult> successAction)
+    {
+        if (material is not null) return successAction(material);
+
+        return problemDetailsFactory.CreateProblemDetails(
+            controller,
+            ToStatusCodeFromMaterialsError(MaterialsError.MaterialNotFound),
+            MaterialsError.MaterialNotFound,
+            errorLocalizer[$"{nameof(MaterialsError)}.{MaterialsError.MaterialNotFound}"]);
     }
 }
