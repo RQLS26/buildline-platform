@@ -41,6 +41,7 @@ using Buildline.Platform.Iam.Application.QueryServices;
 using Buildline.Platform.Iam.Domain.Repositories;
 using Buildline.Platform.Iam.Infrastructure.Hashing.BCrypt.Services;
 using Buildline.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Iam.Infrastructure.Pipeline.Middleware.Extensions;
 using Buildline.Platform.Iam.Infrastructure.Tokens.Jwt.Configuration;
 using Buildline.Platform.Iam.Infrastructure.Tokens.Jwt.Services;
 using Buildline.Platform.Iam.Interfaces.Acl;
@@ -251,6 +252,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowFrontendPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseRequestAuthorization();
 app.UseAuthorization();
 
 app.MapGet("/api/v1/health", () => Results.Ok(new { status = "Healthy", service = "Buildline Platform API" }))
@@ -264,6 +266,3 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
-
-
-
