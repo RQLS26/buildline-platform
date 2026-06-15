@@ -99,4 +99,38 @@ public class MaterialCommandService(
                 localizer[$"{nameof(MaterialsError)}.{MaterialsError.InternalServerError}"]);
         }
     }
+
+    public async Task<Result> Handle(DeleteMaterialCommand command, CancellationToken cancellationToken = default)
+    {
+        var material = await materialRepository.FindByIdAsync(command.MaterialId, cancellationToken);
+        if (material is null)
+            return Result.Failure(
+                MaterialsError.MaterialNotFound,
+                localizer[$"{nameof(MaterialsError)}.{MaterialsError.MaterialNotFound}"]);
+
+        try
+        {
+            materialRepository.Remove(material);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return Result.Success();
+        }
+        catch (OperationCanceledException)
+        {
+            return Result.Failure(
+                MaterialsError.OperationCancelled,
+                localizer[$"{nameof(MaterialsError)}.{MaterialsError.OperationCancelled}"]);
+        }
+        catch (DbUpdateException)
+        {
+            return Result.Failure(
+                MaterialsError.DatabaseError,
+                localizer[$"{nameof(MaterialsError)}.{MaterialsError.DatabaseError}"]);
+        }
+        catch (Exception)
+        {
+            return Result.Failure(
+                MaterialsError.InternalServerError,
+                localizer[$"{nameof(MaterialsError)}.{MaterialsError.InternalServerError}"]);
+        }
+    }
 }

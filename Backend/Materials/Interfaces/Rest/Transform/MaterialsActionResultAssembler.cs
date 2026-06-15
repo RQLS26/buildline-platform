@@ -55,6 +55,18 @@ public static class MaterialsActionResultAssembler
         return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
     }
 
+    public static IActionResult ToActionResultFromDeleteMaterialResult(
+        ControllerBase controller,
+        Result result,
+        ProblemDetailsFactory problemDetailsFactory,
+        Func<IActionResult> successAction)
+    {
+        if (result.IsSuccess) return successAction();
+
+        var statusCode = ToStatusCodeFromMaterialsError((MaterialsError)result.Error!);
+        return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
+    }
+
     public static IActionResult ToActionResultFromGetMaterialByIdResult(
         ControllerBase controller,
         Material? material,
