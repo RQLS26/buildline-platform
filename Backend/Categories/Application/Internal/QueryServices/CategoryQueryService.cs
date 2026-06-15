@@ -11,4 +11,9 @@ public class CategoryQueryService(ICategoryRepository categoryRepository) : ICat
     {
         return await categoryRepository.ListAsync(cancellationToken);
     }
+
+    public async Task<Category?> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken = default)
+    {
+        return await categoryRepository.FindByIdAsync(query.CategoryId, cancellationToken);
+    }
 }
