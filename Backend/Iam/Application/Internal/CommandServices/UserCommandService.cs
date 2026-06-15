@@ -12,6 +12,16 @@ using Microsoft.Extensions.Localization;
 
 namespace Buildline.Platform.Iam.Application.Internal.CommandServices;
 
+/// <summary>
+///     Application command service that coordinates IAM writes for authentication and user management.
+/// </summary>
+/// <remarks>
+///     The service follows the course sample architecture: controllers translate HTTP payloads into
+///     commands, this service enforces application rules, repositories load or persist aggregates,
+///     and <see cref="IUnitOfWork"/> commits the transaction. It returns <see cref="Result{T}"/>
+///     instead of throwing business exceptions so REST assemblers can produce consistent Problem
+///     Details responses.
+/// </remarks>
 public class UserCommandService(
     IUserRepository userRepository,
     IHashingService hashingService,
@@ -20,6 +30,20 @@ public class UserCommandService(
     IStringLocalizer<ErrorMessages> localizer)
     : IUserCommandService
 {
+    /// <summary>
+    ///     Handles user creation from the administration module.
+    /// </summary>
+    /// <param name="command">Create-user command built from the REST resource.</param>
+    /// <param name="cancellationToken">Token used to cancel repository and unit-of-work work.</param>
+    /// <returns>
+    ///     A successful result with the persisted user, or an IAM error for duplicated email,
+    ///     cancellation, database failure or unexpected server failure.
+    /// </returns>
+    /// <remarks>
+    ///     The plain password is hashed before the aggregate is constructed. This keeps credential
+    ///     hashing outside the domain object while ensuring no plain credential crosses the
+    ///     persistence boundary.
+    /// </remarks>
     public async Task<Result<User>> Handle(CreateUserCommand command, CancellationToken cancellationToken = default)
     {
         if (await userRepository.ExistsByEmailAsync(command.Email, cancellationToken))
@@ -64,6 +88,20 @@ public class UserCommandService(
         }
     }
 
+    /// <summary>
+    ///     Handles administrative updates over an existing IAM user account.
+    /// </summary>
+    /// <param name="command">Update command containing the user id and the complete replacement values.</param>
+    /// <param name="cancellationToken">Token used to cancel lookup, uniqueness validation and persistence.</param>
+    /// <returns>
+    ///     A successful result with the updated user, or an IAM error when the user does not exist,
+    ///     the email belongs to another account, persistence fails, or the operation is cancelled.
+    /// </returns>
+    /// <remarks>
+    ///     The method validates email uniqueness before mutating the aggregate. Password hash and
+    ///     last-login are deliberately untouched because US-024 only covers role, status and account
+    ///     metadata management from the frontend users module.
+    /// </remarks>
     public async Task<Result<User>> Handle(UpdateUserCommand command, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.FindByIdAsync(command.UserId, cancellationToken);
@@ -112,6 +150,15 @@ public class UserCommandService(
         }
     }
 
+    /// <summary>
+    ///     Handles user sign-in and token issuance.
+    /// </summary>
+    /// <param name="command">Sign-in command containing the submitted email and password.</param>
+    /// <param name="cancellationToken">Token used to cancel the user lookup.</param>
+    /// <returns>
+    ///     A successful result with the authenticated user and JWT token, or an invalid-credentials
+    ///     result when the email does not exist, the account is inactive, or the password is wrong.
+    /// </returns>
     public async Task<Result<(User user, string token)>> Handle(SignInCommand command, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.FindByEmailAsync(command.Email, cancellationToken);
@@ -125,6 +172,19 @@ public class UserCommandService(
         return Result<(User user, string token)>.Success((user, token));
     }
 
+    /// <summary>
+    ///     Handles public user registration and initial token issuance.
+    /// </summary>
+    /// <param name="command">Sign-up command containing account fields and the plain password to hash.</param>
+    /// <param name="cancellationToken">Token used to cancel persistence operations.</param>
+    /// <returns>
+    ///     A successful result with the created user and JWT token, or an IAM error for duplicated
+    ///     email, cancellation, database failure or unexpected server failure.
+    /// </returns>
+    /// <remarks>
+    ///     The sign-up workflow currently activates accounts immediately because Sprint 3 does not
+    ///     include email confirmation or invitation acceptance.
+    /// </remarks>
     public async Task<Result<(User user, string token)>> Handle(SignUpCommand command, CancellationToken cancellationToken = default)
     {
         if (await userRepository.ExistsByEmailAsync(command.Email, cancellationToken))
