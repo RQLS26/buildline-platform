@@ -1,7 +1,10 @@
+using System.Reflection;
+using System.Text;
 using Buildline.Platform.Categories.Application.Internal.QueryServices;
 using Buildline.Platform.Categories.Application.QueryServices;
 using Buildline.Platform.Categories.Domain.Repositories;
 using Buildline.Platform.Categories.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Buildline.Platform.Iam.Application.CommandServices;
 using Buildline.Platform.Iam.Application.Internal.CommandServices;
 using Buildline.Platform.Iam.Application.Internal.OutboundServices;
@@ -38,6 +41,7 @@ using Buildline.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
+using Microsoft.IdentityModel.Tokens;
 using ProblemDetailsFactory = Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,6 +80,28 @@ builder.Services.AddSingleton<IStringLocalizer<CommonMessages>, StringLocalizer<
 builder.Services.AddSingleton<ProblemDetailsFactory>();
 builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
 
+var tokenSecret = Environment.ExpandEnvironmentVariables(
+    builder.Configuration.GetSection("TokenSettings").Get<TokenSettings>()?.Secret ?? string.Empty);
+if (string.IsNullOrWhiteSpace(tokenSecret))
+    throw new InvalidOperationException("JWT token secret is not set in TokenSettings.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+        options.SaveToken = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenSecret)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+builder.Services.AddAuthorization();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -92,6 +118,26 @@ builder.Services.AddSwaggerGen(options =>
             }
         });
     options.EnableAnnotations();
+
+    var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFileName);
+    if (File.Exists(xmlFilePath))
+        options.IncludeXmlComments(xmlFilePath);
+
+    options.AddSecurityDefinition("Bearer",
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Description = "JWT Authorization header using the Bearer scheme.",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT"
+        });
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document, null)] = []
+    });
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -131,6 +177,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowFrontendPolicy");
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/api/v1/health", () => Results.Ok(new { status = "Healthy", service = "Buildline Platform API" }))
