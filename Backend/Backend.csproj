@@ -4,6 +4,10 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <InvariantGlobalization>false</InvariantGlobalization>
+        <LangVersion>14</LangVersion>
+        <RootNamespace>Buildline.Platform</RootNamespace>
+        <AssemblyName>Buildline.Platform</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

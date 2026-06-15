@@ -1,41 +1,100 @@
+using Buildline.Platform.Profiles.Application.Internal.QueryServices;
+using Buildline.Platform.Profiles.Application.QueryServices;
+using Buildline.Platform.Profiles.Domain.Repositories;
+using Buildline.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Resources.Shared;
+using Buildline.Platform.Shared.Domain.Repositories;
+using Buildline.Platform.Shared.Infrastructure.Interfaces.AspNetCore.Configuration;
+using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
+using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Microsoft.OpenApi;
+using ProblemDetailsFactory = Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
+    .AddDataAnnotationsLocalization();
+builder.Services.AddProblemDetails();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendPolicy",
+        policy => policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
+builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+{
+    var connectionStringTemplate = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrWhiteSpace(connectionStringTemplate))
+        throw new InvalidOperationException("Database connection string is not set in the configuration.");
+
+    var connectionString = Environment.ExpandEnvironmentVariables(connectionStringTemplate);
+    options.UseMySQL(connectionString)
+        .UseLoggerFactory(serviceProvider.GetRequiredService<ILoggerFactory>())
+        .EnableDetailedErrors();
+
+    if (builder.Environment.IsDevelopment())
+        options.EnableSensitiveDataLogging();
+});
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Shared/Resources");
+builder.Services.AddSingleton<IStringLocalizer<ErrorMessages>, StringLocalizer<ErrorMessages>>();
+builder.Services.AddSingleton<IStringLocalizer<CommonMessages>, StringLocalizer<CommonMessages>>();
+builder.Services.AddSingleton<ProblemDetailsFactory>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1",
+        new OpenApiInfo
+        {
+            Title = "Buildline Platform API",
+            Version = "v1",
+            Description = "Backend Web Services for Buildline construction logistics workflows.",
+            Contact = new OpenApiContact
+            {
+                Name = "RQLS Team",
+                Email = "contact@buildline.com"
+            }
+        });
+    options.EnableAnnotations();
+});
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseGlobalExceptionHandler();
+
+var supportedCultures = new[] { "en", "es" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
+app.UseCors("AllowFrontendPolicy");
 app.UseHttpsRedirection();
+app.UseAuthorization();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+app.MapGet("/api/v1/health", () => Results.Ok(new { status = "Healthy", service = "Buildline Platform API" }))
+    .WithName("GetHealth");
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
