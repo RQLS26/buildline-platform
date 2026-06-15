@@ -232,3 +232,17 @@ Acceptance criteria:
 - Given supplier, project, material and amount data, when POST is executed, then the API creates a purchase order.
 - Given purchase orders exist, when GET is called, then the API returns traceable purchase history.
 
+---
+
+### TS-PROC-004 - Purchase order detail and update API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** procurement  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to query purchase order details and approve or reject orders.
+
+Acceptance criteria:
+- Given an existing purchase order id, when GET is called, then the API returns supplier, amount and state.
+- Given a valid transition, when PATCH is executed, then the API updates state without losing traceability.
+
