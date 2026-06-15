@@ -2,6 +2,7 @@ using Buildline.Platform.Categories.Infrastructure.Persistence.EntityFrameworkCo
 using Buildline.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Materials.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Buildline.Platform.Projects.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Categories Context
         builder.ApplyCategoriesConfiguration();
+
+        // Projects Context
+        builder.ApplyProjectsConfiguration();
 
         // IAM Context
         builder.ApplyIamConfiguration();

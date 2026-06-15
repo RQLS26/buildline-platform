@@ -54,6 +54,21 @@
     <data name="CategoriesError.InternalServerError" xml:space="preserve">
     <value>Ocurrió un error interno inesperado en Categorías.</value>
   </data>
+    <data name="ProjectsError.ProjectNotFound" xml:space="preserve">
+    <value>Proyecto no encontrado.</value>
+  </data>
+    <data name="ProjectsError.InvalidProjectData" xml:space="preserve">
+    <value>Datos de proyecto inválidos proporcionados.</value>
+  </data>
+    <data name="ProjectsError.OperationCancelled" xml:space="preserve">
+    <value>La operación de proyecto fue cancelada.</value>
+  </data>
+    <data name="ProjectsError.DatabaseError" xml:space="preserve">
+    <value>Ocurrió un error de base de datos durante la operación de proyecto.</value>
+  </data>
+    <data name="ProjectsError.InternalServerError" xml:space="preserve">
+    <value>Ocurrió un error interno inesperado en Proyectos.</value>
+  </data>
     <data name="IamError.UserNotFound" xml:space="preserve">
     <value>Usuario no encontrado.</value>
   </data>

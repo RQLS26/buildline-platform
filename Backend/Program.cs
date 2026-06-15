@@ -24,6 +24,10 @@ using Buildline.Platform.Profiles.Application.Internal.QueryServices;
 using Buildline.Platform.Profiles.Application.QueryServices;
 using Buildline.Platform.Profiles.Domain.Repositories;
 using Buildline.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Projects.Application.Internal.QueryServices;
+using Buildline.Platform.Projects.Application.QueryServices;
+using Buildline.Platform.Projects.Domain.Repositories;
+using Buildline.Platform.Projects.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Resources.Shared;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -104,6 +108,8 @@ builder.Services.AddScoped<IMaterialQueryService, MaterialQueryService>();
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
 builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 
 var app = builder.Build();
 
