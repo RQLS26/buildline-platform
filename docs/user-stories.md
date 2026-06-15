@@ -218,3 +218,17 @@ Acceptance criteria:
 - Given an existing quotation id, when GET is called, then the API returns supplier, material and amount data.
 - Given a valid state change, when PATCH is executed, then the API persists the decision.
 
+---
+
+### TS-PROC-003 - Purchase orders list and create API
+
+**Branch:** $(System.Collections.Hashtable.Branch)  
+**Context / module:** procurement  
+**Endpoint(s):** $(System.Collections.Hashtable.Endpoints)
+
+As a frontend developer, I want to formalize approved purchases and show purchase history.
+
+Acceptance criteria:
+- Given supplier, project, material and amount data, when POST is executed, then the API creates a purchase order.
+- Given purchase orders exist, when GET is called, then the API returns traceable purchase history.
+
