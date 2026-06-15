@@ -5,14 +5,16 @@ namespace Buildline.Platform.Delivery.Domain.Model;
 /// </summary>
 public enum DeliveryError
 {
-    /// <summary>Indicates the DeliveryNotFound application failure.</summary>
+    /// <summary>Indicates that the requested delivery does not exist.</summary>
     DeliveryNotFound,
-    /// <summary>Indicates the InvalidDeliveryData application failure.</summary>
+    /// <summary>Indicates that the delivery payload is incomplete or invalid.</summary>
     InvalidDeliveryData,
-    /// <summary>Indicates the OperationCancelled application failure.</summary>
+    /// <summary>Indicates that the referenced purchase order cannot be resolved from Procurement.</summary>
+    PurchaseOrderReferenceNotFound,
+    /// <summary>Indicates that the request was cancelled before the operation completed.</summary>
     OperationCancelled,
-    /// <summary>Indicates the DatabaseError application failure.</summary>
+    /// <summary>Indicates that persistence failed while saving delivery data.</summary>
     DatabaseError,
-    /// <summary>Indicates the InternalServerError application failure.</summary>
+    /// <summary>Indicates that an unexpected error occurred while handling a delivery command.</summary>
     InternalServerError
 }

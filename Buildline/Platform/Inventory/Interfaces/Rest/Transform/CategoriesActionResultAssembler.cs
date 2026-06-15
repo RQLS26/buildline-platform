@@ -11,7 +11,7 @@ namespace Buildline.Platform.Inventory.Interfaces.Rest.Transform;
 ///     Converts category query results into HTTP action results.
 /// </summary>
 /// <remarks>
-///     Centralizing response creation mirrors the learning-center sample and prevents duplicated
+///     Centralizing response creation mirrors the course reference structure and prevents duplicated
 ///     status-code and Problem Details mapping across category endpoints.
 /// </remarks>
 public static class CategoriesActionResultAssembler
@@ -73,4 +73,5 @@ public static class CategoriesActionResultAssembler
             errorLocalizer[$"{nameof(CategoriesError)}.{CategoriesError.CategoryNotFound}"]);
     }
 }
+
 

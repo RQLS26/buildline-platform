@@ -5,14 +5,16 @@ namespace Buildline.Platform.Requisition.Domain.Model;
 /// </summary>
 public enum RequisitionError
 {
-    /// <summary>Indicates the RequisitionNotFound application failure.</summary>
+    /// <summary>Indicates that the requested requisition does not exist.</summary>
     RequisitionNotFound,
-    /// <summary>Indicates the InvalidRequisitionData application failure.</summary>
+    /// <summary>Indicates that the payload does not contain the minimum data required to create a requisition.</summary>
     InvalidRequisitionData,
-    /// <summary>Indicates the OperationCancelled application failure.</summary>
+    /// <summary>Indicates that the project reference cannot be resolved from Analytics.</summary>
+    ProjectReferenceNotFound,
+    /// <summary>Indicates that the request was cancelled before the operation completed.</summary>
     OperationCancelled,
-    /// <summary>Indicates the DatabaseError application failure.</summary>
+    /// <summary>Indicates that persistence failed while saving requisition data.</summary>
     DatabaseError,
-    /// <summary>Indicates the InternalServerError application failure.</summary>
+    /// <summary>Indicates that an unexpected error occurred while handling a requisition command.</summary>
     InternalServerError
 }

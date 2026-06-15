@@ -12,7 +12,7 @@ namespace Buildline.Platform.Iam.Interfaces.Rest.Transform;
 ///     Converts IAM user-management application results into HTTP action results.
 /// </summary>
 /// <remarks>
-///     Keeping this mapping outside the controller mirrors the learning-center sample and prevents
+///     Keeping this mapping outside the controller mirrors the course reference structure and prevents
 ///     duplicated status-code decisions across users endpoints. Business errors remain expressed as
 ///     IAM errors in the application layer and are translated to REST Problem Details here.
 /// </remarks>
@@ -116,3 +116,4 @@ public static class UsersActionResultAssembler
         return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
     }
 }
+

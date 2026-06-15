@@ -1,22 +1,20 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Requisition.Domain.Model.Commands;
+using Buildline.Platform.Requisition.Domain.Model.Events;
+using Buildline.Platform.Requisition.Domain.Model.ValueObjects;
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Requisition.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Aggregate root that represents a material requisition created from a construction site.
 /// </summary>
-/// <remarks>
-///     A requisition is not a material catalog record. It captures a concrete operational need,
-///     including project, quantity, requested delivery date, requester and workflow status. This keeps
-///     the Requisition bounded context aligned with the Chapter 04 domain model instead of collapsing
-///     the workflow into the Shared material catalog.
-/// </remarks>
-public partial class Requisition : IAuditableEntity
+public partial class Requisition : IAuditableEntity, IHasDomainEvents
 {
-    /// <summary>
-    ///     Initializes an empty requisition instance for Entity Framework Core materialization.
-    /// </summary>
+    private readonly List<IEvent> _domainEvents = [];
+
+    /// <summary>Initializes an empty requisition instance for Entity Framework Core materialization.</summary>
     protected Requisition()
     {
         ReqId = string.Empty;
@@ -30,22 +28,22 @@ public partial class Requisition : IAuditableEntity
         RequestedBy = string.Empty;
     }
 
-    /// <summary>
-    ///     Creates a requisition aggregate from the material requisition command contract.
-    /// </summary>
-    /// <param name="command">Material requisition payload submitted by the resident engineer workflow.</param>
+    /// <summary>Creates a requisition aggregate from the application command.</summary>
+    /// <param name="command">Command carrying requisition values accepted by the application layer.</param>
     public Requisition(CreateRequisitionCommand command)
     {
+        var materialDescriptor = MaterialDescriptor.From(command.Material, command.Unit, string.Empty);
         ReqId = string.IsNullOrWhiteSpace(command.ReqId) ? $"MR-{DateTime.UtcNow:yyyyMMddHHmmss}" : command.ReqId.Trim();
-        Material = command.Material?.Trim() ?? string.Empty;
+        Material = materialDescriptor.Name;
         Project = command.Project?.Trim() ?? string.Empty;
-        Quantity = command.Quantity ?? 0;
-        Unit = command.Unit?.Trim() ?? string.Empty;
-        Priority = command.Priority?.Trim() ?? "Medium";
-        Status = command.Status?.Trim() ?? "Pending";
+        Quantity = Math.Max(0, command.Quantity ?? 0);
+        Unit = materialDescriptor.Unit;
+        Priority = command.Priority?.Trim() ?? RequisitionPriority.Medium.ToString();
+        Status = command.Status?.Trim() ?? RequisitionStatus.Pending.ToString();
         RequestedOn = command.RequestedOn?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
         DeliveryDate = command.DeliveryDate?.Trim() ?? string.Empty;
         RequestedBy = command.RequestedBy?.Trim() ?? string.Empty;
+        AddDomainEvent(new RequisitionCreatedEvent(Id, ReqId, Material, Project));
     }
 
     /// <summary>Gets the database-generated requisition identifier.</summary>
@@ -87,12 +85,21 @@ public partial class Requisition : IAuditableEntity
     /// <summary>Gets or sets the audit timestamp captured when the requisition is updated.</summary>
     public DateTimeOffset? UpdatedAt { get; set; }
 
-    /// <summary>
-    ///     Applies a partial requisition update, including status transitions made by logistics staff.
-    /// </summary>
-    /// <param name="command">Command containing only the fields that must change.</param>
+    /// <inheritdoc />
+    [NotMapped]
+    public IReadOnlyCollection<IEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    /// <inheritdoc />
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
+    /// <summary>Applies a partial requisition update.</summary>
+    /// <param name="command">Command containing replacement values.</param>
     public void Apply(UpdateRequisitionCommand command)
     {
+        var previousStatus = Status;
         ReqId = command.ReqId is null ? ReqId : command.ReqId.Trim();
         Material = command.Material is null ? Material : command.Material.Trim();
         Project = command.Project is null ? Project : command.Project.Trim();
@@ -103,8 +110,15 @@ public partial class Requisition : IAuditableEntity
         RequestedOn = command.RequestedOn is null ? RequestedOn : command.RequestedOn.Trim();
         DeliveryDate = command.DeliveryDate is null ? DeliveryDate : command.DeliveryDate.Trim();
         RequestedBy = command.RequestedBy is null ? RequestedBy : command.RequestedBy.Trim();
+
+        if (!string.Equals(previousStatus, Status, StringComparison.OrdinalIgnoreCase))
+            AddDomainEvent(new RequisitionStatusChangedEvent(Id, previousStatus, Status));
+    }
+
+    /// <summary>Records a domain event raised by this aggregate.</summary>
+    /// <param name="domainEvent">Event that describes a completed domain change.</param>
+    private void AddDomainEvent(IEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
     }
 }
-
-
-

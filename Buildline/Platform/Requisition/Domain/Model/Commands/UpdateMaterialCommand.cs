@@ -1,7 +1,7 @@
 namespace Buildline.Platform.Requisition.Domain.Model.Commands;
 
 /// <summary>
-///     Command that requests replacement of catalog and stock fields for an existing material.
+///     Command that requests replacement of reference and stock fields for an existing material.
 /// </summary>
 /// <param name="MaterialId">Identifier of the material aggregate to update.</param>
 /// <param name="Sku">Replacement SKU value.</param>
@@ -26,4 +26,5 @@ public record UpdateMaterialCommand(
     int CurrentStock,
     int MinStock,
     int MaxStock);
+
 

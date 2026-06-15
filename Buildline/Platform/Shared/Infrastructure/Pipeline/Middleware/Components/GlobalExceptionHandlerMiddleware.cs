@@ -5,33 +5,33 @@ using Buildline.Platform.Resources.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
-// For OperationCanceledException
-
 namespace Buildline.Platform.Shared.Infrastructure.Pipeline.Middleware.Components;
 
 /// <summary>
-///     Global Exception Handling Middleware
+///     Middleware that converts unhandled application exceptions into localized Problem Details responses.
 /// </summary>
+/// <param name="next">Next middleware delegate in the ASP.NET Core request pipeline.</param>
+/// <param name="logger">Logger used to record unexpected exceptions and cancelled requests.</param>
+/// <param name="errorLocalizer">Localizer used to resolve bounded-context error messages.</param>
+/// <param name="commonLocalizer">Localizer used to resolve shared response titles.</param>
 /// <remarks>
-///     This middleware catches all unhandled exceptions and returns a Problem Details response.
+///     Controllers and command services handle expected application failures through typed results. This
+///     middleware is the last defensive boundary for unexpected failures, keeping the public REST contract
+///     consistent even when an exception escapes lower layers.
 /// </remarks>
 public class GlobalExceptionHandlerMiddleware(
     RequestDelegate next,
     ILogger<GlobalExceptionHandlerMiddleware> logger,
-    IStringLocalizer<ErrorMessages> errorLocalizer, // Inject IStringLocalizer for error messages
-    IStringLocalizer<CommonMessages> // Corrected to Commons
-        commonLocalizer) // Inject IStringLocalizer for common messages like "Internal Server Error"
+    IStringLocalizer<ErrorMessages> errorLocalizer,
+    IStringLocalizer<CommonMessages> commonLocalizer)
 {
-    private readonly IStringLocalizer<CommonMessages> _commonLocalizer = commonLocalizer; // Corrected to Commons
-    private readonly IStringLocalizer<ErrorMessages> _errorLocalizer = errorLocalizer;
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    /**
-     * <summary>
-     *     Invoke the middleware
-     * </summary>
-     * <param name="context">The http context</param>
-     * <returns>A task</returns>
-     */
+    /// <summary>
+    ///     Executes the middleware and delegates successful requests to the next pipeline component.
+    /// </summary>
+    /// <param name="context">HTTP context for the current request.</param>
+    /// <returns>A task that completes when the request has been processed.</returns>
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -40,52 +40,43 @@ public class GlobalExceptionHandlerMiddleware(
         }
         catch (OperationCanceledException ex)
         {
-            logger.LogWarning(ex, "Request was cancelled: {Message}", ex.Message);
-            await HandleOperationCanceledExceptionAsync(context, ex);
+            logger.LogWarning(ex, "Request was cancelled for {Path}", context.Request.Path);
+            await HandleOperationCanceledExceptionAsync(context);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
-            await HandleGenericExceptionAsync(context, ex);
+            logger.LogError(ex, "Unhandled exception occurred for {Path}", context.Request.Path);
+            await HandleGenericExceptionAsync(context);
         }
     }
 
-    /**
-     * <summary>
-     *     Handle the OperationCanceledException
-     * </summary>
-     * <param name="context">The http context</param>
-     * <param name="exception">The exception</param>
-     * <returns>A task</returns>
-     */
-    private async Task HandleOperationCanceledExceptionAsync(HttpContext context, OperationCanceledException exception)
+    /// <summary>
+    ///     Writes a localized conflict response for cancelled operations.
+    /// </summary>
+    /// <param name="context">HTTP context that will receive the Problem Details payload.</param>
+    /// <returns>A task that completes when the response body has been written.</returns>
+    private async Task HandleOperationCanceledExceptionAsync(HttpContext context)
     {
         context.Response.ContentType = MediaTypeNames.Application.Json;
-        context.Response.StatusCode = StatusCodes.Status409Conflict; // Or 204 No Content if appropriate
+        context.Response.StatusCode = StatusCodes.Status409Conflict;
 
         var problemDetails = new ProblemDetails
         {
             Status = StatusCodes.Status409Conflict,
-            Title = _errorLocalizer["OperationCancelled"], // Localized title
-            Detail = _errorLocalizer["OperationCancelled"], // Localized detail
+            Title = errorLocalizer["OperationCancelled"],
+            Detail = errorLocalizer["OperationCancelled"],
             Instance = context.Request.Path
         };
 
-        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        var result = JsonSerializer.Serialize(problemDetails, jsonOptions);
-
-        await context.Response.WriteAsync(result);
+        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, JsonOptions));
     }
 
-    /**
-     * <summary>
-     *     Handle a generic exception
-     * </summary>
-     * <param name="context">The http context</param>
-     * <param name="exception">The exception</param>
-     * <returns>A task</returns>
-     */
-    private async Task HandleGenericExceptionAsync(HttpContext context, Exception exception)
+    /// <summary>
+    ///     Writes a localized internal-server-error response for unexpected failures.
+    /// </summary>
+    /// <param name="context">HTTP context that will receive the Problem Details payload.</param>
+    /// <returns>A task that completes when the response body has been written.</returns>
+    private async Task HandleGenericExceptionAsync(HttpContext context)
     {
         context.Response.ContentType = MediaTypeNames.Application.Json;
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
@@ -93,14 +84,11 @@ public class GlobalExceptionHandlerMiddleware(
         var problemDetails = new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
-            Title = _commonLocalizer["InternalServerError"], // Localized title
-            Detail = _errorLocalizer["GenericError"], // Localized generic error message
+            Title = commonLocalizer["InternalServerError"],
+            Detail = errorLocalizer["GenericError"],
             Instance = context.Request.Path
         };
 
-        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        var result = JsonSerializer.Serialize(problemDetails, jsonOptions);
-
-        await context.Response.WriteAsync(result);
+        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, JsonOptions));
     }
 }

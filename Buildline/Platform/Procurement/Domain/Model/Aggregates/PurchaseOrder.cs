@@ -1,18 +1,19 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Procurement.Domain.Model.Commands;
+using Buildline.Platform.Procurement.Domain.Model.Events;
+using Buildline.Platform.Procurement.Domain.Model.ValueObjects;
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Procurement.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Aggregate root that represents a purchase order emitted by the procurement workflow.
 /// </summary>
-/// <remarks>
-///     Purchase orders formalize approved spend and become the financial source used by Analytics and
-///     Budgeting. The aggregate stores supplier, project, material and approval status in the exact
-///     shape currently consumed by the Vue procurement screens.
-/// </remarks>
-public partial class PurchaseOrder : IAuditableEntity
+public partial class PurchaseOrder : IAuditableEntity, IHasDomainEvents
 {
+    private readonly List<IEvent> _domainEvents = [];
+
     /// <summary>Initializes an empty purchase order for Entity Framework Core materialization.</summary>
     protected PurchaseOrder()
     {
@@ -24,10 +25,8 @@ public partial class PurchaseOrder : IAuditableEntity
         Status = string.Empty;
     }
 
-    /// <summary>
-    ///     Creates a purchase order from the procurement application command contract.
-    /// </summary>
-    /// <param name="command">Purchase order payload submitted by procurement staff.</param>
+    /// <summary>Creates a purchase order from a procurement command.</summary>
+    /// <param name="command">Command carrying purchase order values accepted by the application layer.</param>
     public PurchaseOrder(CreatePurchaseOrderCommand command)
     {
         OrderId = string.IsNullOrWhiteSpace(command.OrderId) ? $"PO-{DateTime.UtcNow:yyyyMMddHHmmss}" : command.OrderId.Trim();
@@ -35,8 +34,9 @@ public partial class PurchaseOrder : IAuditableEntity
         SupplierName = command.SupplierName?.Trim() ?? string.Empty;
         Material = command.Material?.Trim() ?? string.Empty;
         Project = command.Project?.Trim() ?? string.Empty;
-        TotalAmount = command.TotalAmount ?? 0m;
-        Status = command.Status?.Trim() ?? "Pending";
+        TotalAmount = Money.From(command.TotalAmount).Amount;
+        Status = command.Status?.Trim() ?? ProcurementStatus.Pending.ToString();
+        AddDomainEvent(new PurchaseOrderCreatedEvent(Id, OrderId, SupplierName, TotalAmount));
     }
 
     /// <summary>Gets the database-generated purchase order identifier.</summary>
@@ -69,21 +69,37 @@ public partial class PurchaseOrder : IAuditableEntity
     /// <summary>Gets or sets the audit timestamp captured when the order is updated.</summary>
     public DateTimeOffset? UpdatedAt { get; set; }
 
-    /// <summary>
-    ///     Applies a partial purchase order update, most commonly an approval status transition.
-    /// </summary>
-    /// <param name="command">Purchase order fields to replace.</param>
+    /// <inheritdoc />
+    [NotMapped]
+    public IReadOnlyCollection<IEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    /// <inheritdoc />
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
+    /// <summary>Applies a partial purchase order update.</summary>
+    /// <param name="command">Command containing replacement values.</param>
     public void Apply(UpdatePurchaseOrderCommand command)
     {
+        var previousStatus = Status;
         OrderId = command.OrderId is null ? OrderId : command.OrderId.Trim();
         Date = command.Date is null ? Date : command.Date.Trim();
         SupplierName = command.SupplierName is null ? SupplierName : command.SupplierName.Trim();
         Material = command.Material is null ? Material : command.Material.Trim();
         Project = command.Project is null ? Project : command.Project.Trim();
-        TotalAmount = command.TotalAmount ?? TotalAmount;
+        TotalAmount = command.TotalAmount is null ? TotalAmount : Money.From(command.TotalAmount).Amount;
         Status = command.Status is null ? Status : command.Status.Trim();
+
+        if (!string.Equals(previousStatus, Status, StringComparison.OrdinalIgnoreCase))
+            AddDomainEvent(new PurchaseOrderStatusChangedEvent(Id, previousStatus, Status));
+    }
+
+    /// <summary>Records a domain event raised by this aggregate.</summary>
+    /// <param name="domainEvent">Event that describes a completed domain change.</param>
+    private void AddDomainEvent(IEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
     }
 }
-
-
-

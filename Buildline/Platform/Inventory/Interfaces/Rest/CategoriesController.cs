@@ -13,7 +13,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Buildline.Platform.Inventory.Interfaces.Rest;
 
 /// <summary>
-///     REST controller that exposes material categories for catalog and inventory workflows.
+///     REST controller that exposes material categories for reference and inventory workflows.
 /// </summary>
 /// <remarks>
 ///     The controller satisfies TS-09 and TS-10 by providing read-only category endpoints aligned
@@ -31,7 +31,7 @@ public class CategoriesController(
     : ControllerBase
 {
     /// <summary>
-    ///     Gets every material category available for catalog filters.
+    ///     Gets every material category available for reference filters.
     /// </summary>
     /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
     /// <returns>
@@ -40,7 +40,7 @@ public class CategoriesController(
     [HttpGet]
     [SwaggerOperation(
         Summary = "Get all material categories",
-        Description = "Gets all material categories available for catalog and inventory filters.",
+        Description = "Gets all material categories available for reference and inventory filters.",
         OperationId = "GetAllCategories")]
     [SwaggerResponse(StatusCodes.Status200OK, "The categories were found and returned.", typeof(IEnumerable<CategoryResource>))]
     [SwaggerResponse(StatusCodes.Status204NoContent, "No categories are currently registered.")]
@@ -82,4 +82,6 @@ public class CategoriesController(
             foundCategory => Ok(CategoryResourceFromEntityAssembler.ToResourceFromEntity(foundCategory)));
     }
 }
+
+
 

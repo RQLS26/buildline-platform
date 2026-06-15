@@ -1,5 +1,6 @@
 using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Suppliers.Domain.Model.Commands;
+using Buildline.Platform.Suppliers.Domain.Model.ValueObjects;
 
 namespace Buildline.Platform.Suppliers.Domain.Model.Aggregates;
 
@@ -37,7 +38,7 @@ public partial class Supplier : IAuditableEntity
         ContactName = command.ContactName?.Trim() ?? string.Empty;
         Email = command.Email?.Trim() ?? string.Empty;
         Phone = command.Phone?.Trim() ?? string.Empty;
-        Rating = command.Rating ?? 3;
+        Rating = SupplierRating.From(command.Rating).Value;
         IsActive = command.IsActive ?? true;
         Category = command.Category?.Trim() ?? "General";
         DeliveryRate = command.DeliveryRate ?? 80;
@@ -114,12 +115,13 @@ public partial class Supplier : IAuditableEntity
         ContactName = command.ContactName is null ? ContactName : command.ContactName.Trim();
         Email = command.Email is null ? Email : command.Email.Trim();
         Phone = command.Phone is null ? Phone : command.Phone.Trim();
-        Rating = command.Rating ?? Rating;
+        Rating = command.Rating is null ? Rating : SupplierRating.From(command.Rating).Value;
         IsActive = command.IsActive ?? IsActive;
         Category = command.Category is null ? Category : command.Category.Trim();
         DeliveryRate = command.DeliveryRate ?? DeliveryRate;
     }
 }
+
 
 
 

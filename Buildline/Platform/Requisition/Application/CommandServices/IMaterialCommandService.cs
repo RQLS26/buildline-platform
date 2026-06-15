@@ -16,7 +16,7 @@ public interface IMaterialCommandService
     /// <summary>
     ///     Handles material creation.
     /// </summary>
-    /// <param name="command">Command containing catalog and stock data for a new material.</param>
+    /// <param name="command">Command containing reference and stock data for a new material.</param>
     /// <param name="cancellationToken">Token used to cancel persistence operations.</param>
     /// <returns>A result containing the created material or a material-domain error.</returns>
     Task<Result<Material>> Handle(CreateMaterialCommand command, CancellationToken cancellationToken = default);
@@ -37,4 +37,5 @@ public interface IMaterialCommandService
     /// <returns>A result that indicates success or a material-domain error.</returns>
     Task<Result> Handle(DeleteMaterialCommand command, CancellationToken cancellationToken = default);
 }
+
 

@@ -16,7 +16,7 @@ namespace Buildline.Platform.Inventory.Application.Internal.QueryServices;
 public class CategoryQueryService(ICategoryRepository categoryRepository) : ICategoryQueryService
 {
     /// <summary>
-    ///     Retrieves every material category available in the catalog.
+    ///     Retrieves every material category available in material references.
     /// </summary>
     /// <param name="query">Category listing query.</param>
     /// <param name="cancellationToken">Token used to cancel the repository call.</param>
@@ -37,4 +37,5 @@ public class CategoryQueryService(ICategoryRepository categoryRepository) : ICat
         return await categoryRepository.FindByIdAsync(query.CategoryId, cancellationToken);
     }
 }
+
 

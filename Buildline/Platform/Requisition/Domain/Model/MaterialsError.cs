@@ -15,7 +15,7 @@ public enum MaterialsError
     MaterialNotFound,
 
     /// <summary>
-    ///     Required catalog or stock data is missing or invalid.
+    ///     Required reference or stock data is missing or invalid.
     /// </summary>
     InvalidMaterialData,
 
@@ -34,4 +34,5 @@ public enum MaterialsError
     /// </summary>
     InternalServerError
 }
+
 

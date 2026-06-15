@@ -15,7 +15,7 @@ public enum CategoriesError
     CategoryNotFound,
 
     /// <summary>
-    ///     Category state or request data violates catalog rules.
+    ///     Category state or request data violates reference-data rules.
     /// </summary>
     InvalidCategoryData,
 
@@ -34,4 +34,6 @@ public enum CategoriesError
     /// </summary>
     InternalServerError
 }
+
+
 

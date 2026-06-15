@@ -4,7 +4,7 @@ using Buildline.Platform.Shared.Domain.Model.Entities;
 namespace Buildline.Platform.Requisition.Domain.Model.Aggregates;
 
 /// <summary>
-///     Aggregate root that represents a material in the Buildline construction catalog.
+///     Aggregate root that represents a material in the Buildline construction material references.
 /// </summary>
 /// <remarks>
 ///     Materials are shared by requisitions and inventory: requisitions select materials to request,
@@ -16,7 +16,7 @@ public partial class Material : IAuditableEntity
     ///     Initializes an empty material instance for Entity Framework Core materialization.
     /// </summary>
     /// <remarks>
-    ///     Domain code should use public constructors so catalog fields are explicitly provided. EF
+    ///     Domain code should use public constructors so reference fields are explicitly provided. EF
     ///     Core uses this constructor when rebuilding persisted material aggregates.
     /// </remarks>
     protected Material()
@@ -29,9 +29,9 @@ public partial class Material : IAuditableEntity
     }
 
     /// <summary>
-    ///     Creates a material aggregate from catalog and stock values.
+    ///     Creates a material aggregate from reference and stock values.
     /// </summary>
-    /// <param name="sku">Business SKU used to identify the material in catalog views.</param>
+    /// <param name="sku">Business SKU used to identify the material in reference views.</param>
     /// <param name="name">Human-readable material name.</param>
     /// <param name="category">Material category name used by filters and reports.</param>
     /// <param name="unit">Measurement unit, such as PCS, Bags, Tons or m3.</param>
@@ -62,7 +62,7 @@ public partial class Material : IAuditableEntity
     /// <summary>
     ///     Creates a material aggregate from a create-material command.
     /// </summary>
-    /// <param name="command">Command carrying catalog fields accepted by the application service.</param>
+    /// <param name="command">Command carrying reference fields accepted by the application service.</param>
     public Material(CreateMaterialCommand command)
         : this(
             command.Sku,
@@ -82,7 +82,7 @@ public partial class Material : IAuditableEntity
     public int Id { get; private set; }
 
     /// <summary>
-    ///     Gets the SKU used by material catalog and procurement workflows.
+    ///     Gets the SKU used by material reference and procurement workflows.
     /// </summary>
     public string Sku { get; private set; }
 
@@ -132,7 +132,7 @@ public partial class Material : IAuditableEntity
     public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>
-    ///     Replaces catalog and stock information for the material.
+    ///     Replaces reference and stock information for the material.
     /// </summary>
     /// <param name="sku">Updated SKU value.</param>
     /// <param name="name">Updated material name.</param>
@@ -146,7 +146,7 @@ public partial class Material : IAuditableEntity
     ///     Validation remains in the application service so the aggregate focuses on state transition.
     ///     Future inventory rules can be promoted here when stock thresholds become richer invariants.
     /// </remarks>
-    public void UpdateCatalogInformation(
+    public void UpdateReferenceInformation(
         string sku,
         string name,
         string category,
@@ -166,4 +166,6 @@ public partial class Material : IAuditableEntity
         MaxStock = maxStock;
     }
 }
+
+
 

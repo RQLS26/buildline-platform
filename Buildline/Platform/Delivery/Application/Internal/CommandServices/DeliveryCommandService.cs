@@ -1,4 +1,5 @@
 using Buildline.Platform.Delivery.Application.CommandServices;
+using Buildline.Platform.Delivery.Application.Internal.OutboundServices;
 using Buildline.Platform.Delivery.Domain.Model;
 using DeliveryAggregate = Buildline.Platform.Delivery.Domain.Model.Aggregates.Delivery;
 using Buildline.Platform.Delivery.Domain.Model.Commands;
@@ -14,11 +15,17 @@ namespace Buildline.Platform.Delivery.Application.Internal.CommandServices;
 /// <summary>
 ///     Application command service that coordinates delivery write use cases.
 /// </summary>
-/// <param name="repository">Repository used to retrieve and persist aggregates.</param>
+/// <param name="repository">Repository used to retrieve and persist delivery aggregates.</param>
+/// <param name="purchaseOrderReferenceService">Outbound service used to validate purchase order references owned by Procurement.</param>
 /// <param name="unitOfWork">Unit of work used to commit aggregate changes transactionally.</param>
 /// <param name="localizer">Localizer used to resolve bounded-context error messages.</param>
+/// <remarks>
+///     Delivery creation depends on an existing purchase order. This service owns that application-level
+///     coordination and returns typed failures so the REST layer can expose predictable Problem Details.
+/// </remarks>
 public class DeliveryCommandService(
     IDeliveryRepository repository,
+    IPurchaseOrderReferenceService purchaseOrderReferenceService,
     IUnitOfWork unitOfWork,
     IStringLocalizer<ErrorMessages> localizer)
     : IDeliveryCommandService
@@ -30,6 +37,11 @@ public class DeliveryCommandService(
             return Result<DeliveryAggregate>.Failure(
                 DeliveryError.InvalidDeliveryData,
                 localizer[$"{nameof(DeliveryError)}.{DeliveryError.InvalidDeliveryData}"]);
+
+        if (!await purchaseOrderReferenceService.PurchaseOrderExistsForAsync(command, cancellationToken))
+            return Result<DeliveryAggregate>.Failure(
+                DeliveryError.PurchaseOrderReferenceNotFound,
+                localizer[$"{nameof(DeliveryError)}.{DeliveryError.PurchaseOrderReferenceNotFound}"]);
 
         var aggregate = new DeliveryAggregate(command);
 
@@ -95,4 +107,3 @@ public class DeliveryCommandService(
         }
     }
 }
-

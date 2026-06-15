@@ -1,18 +1,19 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Analytics.Domain.Model.Commands;
+using Buildline.Platform.Analytics.Domain.Model.Events;
+using Buildline.Platform.Analytics.Domain.Model.ValueObjects;
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Analytics.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Aggregate root that represents the budget state of a construction project.
 /// </summary>
-/// <remarks>
-///     Analytics and Budgeting consumes procurement and project data to expose management KPIs. This
-///     first Sprint 3 aggregate keeps the frontend dashboard contract stable while giving the bounded
-///     context its own persistence and API boundary.
-/// </remarks>
-public partial class Budget : IAuditableEntity
+public partial class Budget : IAuditableEntity, IHasDomainEvents
 {
+    private readonly List<IEvent> _domainEvents = [];
+
     /// <summary>Initializes an empty budget for Entity Framework Core materialization.</summary>
     protected Budget()
     {
@@ -20,15 +21,15 @@ public partial class Budget : IAuditableEntity
         Status = string.Empty;
     }
 
-    /// <summary>Creates a budget aggregate from the frontend budgeting contract.</summary>
-    /// <param name="command">Budget payload submitted by management or seed import workflows.</param>
+    /// <summary>Creates a budget aggregate from a budgeting command.</summary>
+    /// <param name="command">Command carrying budget values accepted by the application layer.</param>
     public Budget(CreateBudgetCommand command)
     {
         Project = command.Project?.Trim() ?? string.Empty;
         TotalBudget = command.TotalBudget ?? 0m;
         Spent = command.Spent ?? 0m;
         Allocated = command.Allocated ?? 0m;
-        Status = command.Status?.Trim() ?? "On Track";
+        Status = command.Status?.Trim() ?? BudgetHealth.OnTrack.ToString();
     }
 
     /// <summary>Gets the database-generated budget identifier.</summary>
@@ -55,17 +56,35 @@ public partial class Budget : IAuditableEntity
     /// <summary>Gets or sets the audit timestamp captured when the budget row is updated.</summary>
     public DateTimeOffset? UpdatedAt { get; set; }
 
+    /// <inheritdoc />
+    [NotMapped]
+    public IReadOnlyCollection<IEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    /// <inheritdoc />
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
     /// <summary>Applies a partial budget update.</summary>
-    /// <param name="command">Budget fields to replace.</param>
+    /// <param name="command">Command containing replacement values.</param>
     public void Apply(UpdateBudgetCommand command)
     {
+        var previousStatus = Status;
         Project = command.Project is null ? Project : command.Project.Trim();
         TotalBudget = command.TotalBudget ?? TotalBudget;
         Spent = command.Spent ?? Spent;
         Allocated = command.Allocated ?? Allocated;
         Status = command.Status is null ? Status : command.Status.Trim();
+
+        if (!string.Equals(previousStatus, Status, StringComparison.OrdinalIgnoreCase))
+            AddDomainEvent(new BudgetStatusChangedEvent(Id, Project, previousStatus, Status));
+    }
+
+    /// <summary>Records a domain event raised by this aggregate.</summary>
+    /// <param name="domainEvent">Event that describes a completed domain change.</param>
+    private void AddDomainEvent(IEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
     }
 }
-
-
-

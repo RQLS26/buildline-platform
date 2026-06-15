@@ -1,4 +1,5 @@
 using Buildline.Platform.Requisition.Application.CommandServices;
+using Buildline.Platform.Requisition.Application.Internal.OutboundServices;
 using Buildline.Platform.Requisition.Domain.Model;
 using RequisitionAggregate = Buildline.Platform.Requisition.Domain.Model.Aggregates.Requisition;
 using Buildline.Platform.Requisition.Domain.Model.Commands;
@@ -14,11 +15,18 @@ namespace Buildline.Platform.Requisition.Application.Internal.CommandServices;
 /// <summary>
 ///     Application command service that coordinates requisition write use cases.
 /// </summary>
-/// <param name="repository">Repository used to retrieve and persist aggregates.</param>
+/// <param name="repository">Repository used to retrieve and persist requisition aggregates.</param>
+/// <param name="projectReferenceService">Outbound service used to validate project references owned by Analytics.</param>
 /// <param name="unitOfWork">Unit of work used to commit aggregate changes transactionally.</param>
 /// <param name="localizer">Localizer used to resolve bounded-context error messages.</param>
+/// <remarks>
+///     The service keeps the controller thin, validates frontend payloads, checks cross-context references
+///     through an outbound service and returns a typed <see cref="Result{T}" /> so REST assemblers can map
+///     failures consistently to Problem Details responses.
+/// </remarks>
 public class RequisitionCommandService(
     IRequisitionRepository repository,
+    IProjectReferenceService projectReferenceService,
     IUnitOfWork unitOfWork,
     IStringLocalizer<ErrorMessages> localizer)
     : IRequisitionCommandService
@@ -30,6 +38,11 @@ public class RequisitionCommandService(
             return Result<RequisitionAggregate>.Failure(
                 RequisitionError.InvalidRequisitionData,
                 localizer[$"{nameof(RequisitionError)}.{RequisitionError.InvalidRequisitionData}"]);
+
+        if (!await projectReferenceService.ProjectExistsForAsync(command, cancellationToken))
+            return Result<RequisitionAggregate>.Failure(
+                RequisitionError.ProjectReferenceNotFound,
+                localizer[$"{nameof(RequisitionError)}.{RequisitionError.ProjectReferenceNotFound}"]);
 
         var aggregate = new RequisitionAggregate(command);
 
@@ -95,4 +108,3 @@ public class RequisitionCommandService(
         }
     }
 }
-

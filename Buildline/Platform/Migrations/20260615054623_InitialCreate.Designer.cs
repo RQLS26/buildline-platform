@@ -53,56 +53,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_categories");
 
                     b.ToTable("categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Structural steel materials such as rebar and beams.",
-                            Name = "Steel"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Cement and concrete materials for construction work.",
-                            Name = "Concrete"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Sand, gravel and related aggregate materials.",
-                            Name = "Aggregate"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Pipes and plumbing-related materials.",
-                            Name = "Plumbing"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Electrical wiring and installation materials.",
-                            Name = "Electrical"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Description = "Plywood and wood-based construction materials.",
-                            Name = "Wood"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Description = "Safety and site operation equipment.",
-                            Name = "Equipment"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Description = "General construction supplies.",
-                            Name = "General"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Iam.Domain.Model.Aggregates.User", b =>
@@ -180,34 +130,6 @@ namespace Buildline.Platform.Migrations
                         .HasDatabaseName("i_x_users_email");
 
                     b.ToTable("users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AvatarColor = "#3d63a1",
-                            Department = "Management",
-                            Email = "admin@buildline.com",
-                            IsActive = true,
-                            LastLogin = "May 19, 2026",
-                            Name = "Nombre admin",
-                            PasswordHash = "$2a$11$ZIgOUFd7cA0EDVQ7KXkxleNzW8rkPUHGbWp7PXuLyvOZxEWeVXQkm",
-                            Phone = "+51 987 654 321",
-                            Role = "owner"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AvatarColor = "#F96116",
-                            Department = "Engineering",
-                            Email = "carlos@buildline.com",
-                            IsActive = true,
-                            LastLogin = "May 18, 2026",
-                            Name = "Carlos Mendoza",
-                            PasswordHash = "$2a$11$jpepzAUUxa.fRn8vJgBuQ.n4SDJFFeS/iEfg.7yjprthBADPSXbBy",
-                            Phone = "+51 912 345 678",
-                            Role = "viewer"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Requisition.Domain.Model.Aggregates.Material", b =>
@@ -271,80 +193,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_materials");
 
                     b.ToTable("materials");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "Steel",
-                            CurrentStock = 99,
-                            MaxStock = 800,
-                            MinStock = 100,
-                            Name = "Steel Rebar 1/2\"",
-                            Project = "Skyline Tower",
-                            Sku = "MAT-001",
-                            Unit = "PCS"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "Concrete",
-                            CurrentStock = 0,
-                            MaxStock = 500,
-                            MinStock = 100,
-                            Name = "Concrete 3000 PSI",
-                            Project = "Skyline Tower",
-                            Sku = "MAT-002",
-                            Unit = "Bags"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Category = "Concrete",
-                            CurrentStock = 200,
-                            MaxStock = 400,
-                            MinStock = 50,
-                            Name = "Cement Type I",
-                            Project = "Coastal Bridge",
-                            Sku = "MAT-003",
-                            Unit = "Bags"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Category = "Aggregate",
-                            CurrentStock = 0,
-                            MaxStock = 300,
-                            MinStock = 50,
-                            Name = "Sand Fine",
-                            Project = "Grand Park",
-                            Sku = "MAT-004",
-                            Unit = "m3"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Category = "Aggregate",
-                            CurrentStock = 320,
-                            MaxStock = 500,
-                            MinStock = 80,
-                            Name = "Gravel 3/4\"",
-                            Project = "Skyline Tower",
-                            Sku = "MAT-005",
-                            Unit = "Tons"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Category = "Plumbing",
-                            CurrentStock = 45,
-                            MaxStock = 200,
-                            MinStock = 60,
-                            Name = "PVC Pipes 4\"",
-                            Project = "Coastal Bridge",
-                            Sku = "MAT-006",
-                            Unit = "PCS"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Profiles.Domain.Model.Aggregates.Profile", b =>
@@ -396,17 +244,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_profiles");
 
                     b.ToTable("profiles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "Av. Primavera 123, Surco, Lima",
-                            CompanyName = "Buildline S.A.C.",
-                            Email = "contacto@buildline.com",
-                            Phone = "+51 987 654 321",
-                            Ruc = "20555444333"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Analytics.Domain.Model.Aggregates.Project", b =>
@@ -466,41 +303,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_projects");
 
                     b.ToTable("projects");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Budget = 500000m,
-                            Date = "2026-01-15",
-                            Location = "Lima, Peru",
-                            Name = "Skyline Tower",
-                            Progress = 35,
-                            Spent = 120000m,
-                            Status = "In Progress"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Budget = 250000m,
-                            Date = "2026-03-01",
-                            Location = "Arequipa, Peru",
-                            Name = "Coastal Bridge",
-                            Progress = 72,
-                            Spent = 210000m,
-                            Status = "In Progress"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Budget = 100000m,
-                            Date = "2026-02-10",
-                            Location = "Cusco, Peru",
-                            Name = "Grand Park",
-                            Progress = 90,
-                            Spent = 105000m,
-                            Status = "At Risk"
-                        });
                 });
 #pragma warning restore 612, 618
         }

@@ -1,17 +1,19 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Inventory.Domain.Model.Commands;
+using Buildline.Platform.Inventory.Domain.Model.Events;
+using Buildline.Platform.Inventory.Domain.Model.ValueObjects;
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Inventory.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Aggregate root that represents a stock item controlled by the Inventory bounded context.
 /// </summary>
-/// <remarks>
-///     Inventory items are separate from shared material catalog entries because they represent stock
-///     levels, thresholds and warehouse state for a specific project.
-/// </remarks>
-public partial class InventoryItem : IAuditableEntity
+public partial class InventoryItem : IAuditableEntity, IHasDomainEvents
 {
+    private readonly List<IEvent> _domainEvents = [];
+
     /// <summary>Initializes an empty inventory item for Entity Framework Core materialization.</summary>
     protected InventoryItem()
     {
@@ -22,17 +24,18 @@ public partial class InventoryItem : IAuditableEntity
         LastUpdated = string.Empty;
     }
 
-    /// <summary>Creates an inventory item from the frontend inventory contract.</summary>
-    /// <param name="command">Inventory payload submitted by the stock management screen.</param>
+    /// <summary>Creates an inventory item from a stock command.</summary>
+    /// <param name="command">Command carrying inventory values accepted by the application layer.</param>
     public InventoryItem(CreateInventoryItemCommand command)
     {
+        var stockLevel = StockLevel.From(command.CurrentStock, command.MinStock, command.MaxStock);
         Sku = command.Sku?.Trim() ?? string.Empty;
         Name = command.Name?.Trim() ?? string.Empty;
         Project = command.Project?.Trim() ?? string.Empty;
         Category = command.Category?.Trim() ?? string.Empty;
-        CurrentStock = command.CurrentStock ?? 0;
-        MaxStock = command.MaxStock ?? 0;
-        MinStock = command.MinStock ?? 0;
+        CurrentStock = stockLevel.Current;
+        MaxStock = stockLevel.Maximum;
+        MinStock = stockLevel.Minimum;
         LastUpdated = command.LastUpdated?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
     }
 
@@ -69,10 +72,21 @@ public partial class InventoryItem : IAuditableEntity
     /// <summary>Gets or sets the audit timestamp captured when the stock item is updated.</summary>
     public DateTimeOffset? UpdatedAt { get; set; }
 
+    /// <inheritdoc />
+    [NotMapped]
+    public IReadOnlyCollection<IEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    /// <inheritdoc />
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
     /// <summary>Applies a partial stock update.</summary>
-    /// <param name="command">Inventory fields to replace.</param>
+    /// <param name="command">Command containing replacement values.</param>
     public void Apply(UpdateInventoryItemCommand command)
     {
+        var previousStock = CurrentStock;
         Sku = command.Sku is null ? Sku : command.Sku.Trim();
         Name = command.Name is null ? Name : command.Name.Trim();
         Project = command.Project is null ? Project : command.Project.Trim();
@@ -81,8 +95,16 @@ public partial class InventoryItem : IAuditableEntity
         MaxStock = command.MaxStock ?? MaxStock;
         MinStock = command.MinStock ?? MinStock;
         LastUpdated = command.LastUpdated is null ? LastUpdated : command.LastUpdated.Trim();
+
+        var stockLevel = new StockLevel(CurrentStock, MinStock, MaxStock);
+        if (previousStock != CurrentStock)
+            AddDomainEvent(new InventoryStockChangedEvent(Id, Sku, previousStock, CurrentStock, stockLevel.IsBelowMinimum));
+    }
+
+    /// <summary>Records a domain event raised by this aggregate.</summary>
+    /// <param name="domainEvent">Event that describes a completed domain change.</param>
+    private void AddDomainEvent(IEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
     }
 }
-
-
-

@@ -1,207 +1,216 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <data name="GenericError" xml:space="preserve">
+  <data name="GenericError" xml:space="preserve">
     <value>Ocurrió un error.</value>
   </data>
-    <data name="OperationCancelled" xml:space="preserve">
+  <data name="OperationCancelled" xml:space="preserve">
     <value>La operación fue cancelada.</value>
   </data>
-    <data name="ProfilesError.ProfileNotFound" xml:space="preserve">
+  <data name="ProfilesError.ProfileNotFound" xml:space="preserve">
     <value>Perfil no encontrado.</value>
   </data>
-    <data name="ProfilesError.EmailAlreadyRegistered" xml:space="preserve">
+  <data name="ProfilesError.EmailAlreadyRegistered" xml:space="preserve">
     <value>La dirección de correo electrónico {0} ya está registrada.</value>
   </data>
-    <data name="ProfilesError.InvalidProfileData" xml:space="preserve">
+  <data name="ProfilesError.InvalidProfileData" xml:space="preserve">
     <value>Datos de perfil inválidos proporcionados.</value>
   </data>
-    <data name="ProfilesError.OperationCancelled" xml:space="preserve">
+  <data name="ProfilesError.OperationCancelled" xml:space="preserve">
     <value>La operación de perfil fue cancelada.</value>
   </data>
-    <data name="ProfilesError.DatabaseError" xml:space="preserve">
+  <data name="ProfilesError.DatabaseError" xml:space="preserve">
     <value>Ocurrió un error de base de datos durante la operación de perfil.</value>
   </data>
-    <data name="ProfilesError.InternalServerError" xml:space="preserve">
+  <data name="ProfilesError.InternalServerError" xml:space="preserve">
     <value>Ocurrió un error interno inesperado en Perfiles.</value>
   </data>
-    <data name="MaterialsError.MaterialNotFound" xml:space="preserve">
+  <data name="MaterialsError.MaterialNotFound" xml:space="preserve">
     <value>Material no encontrado.</value>
   </data>
-    <data name="MaterialsError.InvalidMaterialData" xml:space="preserve">
+  <data name="MaterialsError.InvalidMaterialData" xml:space="preserve">
     <value>Datos de material inválidos proporcionados.</value>
   </data>
-    <data name="MaterialsError.OperationCancelled" xml:space="preserve">
+  <data name="MaterialsError.OperationCancelled" xml:space="preserve">
     <value>La operación de material fue cancelada.</value>
   </data>
-    <data name="MaterialsError.DatabaseError" xml:space="preserve">
+  <data name="MaterialsError.DatabaseError" xml:space="preserve">
     <value>Ocurrió un error de base de datos durante la operación de material.</value>
   </data>
-    <data name="MaterialsError.InternalServerError" xml:space="preserve">
+  <data name="MaterialsError.InternalServerError" xml:space="preserve">
     <value>Ocurrió un error interno inesperado en Materiales.</value>
   </data>
-    <data name="CategoriesError.CategoryNotFound" xml:space="preserve">
+  <data name="CategoriesError.CategoryNotFound" xml:space="preserve">
     <value>Categoría no encontrada.</value>
   </data>
-    <data name="CategoriesError.InvalidCategoryData" xml:space="preserve">
+  <data name="CategoriesError.InvalidCategoryData" xml:space="preserve">
     <value>Datos de categoría inválidos proporcionados.</value>
   </data>
-    <data name="CategoriesError.OperationCancelled" xml:space="preserve">
+  <data name="CategoriesError.OperationCancelled" xml:space="preserve">
     <value>La operación de categoría fue cancelada.</value>
   </data>
-    <data name="CategoriesError.DatabaseError" xml:space="preserve">
+  <data name="CategoriesError.DatabaseError" xml:space="preserve">
     <value>Ocurrió un error de base de datos durante la operación de categoría.</value>
   </data>
-    <data name="CategoriesError.InternalServerError" xml:space="preserve">
+  <data name="CategoriesError.InternalServerError" xml:space="preserve">
     <value>Ocurrió un error interno inesperado en Categorías.</value>
   </data>
-    <data name="ProjectsError.ProjectNotFound" xml:space="preserve">
+  <data name="ProjectsError.ProjectNotFound" xml:space="preserve">
     <value>Proyecto no encontrado.</value>
   </data>
-    <data name="ProjectsError.InvalidProjectData" xml:space="preserve">
+  <data name="ProjectsError.InvalidProjectData" xml:space="preserve">
     <value>Datos de proyecto inválidos proporcionados.</value>
   </data>
-    <data name="ProjectsError.OperationCancelled" xml:space="preserve">
+  <data name="ProjectsError.OperationCancelled" xml:space="preserve">
     <value>La operación de proyecto fue cancelada.</value>
   </data>
-    <data name="ProjectsError.DatabaseError" xml:space="preserve">
+  <data name="ProjectsError.DatabaseError" xml:space="preserve">
     <value>Ocurrió un error de base de datos durante la operación de proyecto.</value>
   </data>
-    <data name="ProjectsError.InternalServerError" xml:space="preserve">
+  <data name="ProjectsError.InternalServerError" xml:space="preserve">
     <value>Ocurrió un error interno inesperado en Proyectos.</value>
   </data>
-    <data name="IamError.UserNotFound" xml:space="preserve">
+  <data name="IamError.UserNotFound" xml:space="preserve">
     <value>Usuario no encontrado.</value>
   </data>
-    <data name="IamError.EmailAlreadyTaken" xml:space="preserve">
+  <data name="IamError.EmailAlreadyTaken" xml:space="preserve">
     <value>La dirección de correo electrónico ya está registrada.</value>
   </data>
-    <data name="IamError.InvalidCredentials" xml:space="preserve">
+  <data name="IamError.InvalidCredentials" xml:space="preserve">
     <value>Correo electrónico o contraseña inválidos.</value>
   </data>
-    <data name="IamError.OperationCancelled" xml:space="preserve">
+  <data name="IamError.OperationCancelled" xml:space="preserve">
     <value>La operación de usuario fue cancelada.</value>
   </data>
-    <data name="IamError.DatabaseError" xml:space="preserve">
+  <data name="IamError.DatabaseError" xml:space="preserve">
     <value>Ocurrió un error de base de datos durante la operación IAM.</value>
   </data>
-    <data name="IamError.InternalServerError" xml:space="preserve">
+  <data name="IamError.InternalServerError" xml:space="preserve">
     <value>Ocurrió un error interno inesperado en IAM.</value>
   </data>
-    <data name="SuppliersError.SupplierIncidentNotFound" xml:space="preserve">
+  <data name="SuppliersError.SupplierIncidentNotFound" xml:space="preserve">
     <value>Incidente de proveedor no encontrado.</value>
   </data>
-    <data name="RequisitionError.RequisitionNotFound" xml:space="preserve">
+  <data name="RequisitionError.RequisitionNotFound" xml:space="preserve">
     <value>Requisicion no encontrada.</value>
   </data>
-    <data name="ProcurementError.QuotationNotFound" xml:space="preserve">
+  <data name="ProcurementError.QuotationNotFound" xml:space="preserve">
     <value>Cotizacion no encontrada.</value>
   </data>
-    <data name="DeliveryError.InvalidDeliveryData" xml:space="preserve">
+  <data name="DeliveryError.InvalidDeliveryData" xml:space="preserve">
     <value>Datos de entrega invalidos proporcionados.</value>
   </data>
-    <data name="InventoryError.InventoryItemNotFound" xml:space="preserve">
+  <data name="InventoryError.InventoryItemNotFound" xml:space="preserve">
     <value>Item de inventario no encontrado.</value>
   </data>
-    <data name="RequisitionError.DatabaseError" xml:space="preserve">
+  <data name="RequisitionError.DatabaseError" xml:space="preserve">
     <value>Ocurrio un error de base de datos durante la operacion de requisicion.</value>
   </data>
-    <data name="CommunicationError.DatabaseError" xml:space="preserve">
+  <data name="CommunicationError.DatabaseError" xml:space="preserve">
     <value>Ocurrio un error de base de datos durante la operacion de comunicacion.</value>
   </data>
-    <data name="SuppliersError.OperationCancelled" xml:space="preserve">
+  <data name="SuppliersError.OperationCancelled" xml:space="preserve">
     <value>La operacion de proveedores fue cancelada.</value>
   </data>
-    <data name="CommunicationError.OperationCancelled" xml:space="preserve">
+  <data name="CommunicationError.OperationCancelled" xml:space="preserve">
     <value>La operacion de comunicacion fue cancelada.</value>
   </data>
-    <data name="InventoryError.InternalServerError" xml:space="preserve">
+  <data name="InventoryError.InternalServerError" xml:space="preserve">
     <value>Ocurrio un error interno inesperado en Inventario.</value>
   </data>
-    <data name="SuppliersError.InternalServerError" xml:space="preserve">
+  <data name="SuppliersError.InternalServerError" xml:space="preserve">
     <value>Ocurrio un error interno inesperado en Proveedores.</value>
   </data>
-    <data name="ProcurementError.DatabaseError" xml:space="preserve">
+  <data name="ProcurementError.DatabaseError" xml:space="preserve">
     <value>Ocurrio un error de base de datos durante la operacion de compras.</value>
   </data>
-    <data name="InventoryError.DatabaseError" xml:space="preserve">
+  <data name="InventoryError.DatabaseError" xml:space="preserve">
     <value>Ocurrio un error de base de datos durante la operacion de inventario.</value>
   </data>
-    <data name="AnalyticsError.DatabaseError" xml:space="preserve">
+  <data name="AnalyticsError.DatabaseError" xml:space="preserve">
     <value>Ocurrio un error de base de datos durante la operacion de analitica.</value>
   </data>
-    <data name="ProcurementError.InternalServerError" xml:space="preserve">
+  <data name="ProcurementError.InternalServerError" xml:space="preserve">
     <value>Ocurrio un error interno inesperado en Compras.</value>
   </data>
-    <data name="DeliveryError.OperationCancelled" xml:space="preserve">
+  <data name="DeliveryError.OperationCancelled" xml:space="preserve">
     <value>La operacion de entrega fue cancelada.</value>
   </data>
-    <data name="SuppliersError.DatabaseError" xml:space="preserve">
+  <data name="SuppliersError.DatabaseError" xml:space="preserve">
     <value>Ocurrio un error de base de datos durante la operacion de proveedores.</value>
   </data>
-    <data name="AnalyticsError.InvalidBudgetData" xml:space="preserve">
+  <data name="AnalyticsError.InvalidBudgetData" xml:space="preserve">
     <value>Datos de presupuesto invalidos proporcionados.</value>
   </data>
-    <data name="SuppliersError.InvalidSupplierData" xml:space="preserve">
+  <data name="SuppliersError.InvalidSupplierData" xml:space="preserve">
     <value>Datos de proveedor invalidos proporcionados.</value>
   </data>
-    <data name="RequisitionError.InternalServerError" xml:space="preserve">
+  <data name="RequisitionError.InternalServerError" xml:space="preserve">
     <value>Ocurrio un error interno inesperado en Requisiciones.</value>
   </data>
-    <data name="ProcurementError.PurchaseOrderNotFound" xml:space="preserve">
+  <data name="ProcurementError.PurchaseOrderNotFound" xml:space="preserve">
     <value>Orden de compra no encontrada.</value>
   </data>
-    <data name="CommunicationError.InternalServerError" xml:space="preserve">
+  <data name="CommunicationError.InternalServerError" xml:space="preserve">
     <value>Ocurrio un error interno inesperado en Comunicacion.</value>
   </data>
-    <data name="AnalyticsError.InternalServerError" xml:space="preserve">
+  <data name="AnalyticsError.InternalServerError" xml:space="preserve">
     <value>Ocurrio un error interno inesperado en Analitica.</value>
   </data>
-    <data name="InventoryError.InvalidInventoryItemData" xml:space="preserve">
+  <data name="InventoryError.InvalidInventoryItemData" xml:space="preserve">
     <value>Datos de inventario invalidos proporcionados.</value>
   </data>
-    <data name="ProcurementError.OperationCancelled" xml:space="preserve">
+  <data name="ProcurementError.OperationCancelled" xml:space="preserve">
     <value>La operacion de compras fue cancelada.</value>
   </data>
-    <data name="AnalyticsError.BudgetNotFound" xml:space="preserve">
+  <data name="AnalyticsError.BudgetNotFound" xml:space="preserve">
     <value>Presupuesto no encontrado.</value>
   </data>
-    <data name="ProcurementError.InvalidQuotationData" xml:space="preserve">
+  <data name="ProcurementError.InvalidQuotationData" xml:space="preserve">
     <value>Datos de cotizacion invalidos proporcionados.</value>
   </data>
-    <data name="CommunicationError.MessageNotFound" xml:space="preserve">
+  <data name="CommunicationError.MessageNotFound" xml:space="preserve">
     <value>Mensaje no encontrado.</value>
   </data>
-    <data name="ProcurementError.InvalidPurchaseOrderData" xml:space="preserve">
+  <data name="ProcurementError.InvalidPurchaseOrderData" xml:space="preserve">
     <value>Datos de orden de compra invalidos proporcionados.</value>
   </data>
-    <data name="CommunicationError.InvalidMessageData" xml:space="preserve">
+  <data name="CommunicationError.InvalidMessageData" xml:space="preserve">
     <value>Datos de mensaje invalidos proporcionados.</value>
   </data>
-    <data name="SuppliersError.InvalidSupplierIncidentData" xml:space="preserve">
+  <data name="SuppliersError.InvalidSupplierIncidentData" xml:space="preserve">
     <value>Datos de incidente de proveedor invalidos proporcionados.</value>
   </data>
-    <data name="RequisitionError.InvalidRequisitionData" xml:space="preserve">
+  <data name="RequisitionError.InvalidRequisitionData" xml:space="preserve">
     <value>Datos de requisicion invalidos proporcionados.</value>
   </data>
-    <data name="DeliveryError.DeliveryNotFound" xml:space="preserve">
+  <data name="DeliveryError.DeliveryNotFound" xml:space="preserve">
     <value>Entrega no encontrada.</value>
   </data>
-    <data name="DeliveryError.InternalServerError" xml:space="preserve">
+  <data name="DeliveryError.InternalServerError" xml:space="preserve">
     <value>Ocurrio un error interno inesperado en Entregas.</value>
   </data>
-    <data name="RequisitionError.OperationCancelled" xml:space="preserve">
+  <data name="RequisitionError.OperationCancelled" xml:space="preserve">
     <value>La operacion de requisicion fue cancelada.</value>
   </data>
-    <data name="AnalyticsError.OperationCancelled" xml:space="preserve">
+  <data name="AnalyticsError.OperationCancelled" xml:space="preserve">
     <value>La operacion de analitica fue cancelada.</value>
   </data>
-    <data name="SuppliersError.SupplierNotFound" xml:space="preserve">
+  <data name="SuppliersError.SupplierNotFound" xml:space="preserve">
     <value>Proveedor no encontrado.</value>
   </data>
-    <data name="DeliveryError.DatabaseError" xml:space="preserve">
+  <data name="DeliveryError.DatabaseError" xml:space="preserve">
     <value>Ocurrio un error de base de datos durante la operacion de entrega.</value>
   </data>
-    <data name="InventoryError.OperationCancelled" xml:space="preserve">
+  <data name="InventoryError.OperationCancelled" xml:space="preserve">
     <value>La operacion de inventario fue cancelada.</value>
+  </data>
+  <data name="RequisitionError.ProjectReferenceNotFound" xml:space="preserve">
+    <value>El proyecto referenciado por la requisicion no fue encontrado.</value>
+  </data>
+  <data name="ProcurementError.SupplierReferenceNotSelectable" xml:space="preserve">
+    <value>El proveedor referenciado por la orden de compra no fue encontrado o esta inactivo.</value>
+  </data>
+  <data name="DeliveryError.PurchaseOrderReferenceNotFound" xml:space="preserve">
+    <value>La orden de compra referenciada por la entrega no fue encontrada.</value>
   </data>
 </root>

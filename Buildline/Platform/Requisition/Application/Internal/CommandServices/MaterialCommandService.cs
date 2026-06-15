@@ -12,10 +12,10 @@ using Microsoft.Extensions.Localization;
 namespace Buildline.Platform.Requisition.Application.Internal.CommandServices;
 
 /// <summary>
-///     Application command service that coordinates material catalog writes.
+///     Application command service that coordinates material reference writes.
 /// </summary>
 /// <remarks>
-///     The service follows the learning-center layered pattern: REST resources become commands,
+///     The service follows the course layered pattern: REST resources become commands,
 ///     command handlers validate application rules, aggregates apply state changes, repositories
 ///     persist them, and <see cref="IUnitOfWork"/> commits the transaction.
 /// </remarks>
@@ -26,9 +26,9 @@ public class MaterialCommandService(
     : IMaterialCommandService
 {
     /// <summary>
-    ///     Handles material creation for the catalog.
+    ///     Handles material creation for material references.
     /// </summary>
-    /// <param name="command">Create-material command with catalog and stock fields.</param>
+    /// <param name="command">Create-material command with reference and stock fields.</param>
     /// <param name="cancellationToken">Token used to cancel repository and unit-of-work operations.</param>
     /// <returns>
     ///     A successful result with the created material, or a material-domain error for invalid data,
@@ -70,7 +70,7 @@ public class MaterialCommandService(
     }
 
     /// <summary>
-    ///     Handles replacement of catalog and stock information for an existing material.
+    ///     Handles replacement of reference and stock information for an existing material.
     /// </summary>
     /// <param name="command">Update command containing the material id and replacement values.</param>
     /// <param name="cancellationToken">Token used to cancel lookup, mutation and persistence.</param>
@@ -93,7 +93,7 @@ public class MaterialCommandService(
 
         try
         {
-            material.UpdateCatalogInformation(
+            material.UpdateReferenceInformation(
                 command.Sku,
                 command.Name,
                 command.Category,
@@ -127,7 +127,7 @@ public class MaterialCommandService(
     }
 
     /// <summary>
-    ///     Handles removal of an existing material from the catalog.
+    ///     Handles removal of an existing material from material references.
     /// </summary>
     /// <param name="command">Delete command containing the material id.</param>
     /// <param name="cancellationToken">Token used to cancel lookup and persistence.</param>
@@ -169,4 +169,5 @@ public class MaterialCommandService(
         }
     }
 }
+
 

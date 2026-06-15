@@ -1,6 +1,6 @@
 # Buildline Platform Backend
 
-Buildline Platform API is the Sprint 3 Web Services implementation for the Buildline construction logistics platform. The solution follows the course learning-center structure: bounded contexts, CQRS-style application services, repository/unit-of-work persistence, REST resources and assemblers, shared Problem Details handling, JWT authentication, ACL facades and EF Core migrations.
+Buildline Platform API is the Sprint 3 Web Services implementation for the Buildline construction logistics platform. It exposes frontend-aligned bounded contexts through versioned REST resources, application command/query services, repository/unit-of-work persistence, Problem Details responses, ACL facades and EF Core migrations.
 
 ## Architecture
 
@@ -57,7 +57,7 @@ The backend uses EF Core with MySQL:
 .\.tools\dotnet-ef database update --project Buildline\Platform\Buildline.Platform.csproj --startup-project Buildline\Platform\Buildline.Platform.csproj
 ```
 
-The migrations create `users`, `profiles`, `projects`, `materials`, `categories`, `requisitions`, `purchase_orders`, `quotations`, `inventory_items`, `deliveries`, `suppliers`, `supplier_incidents`, `budgets` and `messages`, including seed data aligned with the Sprint 2 frontend mock contracts.
+The migrations create `users`, `profiles`, `projects`, `materials`, `categories`, `requisitions`, `purchase_orders`, `quotations`, `inventory_items`, `deliveries`, `suppliers`, `supplier_incidents`, `budgets` and `messages`. Local demonstration data is loaded by the JSON-backed development seeder instead of model-builder seed configuration.
 
 ## Docker
 
@@ -78,4 +78,5 @@ Health check:
 ```http
 GET http://localhost:8080/api/v1/health
 ```
+
 

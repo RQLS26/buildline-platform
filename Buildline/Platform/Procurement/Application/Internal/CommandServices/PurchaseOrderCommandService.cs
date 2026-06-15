@@ -1,4 +1,5 @@
 using Buildline.Platform.Procurement.Application.CommandServices;
+using Buildline.Platform.Procurement.Application.Internal.OutboundServices;
 using Buildline.Platform.Procurement.Domain.Model;
 using Buildline.Platform.Procurement.Domain.Model.Aggregates;
 using Buildline.Platform.Procurement.Domain.Model.Commands;
@@ -14,11 +15,17 @@ namespace Buildline.Platform.Procurement.Application.Internal.CommandServices;
 /// <summary>
 ///     Application command service that coordinates purchase order write use cases.
 /// </summary>
-/// <param name="repository">Repository used to retrieve and persist aggregates.</param>
+/// <param name="repository">Repository used to retrieve and persist purchase order aggregates.</param>
+/// <param name="supplierDirectoryService">Outbound service used to validate supplier references owned by Suppliers.</param>
 /// <param name="unitOfWork">Unit of work used to commit aggregate changes transactionally.</param>
 /// <param name="localizer">Localizer used to resolve bounded-context error messages.</param>
+/// <remarks>
+///     The service centralizes purchase order invariants that depend on external context data, keeping the
+///     aggregate focused on its own state and keeping controller actions free from persistence orchestration.
+/// </remarks>
 public class PurchaseOrderCommandService(
     IPurchaseOrderRepository repository,
+    ISupplierDirectoryService supplierDirectoryService,
     IUnitOfWork unitOfWork,
     IStringLocalizer<ErrorMessages> localizer)
     : IPurchaseOrderCommandService
@@ -30,6 +37,11 @@ public class PurchaseOrderCommandService(
             return Result<PurchaseOrder>.Failure(
                 ProcurementError.InvalidPurchaseOrderData,
                 localizer[$"{nameof(ProcurementError)}.{ProcurementError.InvalidPurchaseOrderData}"]);
+
+        if (!await supplierDirectoryService.SupplierCanReceiveOrdersForAsync(command, cancellationToken))
+            return Result<PurchaseOrder>.Failure(
+                ProcurementError.SupplierReferenceNotSelectable,
+                localizer[$"{nameof(ProcurementError)}.{ProcurementError.SupplierReferenceNotSelectable}"]);
 
         var aggregate = new PurchaseOrder(command);
 

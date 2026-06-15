@@ -6,7 +6,7 @@ using Buildline.Platform.Requisition.Domain.Repositories;
 namespace Buildline.Platform.Requisition.Application.Internal.QueryServices;
 
 /// <summary>
-///     Application query service that coordinates read access to material catalog data.
+///     Application query service that coordinates read access to material reference data.
 /// </summary>
 /// <param name="materialRepository">Repository used to retrieve persisted material aggregates.</param>
 /// <remarks>
@@ -15,7 +15,7 @@ namespace Buildline.Platform.Requisition.Application.Internal.QueryServices;
 public class MaterialQueryService(IMaterialRepository materialRepository) : IMaterialQueryService
 {
     /// <summary>
-    ///     Retrieves every material currently registered in the catalog.
+    ///     Retrieves every material currently registered in material references.
     /// </summary>
     /// <param name="query">Material listing query.</param>
     /// <param name="cancellationToken">Token used to cancel the repository call.</param>
@@ -36,4 +36,5 @@ public class MaterialQueryService(IMaterialRepository materialRepository) : IMat
         return await materialRepository.FindByIdAsync(query.MaterialId, cancellationToken);
     }
 }
+
 

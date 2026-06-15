@@ -12,7 +12,7 @@ namespace Buildline.Platform.Profiles.Interfaces.Rest.Transform;
 ///     Converts profile query and command results into HTTP action results.
 /// </summary>
 /// <remarks>
-///     Centralized response mapping keeps profile controllers aligned with the learning-center
+///     Centralized response mapping keeps profile controllers aligned with the course reference
 ///     Problem Details pattern.
 /// </remarks>
 public static class ProfilesActionResultAssembler
@@ -93,3 +93,4 @@ public static class ProfilesActionResultAssembler
         return profileList.Count == 0 ? new NoContentResult() : successAction(profileList);
     }
 }
+

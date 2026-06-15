@@ -1,21 +1,19 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using Buildline.Platform.Shared.Domain.Model.Events;
 using Buildline.Platform.Suppliers.Domain.Model.Commands;
+using Buildline.Platform.Suppliers.Domain.Model.Events;
 
 namespace Buildline.Platform.Suppliers.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Aggregate root that captures an operational incident reported against a supplier.
 /// </summary>
-/// <remarks>
-///     Incidents preserve evidence for supplier evaluation and procurement risk decisions. The
-///     aggregate intentionally stores the purchase-order display code used by the frontend so the
-///     Sprint 2 mock contract can migrate to the API without changing the user interface.
-/// </remarks>
-public partial class SupplierIncident : IAuditableEntity
+public partial class SupplierIncident : IAuditableEntity, IHasDomainEvents
 {
-    /// <summary>
-    ///     Initializes an empty incident instance for Entity Framework Core materialization.
-    /// </summary>
+    private readonly List<IEvent> _domainEvents = [];
+
+    /// <summary>Initializes an empty incident instance for Entity Framework Core materialization.</summary>
     protected SupplierIncident()
     {
         IncidentId = string.Empty;
@@ -30,10 +28,8 @@ public partial class SupplierIncident : IAuditableEntity
         Time = string.Empty;
     }
 
-    /// <summary>
-    ///     Creates an incident aggregate from the supplier incident application command contract.
-    /// </summary>
-    /// <param name="command">Incident payload submitted by the supplier incidents screen.</param>
+    /// <summary>Creates an incident aggregate from a supplier incident command.</summary>
+    /// <param name="command">Command carrying incident values accepted by the application layer.</param>
     public SupplierIncident(CreateSupplierIncidentCommand command)
     {
         IncidentId = string.IsNullOrWhiteSpace(command.IncidentId) ? "INC-DRAFT" : command.IncidentId.Trim();
@@ -46,6 +42,7 @@ public partial class SupplierIncident : IAuditableEntity
         Status = command.Status?.Trim() ?? "Open";
         Date = command.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
         Time = command.Time?.Trim() ?? DateTime.UtcNow.ToString("HH:mm");
+        AddDomainEvent(new SupplierIncidentReportedEvent(Id, IncidentId, Supplier, Severity));
     }
 
     /// <summary>Gets the database-generated incident identifier.</summary>
@@ -87,10 +84,18 @@ public partial class SupplierIncident : IAuditableEntity
     /// <summary>Gets or sets the audit timestamp captured when the incident is updated.</summary>
     public DateTimeOffset? UpdatedAt { get; set; }
 
-    /// <summary>
-    ///     Applies a partial incident update, including status transitions from the incidents board.
-    /// </summary>
-    /// <param name="command">Command containing the incident fields to change.</param>
+    /// <inheritdoc />
+    [NotMapped]
+    public IReadOnlyCollection<IEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    /// <inheritdoc />
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
+    /// <summary>Applies a partial incident update.</summary>
+    /// <param name="command">Command containing replacement values.</param>
     public void Apply(UpdateSupplierIncidentCommand command)
     {
         IncidentId = command.IncidentId is null ? IncidentId : command.IncidentId.Trim();
@@ -104,7 +109,11 @@ public partial class SupplierIncident : IAuditableEntity
         Date = command.Date is null ? Date : command.Date.Trim();
         Time = command.Time is null ? Time : command.Time.Trim();
     }
+
+    /// <summary>Records a domain event raised by this aggregate.</summary>
+    /// <param name="domainEvent">Event that describes a completed domain change.</param>
+    private void AddDomainEvent(IEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
 }
-
-
-

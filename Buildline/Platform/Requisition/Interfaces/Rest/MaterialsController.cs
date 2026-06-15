@@ -15,7 +15,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Buildline.Platform.Requisition.Interfaces.Rest;
 
 /// <summary>
-///     REST controller that exposes the material catalog required by requisitions and inventory.
+///     REST controller that exposes the material reference data required by requisitions and inventory.
 /// </summary>
 /// <remarks>
 ///     The controller satisfies TS-04 through TS-08, replacing the Sprint 2 mock material service with
@@ -25,7 +25,7 @@ namespace Buildline.Platform.Requisition.Interfaces.Rest;
 [Authorize]
 [Route("api/v1/materials")]
 [Produces(MediaTypeNames.Application.Json)]
-[SwaggerTag("Available Material Catalog endpoints for requisitions and inventory.")]
+[SwaggerTag("Available material reference endpoints for requisitions and inventory.")]
 public class MaterialsController(
     IMaterialCommandService materialCommandService,
     IMaterialQueryService materialQueryService,
@@ -68,7 +68,7 @@ public class MaterialsController(
     [HttpGet("{materialId:int}")]
     [SwaggerOperation(
         Summary = "Get material by id",
-        Description = "Gets a material from the Buildline catalog by its unique identifier.",
+        Description = "Gets a material from the Buildline material references by its unique identifier.",
         OperationId = "GetMaterialById")]
     [SwaggerResponse(StatusCodes.Status200OK, "The material was found and returned.", typeof(MaterialResource))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
@@ -86,9 +86,9 @@ public class MaterialsController(
     }
 
     /// <summary>
-    ///     Creates a new material catalog record.
+    ///     Creates a new material reference record.
     /// </summary>
-    /// <param name="resource">Request body containing catalog and stock fields.</param>
+    /// <param name="resource">Request body containing reference and stock fields.</param>
     /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
     /// <returns>
     ///     <c>201 Created</c> with the created material resource when successful; otherwise a Problem Details response.
@@ -96,7 +96,7 @@ public class MaterialsController(
     [HttpPost]
     [SwaggerOperation(
         Summary = "Create material",
-        Description = "Registers a material in the Buildline catalog.",
+        Description = "Registers a material in the Buildline material references.",
         OperationId = "CreateMaterial")]
     [SwaggerResponse(StatusCodes.Status201Created, "The material was created.", typeof(MaterialResource))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The material data was invalid.")]
@@ -118,10 +118,10 @@ public class MaterialsController(
     }
 
     /// <summary>
-    ///     Replaces catalog and stock information for an existing material.
+    ///     Replaces reference and stock information for an existing material.
     /// </summary>
     /// <param name="materialId">Identifier of the material that must be updated.</param>
-    /// <param name="resource">Request body containing replacement catalog and stock values.</param>
+    /// <param name="resource">Request body containing replacement reference and stock values.</param>
     /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
     /// <returns>
     ///     <c>200 OK</c> with the updated material resource when successful; otherwise a Problem Details response.
@@ -129,7 +129,7 @@ public class MaterialsController(
     [HttpPut("{materialId:int}")]
     [SwaggerOperation(
         Summary = "Update material by id",
-        Description = "Updates a material from the Buildline catalog by its unique identifier.",
+        Description = "Updates a material from the Buildline material references by its unique identifier.",
         OperationId = "UpdateMaterialById")]
     [SwaggerResponse(StatusCodes.Status200OK, "The material was updated.", typeof(MaterialResource))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
@@ -164,7 +164,7 @@ public class MaterialsController(
     [HttpPatch("{materialId:int}")]
     [SwaggerOperation(
         Summary = "Patch material by id",
-        Description = "Partially-compatible update endpoint for the current inventory and material catalog frontend.",
+        Description = "Partially-compatible update endpoint for the current inventory and material reference frontend.",
         OperationId = "PatchMaterialById")]
     [SwaggerResponse(StatusCodes.Status200OK, "The material was updated.", typeof(MaterialResource))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
@@ -187,7 +187,7 @@ public class MaterialsController(
     [HttpDelete("{materialId:int}")]
     [SwaggerOperation(
         Summary = "Delete material by id",
-        Description = "Deletes a material from the Buildline catalog by its unique identifier.",
+        Description = "Deletes a material from the Buildline material references by its unique identifier.",
         OperationId = "DeleteMaterialById")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "The material was deleted.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
@@ -203,4 +203,6 @@ public class MaterialsController(
             NoContent);
     }
 }
+
+
 

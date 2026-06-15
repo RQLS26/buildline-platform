@@ -1,6 +1,6 @@
 # Buildline Platform - REST API Technical Stories
 
-This document contains API-focused technical stories and backend improvements for the Buildline Platform REST API. It follows the same endpoint-oriented style used by the Learning Center Platform reference project while preserving Buildline bounded contexts and frontend contracts.
+This document contains API-focused technical stories and backend improvements for the Buildline Platform REST API. It follows the same endpoint-oriented style used by the course reference project while preserving Buildline bounded contexts and frontend contracts.
 
 Common conventions:
 - Base path: `/api/v1`.
@@ -122,17 +122,17 @@ Acceptance criteria:
 
 ---
 
-### TS-REQ-004 - Materials catalog API
+### TS-REQ-004 - Materials reference API
 
-**Branch:** `feature/TS-REQ-004-materials-catalog-api`  
+**Branch:** `feature/TS-REQ-004-materials-reference-api`  
 **Context / module:** requisition / materials reference data  
 **Endpoint(s):** `GET/POST /api/v1/materials, GET/PUT/PATCH/DELETE /api/v1/materials/{id}`
 
-As a frontend developer, I want to provide material catalog data for requisitions, procurement and inventory.
+As a frontend developer, I want to provide material reference data for requisitions, procurement and inventory.
 
 Acceptance criteria:
-- Given materials exist, when the catalog is queried, then the API returns name, unit and category data.
-- Given valid catalog changes, when create/update/delete operations are executed, then the API persists the material catalog state.
+- Given materials exist, when material references are queried, then the API returns name, unit and category data.
+- Given valid reference data changes, when create/update/delete operations are executed, then the API persists the material reference state.
 
 ---
 
@@ -420,11 +420,13 @@ Acceptance criteria:
 
 **Branch:** `feature/backend-deployment-readiness`  
 **Context / module:** deployment  
-**Endpoint(s):** `Dockerfile, appsettings.Production.json, Backend.http smoke requests`
+**Endpoint(s):** `Dockerfile, appsettings.Production.json, Buildline.Platform.http smoke requests`
 
 As a frontend developer, I want to prepare the Web Services for deployment and frontend integration smoke testing.
 
 Acceptance criteria:
 - Given production variables are provided, when the API is built or containerized, then it starts with production-safe configuration.
 - Given the frontend replaces json-server, when smoke requests are executed, then the prioritized endpoints respond with the documented contracts.
+
+
 

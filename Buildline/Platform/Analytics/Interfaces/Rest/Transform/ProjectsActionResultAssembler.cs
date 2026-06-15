@@ -11,7 +11,7 @@ namespace Buildline.Platform.Analytics.Interfaces.Rest.Transform;
 ///     Converts project query results into HTTP action results.
 /// </summary>
 /// <remarks>
-///     Centralizing the status-code mapping follows the learning-center sample and keeps controllers
+///     Centralizing the status-code mapping follows the course reference structure and keeps controllers
 ///     focused on orchestrating requests instead of duplicating Problem Details creation.
 /// </remarks>
 public static class ProjectsActionResultAssembler
@@ -73,4 +73,5 @@ public static class ProjectsActionResultAssembler
             errorLocalizer[$"{nameof(ProjectsError)}.{ProjectsError.ProjectNotFound}"]);
     }
 }
+
 

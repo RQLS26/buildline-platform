@@ -4,7 +4,7 @@ namespace Buildline.Platform.Requisition.Interfaces.Rest.Resources;
 ///     Resource accepted by the create-material endpoint.
 /// </summary>
 /// <param name="Sku">Business SKU assigned to the material.</param>
-/// <param name="Name">Material name displayed in catalog views.</param>
+/// <param name="Name">Material name displayed in reference views.</param>
 /// <param name="Category">Category name used by filters and reports.</param>
 /// <param name="Unit">Measurement unit used for requisition quantities.</param>
 /// <param name="Project">Project associated with the material stock record.</param>
@@ -20,4 +20,6 @@ public record CreateMaterialResource(
     int CurrentStock,
     int MinStock,
     int MaxStock);
+
+
 

@@ -1,18 +1,19 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Delivery.Domain.Model.Commands;
+using Buildline.Platform.Delivery.Domain.Model.Events;
+using Buildline.Platform.Delivery.Domain.Model.ValueObjects;
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Delivery.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Aggregate root that represents a tracked delivery linked to a purchase order.
 /// </summary>
-/// <remarks>
-///     Delivery and Tracking owns dispatch state, origin, destination and ETA data. It deliberately
-///     references purchase orders by business code to preserve the frontend tracking contract while
-///     avoiding direct coupling to Procurement aggregate internals.
-/// </remarks>
-public partial class Delivery : IAuditableEntity
+public partial class Delivery : IAuditableEntity, IHasDomainEvents
 {
+    private readonly List<IEvent> _domainEvents = [];
+
     /// <summary>Initializes an empty delivery for Entity Framework Core materialization.</summary>
     protected Delivery()
     {
@@ -27,11 +28,11 @@ public partial class Delivery : IAuditableEntity
         Items = string.Empty;
     }
 
-    /// <summary>Creates a delivery aggregate from the frontend tracking contract.</summary>
-    /// <param name="command">Delivery payload submitted by the tracking workflow.</param>
+    /// <summary>Creates a delivery aggregate from a tracking command.</summary>
+    /// <param name="command">Command carrying delivery values accepted by the application layer.</param>
     public Delivery(CreateDeliveryCommand command)
     {
-        TrackingId = string.IsNullOrWhiteSpace(command.TrackingId) ? $"TRK-{DateTime.UtcNow:HHmmss}" : command.TrackingId.Trim();
+        TrackingId = TrackingCode.From(command.TrackingId).Value;
         PurchaseOrder = command.PurchaseOrder?.Trim() ?? string.Empty;
         Supplier = command.Supplier?.Trim() ?? string.Empty;
         Origin = command.Origin?.Trim() ?? string.Empty;
@@ -78,10 +79,21 @@ public partial class Delivery : IAuditableEntity
     /// <summary>Gets or sets the audit timestamp captured when the delivery is updated.</summary>
     public DateTimeOffset? UpdatedAt { get; set; }
 
+    /// <inheritdoc />
+    [NotMapped]
+    public IReadOnlyCollection<IEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    /// <inheritdoc />
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
     /// <summary>Applies a partial delivery update, especially status changes.</summary>
-    /// <param name="command">Delivery fields to replace.</param>
+    /// <param name="command">Command containing replacement values.</param>
     public void Apply(UpdateDeliveryCommand command)
     {
+        var previousStatus = Status;
         TrackingId = command.TrackingId is null ? TrackingId : command.TrackingId.Trim();
         PurchaseOrder = command.PurchaseOrder is null ? PurchaseOrder : command.PurchaseOrder.Trim();
         Supplier = command.Supplier is null ? Supplier : command.Supplier.Trim();
@@ -91,8 +103,15 @@ public partial class Delivery : IAuditableEntity
         Eta = command.Eta is null ? Eta : command.Eta.Trim();
         DispatchDate = command.DispatchDate is null ? DispatchDate : command.DispatchDate.Trim();
         Items = command.Items is null ? Items : command.Items.Trim();
+
+        if (!string.Equals(previousStatus, Status, StringComparison.OrdinalIgnoreCase))
+            AddDomainEvent(new DeliveryStatusChangedEvent(Id, TrackingId, previousStatus, Status));
+    }
+
+    /// <summary>Records a domain event raised by this aggregate.</summary>
+    /// <param name="domainEvent">Event that describes a completed domain change.</param>
+    private void AddDomainEvent(IEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
     }
 }
-
-
-

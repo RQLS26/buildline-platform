@@ -9,12 +9,9 @@ namespace Buildline.Platform.Profiles.Infrastructure.Persistence.EntityFramework
 public static class ModelBuilderExtensions
 {
     /// <summary>
-    ///     Applies table mapping, constraints and seed data for company profiles.
+    ///     Applies table mapping and constraints for company profiles.
     /// </summary>
     /// <param name="builder">Model builder used by the shared application database context.</param>
-    /// <remarks>
-    ///     The seed profile mirrors the company-profile data expected by the Sprint 2 frontend.
-    /// </remarks>
     public static void ApplyProfilesConfiguration(this ModelBuilder builder)
     {
         builder.Entity<Profile>().HasKey(profile => profile.Id);
@@ -24,16 +21,6 @@ public static class ModelBuilderExtensions
         builder.Entity<Profile>().Property(profile => profile.Address).IsRequired().HasMaxLength(180);
         builder.Entity<Profile>().Property(profile => profile.Phone).IsRequired().HasMaxLength(24);
         builder.Entity<Profile>().Property(profile => profile.Email).IsRequired().HasMaxLength(120);
-
-        builder.Entity<Profile>().HasData(
-            new
-            {
-                Id = 1,
-                CompanyName = "Buildline S.A.C.",
-                Ruc = "20555444333",
-                Address = "Av. Primavera 123, Surco, Lima",
-                Phone = "+51 987 654 321",
-                Email = "contacto@buildline.com"
-            });
     }
 }
+

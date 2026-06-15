@@ -8,7 +8,7 @@ namespace Buildline.Platform.Inventory.Domain.Model.Aggregates;
 /// <remarks>
 ///     Categories are shared reference data for materials, requisitions and inventory filters. The
 ///     current Sprint 3 API exposes categories as read-only data because the frontend needs stable
-///     classification values before full catalog administration is introduced.
+///     classification values before full reference administration is introduced.
 /// </remarks>
 public partial class Category : IAuditableEntity
 {
@@ -42,7 +42,7 @@ public partial class Category : IAuditableEntity
     public int Id { get; private set; }
 
     /// <summary>
-    ///     Gets the category name used by material catalog and inventory views.
+    ///     Gets the category name used by material reference and inventory views.
     /// </summary>
     public string Name { get; private set; }
 
@@ -61,4 +61,5 @@ public partial class Category : IAuditableEntity
     /// </summary>
     public DateTimeOffset? UpdatedAt { get; set; }
 }
+
 

@@ -1,17 +1,19 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Communication.Domain.Model.Commands;
+using Buildline.Platform.Communication.Domain.Model.Events;
+using Buildline.Platform.Communication.Domain.Model.ValueObjects;
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Communication.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Aggregate root that represents an internal notification or message.
 /// </summary>
-/// <remarks>
-///     Communication owns inbox state such as read/unread, starred messages, category labels and alert
-///     previews. Operational contexts can later publish domain events that create these records.
-/// </remarks>
-public partial class Message : IAuditableEntity
+public partial class Message : IAuditableEntity, IHasDomainEvents
 {
+    private readonly List<IEvent> _domainEvents = [];
+
     /// <summary>Initializes an empty message for Entity Framework Core materialization.</summary>
     protected Message()
     {
@@ -27,10 +29,11 @@ public partial class Message : IAuditableEntity
         Date = string.Empty;
     }
 
-    /// <summary>Creates a message aggregate from the communication application command contract.</summary>
-    /// <param name="command">Message payload submitted by an internal notification workflow.</param>
+    /// <summary>Creates a message aggregate from a communication command.</summary>
+    /// <param name="command">Command carrying message values accepted by the application layer.</param>
     public Message(CreateMessageCommand command)
     {
+        var inboxState = InboxState.From(command.IsRead, command.Starred);
         Sender = command.Sender?.Trim() ?? "System";
         Subject = command.Subject?.Trim() ?? string.Empty;
         Preview = command.Preview?.Trim() ?? string.Empty;
@@ -38,8 +41,8 @@ public partial class Message : IAuditableEntity
         IconClass = command.IconClass?.Trim() ?? "icon-neutral";
         Label = command.Label?.Trim() ?? string.Empty;
         LabelClass = command.LabelClass?.Trim() ?? string.Empty;
-        IsRead = command.IsRead ?? false;
-        Starred = command.Starred ?? false;
+        IsRead = inboxState.IsRead;
+        Starred = inboxState.Starred;
         Category = command.Category?.Trim() ?? "updates";
         Time = command.Time?.Trim() ?? "now";
         Date = command.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
@@ -90,10 +93,22 @@ public partial class Message : IAuditableEntity
     /// <summary>Gets or sets the audit timestamp captured when the message is updated.</summary>
     public DateTimeOffset? UpdatedAt { get; set; }
 
+    /// <inheritdoc />
+    [NotMapped]
+    public IReadOnlyCollection<IEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    /// <inheritdoc />
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
     /// <summary>Applies a partial inbox update such as mark-as-read or toggle-star.</summary>
-    /// <param name="command">Message fields to replace.</param>
+    /// <param name="command">Command containing replacement values.</param>
     public void Apply(UpdateMessageCommand command)
     {
+        var previousReadState = IsRead;
+        var previousStarredState = Starred;
         Sender = command.Sender is null ? Sender : command.Sender.Trim();
         Subject = command.Subject is null ? Subject : command.Subject.Trim();
         Preview = command.Preview is null ? Preview : command.Preview.Trim();
@@ -106,8 +121,15 @@ public partial class Message : IAuditableEntity
         Category = command.Category is null ? Category : command.Category.Trim();
         Time = command.Time is null ? Time : command.Time.Trim();
         Date = command.Date is null ? Date : command.Date.Trim();
+
+        if (previousReadState != IsRead || previousStarredState != Starred)
+            AddDomainEvent(new MessageStateChangedEvent(Id, previousReadState, IsRead, previousStarredState, Starred));
+    }
+
+    /// <summary>Records a domain event raised by this aggregate.</summary>
+    /// <param name="domainEvent">Event that describes a completed domain change.</param>
+    private void AddDomainEvent(IEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
     }
 }
-
-
-

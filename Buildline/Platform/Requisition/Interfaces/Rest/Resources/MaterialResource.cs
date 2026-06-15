@@ -1,7 +1,7 @@
 namespace Buildline.Platform.Requisition.Interfaces.Rest.Resources;
 
 /// <summary>
-///     REST resource returned by material catalog endpoints.
+///     REST resource returned by material reference endpoints.
 /// </summary>
 /// <param name="Id">Material identifier used by API clients.</param>
 /// <param name="Sku">Business SKU displayed in material tables.</param>
@@ -22,4 +22,5 @@ public record MaterialResource(
     int CurrentStock,
     int MinStock,
     int MaxStock);
+
 

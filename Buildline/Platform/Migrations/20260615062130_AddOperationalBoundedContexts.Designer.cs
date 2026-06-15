@@ -68,35 +68,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_budgets");
 
                     b.ToTable("budgets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Allocated = 350000m,
-                            Project = "Skyline Tower",
-                            Spent = 120000m,
-                            Status = "On Track",
-                            TotalBudget = 500000m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Allocated = 240000m,
-                            Project = "Coastal Bridge",
-                            Spent = 210000m,
-                            Status = "At Risk",
-                            TotalBudget = 250000m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Allocated = 100000m,
-                            Project = "Grand Park",
-                            Spent = 105000m,
-                            Status = "Over Budget",
-                            TotalBudget = 100000m
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Inventory.Domain.Model.Aggregates.Category", b =>
@@ -130,56 +101,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_categories");
 
                     b.ToTable("categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Structural steel materials such as rebar and beams.",
-                            Name = "Steel"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Cement and concrete materials for construction work.",
-                            Name = "Concrete"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Sand, gravel and related aggregate materials.",
-                            Name = "Aggregate"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Pipes and plumbing-related materials.",
-                            Name = "Plumbing"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Electrical wiring and installation materials.",
-                            Name = "Electrical"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Description = "Plywood and wood-based construction materials.",
-                            Name = "Wood"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Description = "Safety and site operation equipment.",
-                            Name = "Equipment"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Description = "General construction supplies.",
-                            Name = "General"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Communication.Domain.Model.Aggregates.Message", b =>
@@ -269,56 +190,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_messages");
 
                     b.ToTable("messages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "updates",
-                            Date = "2026-05-19",
-                            Icon = "pi-check-circle",
-                            IconClass = "icon-success",
-                            IsRead = true,
-                            Label = "",
-                            LabelClass = "",
-                            Preview = "The purchase order for ABC Supplies has been approved and is ready for dispatch.",
-                            Sender = "System",
-                            Starred = false,
-                            Subject = "PO-2026-0015 Approved",
-                            Time = "2 min"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "alerts",
-                            Date = "2026-05-19",
-                            Icon = "pi-exclamation-triangle",
-                            IconClass = "icon-warning",
-                            IsRead = false,
-                            Label = "Critical",
-                            LabelClass = "label-critical",
-                            Preview = "Inventory at Skyline Tower dropped below minimum threshold.",
-                            Sender = "Inventory System",
-                            Starred = false,
-                            Subject = "Low Stock: Concrete 3000 PSI",
-                            Time = "15 min"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Category = "updates",
-                            Date = "2026-05-19",
-                            Icon = "pi-truck",
-                            IconClass = "icon-info",
-                            IsRead = false,
-                            Label = "",
-                            LabelClass = "",
-                            Preview = "Shipment from ABC Supplies has departed Lima warehouse.",
-                            Sender = "Logistics",
-                            Starred = false,
-                            Subject = "Delivery TRK-0048 In Transit",
-                            Time = "1 hr"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Delivery.Domain.Model.Aggregates.Delivery", b =>
@@ -394,47 +265,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_deliveries");
 
                     b.ToTable("deliveries");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Destination = "Skyline Tower Site",
-                            DispatchDate = "May 19, 2026",
-                            Eta = "May 21, 2026",
-                            Items = "Steel Rebar 1/2\" (500 PCS)",
-                            Origin = "Lima Warehouse",
-                            PurchaseOrder = "PO-2026-0015",
-                            Status = "In Transit",
-                            Supplier = "ABC Supplies Inc.",
-                            TrackingId = "TRK-0048"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Destination = "Coastal Bridge Site",
-                            DispatchDate = "May 16, 2026",
-                            Eta = "May 18, 2026",
-                            Items = "Concrete 3000 PSI (200 Bags)",
-                            Origin = "Arequipa Plant",
-                            PurchaseOrder = "PO-2026-0013",
-                            Status = "Delivered",
-                            Supplier = "BuildMore Materials",
-                            TrackingId = "TRK-0047"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Destination = "Grand Park Site",
-                            DispatchDate = "May 14, 2026",
-                            Eta = "May 17, 2026",
-                            Items = "Steel Beams W8 (120 PCS)",
-                            Origin = "Callao Port",
-                            PurchaseOrder = "PO-2026-0012",
-                            Status = "Delayed",
-                            Supplier = "Steel House Ltd.",
-                            TrackingId = "TRK-0046"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Iam.Domain.Model.Aggregates.User", b =>
@@ -512,34 +342,6 @@ namespace Buildline.Platform.Migrations
                         .HasDatabaseName("i_x_users_email");
 
                     b.ToTable("users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AvatarColor = "#3d63a1",
-                            Department = "Management",
-                            Email = "admin@buildline.com",
-                            IsActive = true,
-                            LastLogin = "May 19, 2026",
-                            Name = "Nombre admin",
-                            PasswordHash = "$2a$11$ZIgOUFd7cA0EDVQ7KXkxleNzW8rkPUHGbWp7PXuLyvOZxEWeVXQkm",
-                            Phone = "+51 987 654 321",
-                            Role = "owner"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AvatarColor = "#F96116",
-                            Department = "Engineering",
-                            Email = "carlos@buildline.com",
-                            IsActive = true,
-                            LastLogin = "May 18, 2026",
-                            Name = "Carlos Mendoza",
-                            PasswordHash = "$2a$11$jpepzAUUxa.fRn8vJgBuQ.n4SDJFFeS/iEfg.7yjprthBADPSXbBy",
-                            Phone = "+51 912 345 678",
-                            Role = "viewer"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Inventory.Domain.Model.Aggregates.InventoryItem", b =>
@@ -603,56 +405,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_inventory_items");
 
                     b.ToTable("inventory_items");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "Steel",
-                            CurrentStock = 99,
-                            LastUpdated = "2026-05-16",
-                            MaxStock = 800,
-                            MinStock = 100,
-                            Name = "Steel Rebar 1/2\"",
-                            Project = "Skyline Tower",
-                            Sku = "INV-001"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "Concrete",
-                            CurrentStock = 0,
-                            LastUpdated = "2026-05-16",
-                            MaxStock = 500,
-                            MinStock = 100,
-                            Name = "Concrete 3000 PSI",
-                            Project = "Skyline Tower",
-                            Sku = "INV-002"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Category = "Concrete",
-                            CurrentStock = 200,
-                            LastUpdated = "2026-05-17",
-                            MaxStock = 400,
-                            MinStock = 50,
-                            Name = "Cement Type I",
-                            Project = "Coastal Bridge",
-                            Sku = "INV-003"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Category = "Aggregate",
-                            CurrentStock = 0,
-                            LastUpdated = "2026-05-17",
-                            MaxStock = 300,
-                            MinStock = 50,
-                            Name = "Sand Fine",
-                            Project = "Grand Park",
-                            Sku = "INV-004"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Requisition.Domain.Model.Aggregates.Material", b =>
@@ -716,80 +468,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_materials");
 
                     b.ToTable("materials");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "Steel",
-                            CurrentStock = 99,
-                            MaxStock = 800,
-                            MinStock = 100,
-                            Name = "Steel Rebar 1/2\"",
-                            Project = "Skyline Tower",
-                            Sku = "MAT-001",
-                            Unit = "PCS"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "Concrete",
-                            CurrentStock = 0,
-                            MaxStock = 500,
-                            MinStock = 100,
-                            Name = "Concrete 3000 PSI",
-                            Project = "Skyline Tower",
-                            Sku = "MAT-002",
-                            Unit = "Bags"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Category = "Concrete",
-                            CurrentStock = 200,
-                            MaxStock = 400,
-                            MinStock = 50,
-                            Name = "Cement Type I",
-                            Project = "Coastal Bridge",
-                            Sku = "MAT-003",
-                            Unit = "Bags"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Category = "Aggregate",
-                            CurrentStock = 0,
-                            MaxStock = 300,
-                            MinStock = 50,
-                            Name = "Sand Fine",
-                            Project = "Grand Park",
-                            Sku = "MAT-004",
-                            Unit = "m3"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Category = "Aggregate",
-                            CurrentStock = 320,
-                            MaxStock = 500,
-                            MinStock = 80,
-                            Name = "Gravel 3/4\"",
-                            Project = "Skyline Tower",
-                            Sku = "MAT-005",
-                            Unit = "Tons"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Category = "Plumbing",
-                            CurrentStock = 45,
-                            MaxStock = 200,
-                            MinStock = 60,
-                            Name = "PVC Pipes 4\"",
-                            Project = "Coastal Bridge",
-                            Sku = "MAT-006",
-                            Unit = "PCS"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Procurement.Domain.Model.Aggregates.PurchaseOrder", b =>
@@ -852,52 +530,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_purchase_orders");
 
                     b.ToTable("purchase_orders");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Date = "May 19, 2026",
-                            Material = "Steel Rebar 1/2\"",
-                            OrderId = "PO-2026-0015",
-                            Project = "Skyline Tower",
-                            Status = "Approved",
-                            SupplierName = "ABC Supplies Inc.",
-                            TotalAmount = 125000m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Date = "May 18, 2026",
-                            Material = "Cement Type I",
-                            OrderId = "PO-2026-0014",
-                            Project = "Skyline Tower",
-                            Status = "Pending",
-                            SupplierName = "BuildMore Materials",
-                            TotalAmount = 85200m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Date = "May 18, 2026",
-                            Material = "Concrete 3000 PSI",
-                            OrderId = "PO-2026-0013",
-                            Project = "Coastal Bridge",
-                            Status = "Approved",
-                            SupplierName = "BuildMore Materials",
-                            TotalAmount = 42500m
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Date = "May 17, 2026",
-                            Material = "Steel Beams W8",
-                            OrderId = "PO-2026-0012",
-                            Project = "Grand Park",
-                            Status = "Pending",
-                            SupplierName = "Steel House Ltd.",
-                            TotalAmount = 67800m
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Procurement.Domain.Model.Aggregates.Quotation", b =>
@@ -960,52 +592,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_quotations");
 
                     b.ToTable("quotations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Amount = 12500m,
-                            Date = "May 19, 2026",
-                            Material = "Steel Rebar 1/2\"",
-                            Project = "Skyline Tower",
-                            QuotationId = "QT-2026-0018",
-                            Status = "Pending",
-                            Supplier = "ABC Supplies Inc."
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Amount = 8300m,
-                            Date = "May 18, 2026",
-                            Material = "Concrete 3000 PSI",
-                            Project = "Skyline Tower",
-                            QuotationId = "QT-2026-0017",
-                            Status = "Accepted",
-                            Supplier = "Cement Plus"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Amount = 3450m,
-                            Date = "May 17, 2026",
-                            Material = "Power Drill Set",
-                            Project = "Coastal Bridge",
-                            QuotationId = "QT-2026-0016",
-                            Status = "Accepted",
-                            Supplier = "Global Construction"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Amount = 15800m,
-                            Date = "May 17, 2026",
-                            Material = "Cement Type I",
-                            Project = "Skyline Tower",
-                            QuotationId = "QT-2026-0015",
-                            Status = "Pending",
-                            Supplier = "BuildMore Materials"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Profiles.Domain.Model.Aggregates.Profile", b =>
@@ -1057,17 +643,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_profiles");
 
                     b.ToTable("profiles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "Av. Primavera 123, Surco, Lima",
-                            CompanyName = "Buildline S.A.C.",
-                            Email = "contacto@buildline.com",
-                            Phone = "+51 987 654 321",
-                            Ruc = "20555444333"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Analytics.Domain.Model.Aggregates.Project", b =>
@@ -1127,41 +702,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_projects");
 
                     b.ToTable("projects");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Budget = 500000m,
-                            Date = "2026-01-15",
-                            Location = "Lima, Peru",
-                            Name = "Skyline Tower",
-                            Progress = 35,
-                            Spent = 120000m,
-                            Status = "In Progress"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Budget = 250000m,
-                            Date = "2026-03-01",
-                            Location = "Arequipa, Peru",
-                            Name = "Coastal Bridge",
-                            Progress = 72,
-                            Spent = 210000m,
-                            Status = "In Progress"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Budget = 100000m,
-                            Date = "2026-02-10",
-                            Location = "Cusco, Peru",
-                            Name = "Grand Park",
-                            Progress = 90,
-                            Spent = 105000m,
-                            Status = "At Risk"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Requisition.Domain.Model.Aggregates.Requisition", b =>
@@ -1241,64 +781,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_requisitions");
 
                     b.ToTable("requisitions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DeliveryDate = "2026-05-25",
-                            Material = "Steel Rebar 1/2\"",
-                            Priority = "High",
-                            Project = "Skyline Tower",
-                            Quantity = 500,
-                            ReqId = "MR-2026-00024",
-                            RequestedBy = "Carlos Mendoza",
-                            RequestedOn = "May 19, 2026",
-                            Status = "Pending",
-                            Unit = "PCS"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DeliveryDate = "2026-05-24",
-                            Material = "Concrete 3000 PSI",
-                            Priority = "Medium",
-                            Project = "Skyline Tower",
-                            Quantity = 200,
-                            ReqId = "MR-2026-00023",
-                            RequestedBy = "Ana Garcia",
-                            RequestedOn = "May 18, 2026",
-                            Status = "Approved",
-                            Unit = "Bags"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DeliveryDate = "2026-05-23",
-                            Material = "Sand Fine",
-                            Priority = "Low",
-                            Project = "Coastal Bridge",
-                            Quantity = 50,
-                            ReqId = "MR-2026-00022",
-                            RequestedBy = "James Wilson",
-                            RequestedOn = "May 17, 2026",
-                            Status = "Approved",
-                            Unit = "m3"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DeliveryDate = "2026-05-22",
-                            Material = "Cement Type I",
-                            Priority = "High",
-                            Project = "Skyline Tower",
-                            Quantity = 300,
-                            ReqId = "MR-2026-00021",
-                            RequestedBy = "Carlos Mendoza",
-                            RequestedOn = "May 17, 2026",
-                            Status = "Pending",
-                            Unit = "Bags"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Suppliers.Domain.Model.Aggregates.Supplier", b =>
@@ -1368,73 +850,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_suppliers");
 
                     b.ToTable("suppliers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "Steel",
-                            CompanyName = "ABC Supplies Inc.",
-                            ContactName = "Roberto Sanchez",
-                            DeliveryRate = 95,
-                            Email = "ventas@abcsupplies.com",
-                            IsActive = true,
-                            Phone = "+51 987 111 222",
-                            Rating = 5,
-                            Ruc = "20100055237"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "Concrete",
-                            CompanyName = "BuildMore Materials",
-                            ContactName = "Maria Lopez",
-                            DeliveryRate = 88,
-                            Email = "contacto@buildmore.com",
-                            IsActive = true,
-                            Phone = "+51 987 333 444",
-                            Rating = 4,
-                            Ruc = "20419381272"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Category = "Steel",
-                            CompanyName = "Steel House Ltd.",
-                            ContactName = "Pedro Rojas",
-                            DeliveryRate = 78,
-                            Email = "info@steelhouse.com",
-                            IsActive = true,
-                            Phone = "+51 987 555 666",
-                            Rating = 4,
-                            Ruc = "20555555555"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Category = "General",
-                            CompanyName = "Global Construction",
-                            ContactName = "Lucia Vargas",
-                            DeliveryRate = 82,
-                            Email = "global@construction.com",
-                            IsActive = true,
-                            Phone = "+51 987 777 888",
-                            Rating = 3,
-                            Ruc = "10777777777"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Category = "Concrete",
-                            CompanyName = "Cement Plus",
-                            ContactName = "Jorge Diaz",
-                            DeliveryRate = 70,
-                            Email = "ventas@cementplus.com",
-                            IsActive = false,
-                            Phone = "+51 987 999 000",
-                            Rating = 3,
-                            Ruc = "20888888888"
-                        });
                 });
 
             modelBuilder.Entity("Buildline.Platform.Suppliers.Domain.Model.Aggregates.SupplierIncident", b =>
@@ -1516,50 +931,6 @@ namespace Buildline.Platform.Migrations
                         .HasName("p_k_supplier_incidents");
 
                     b.ToTable("supplier_incidents");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Date = "May 15, 2026",
-                            Description = "Steel rebar shipment from Steel House Ltd. is 3 days overdue.",
-                            IncidentId = "INC-015",
-                            PurchaseOrder = "PO-2026-0012",
-                            ReportedBy = "Carlos Mendoza",
-                            Severity = "High",
-                            Status = "Open",
-                            Supplier = "Steel House Ltd.",
-                            Time = "10:45 AM",
-                            Title = "Delayed delivery of steel rebar"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Date = "May 15, 2026",
-                            Description = "Received Type II cement instead of Type I as specified in the PO.",
-                            IncidentId = "INC-014",
-                            PurchaseOrder = "PO-2026-0013",
-                            ReportedBy = "Ana Garcia",
-                            Severity = "High",
-                            Status = "In Progress",
-                            Supplier = "BuildMore Materials",
-                            Time = "08:30 AM",
-                            Title = "Wrong cement type delivered"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Date = "May 16, 2026",
-                            Description = "Several bags arrived with torn packaging.",
-                            IncidentId = "INC-013",
-                            PurchaseOrder = "PO-2026-0010",
-                            ReportedBy = "James Wilson",
-                            Severity = "Medium",
-                            Status = "Resolved",
-                            Supplier = "ABC Supplies Inc.",
-                            Time = "04:15 PM",
-                            Title = "Damaged packaging on arrival"
-                        });
                 });
 #pragma warning restore 612, 618
         }

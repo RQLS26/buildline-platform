@@ -1,10 +1,13 @@
+using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
 using Buildline.Platform.Suppliers.Application.Internal.CommandServices;
 using Buildline.Platform.Suppliers.Application.CommandServices;
 using Buildline.Platform.Procurement.Application.Internal.CommandServices;
+using Buildline.Platform.Procurement.Application.Internal.OutboundServices;
 using Buildline.Platform.Procurement.Application.CommandServices;
 using Buildline.Platform.Inventory.Application.Internal.CommandServices;
 using Buildline.Platform.Inventory.Application.CommandServices;
 using Buildline.Platform.Delivery.Application.Internal.CommandServices;
+using Buildline.Platform.Delivery.Application.Internal.OutboundServices;
 using Buildline.Platform.Delivery.Application.CommandServices;
 using Buildline.Platform.Communication.Application.Internal.CommandServices;
 using Buildline.Platform.Communication.Application.CommandServices;
@@ -43,6 +46,7 @@ using Buildline.Platform.Iam.Infrastructure.Tokens.Jwt.Services;
 using Buildline.Platform.Iam.Interfaces.Acl;
 using Buildline.Platform.Requisition.Application.CommandServices;
 using Buildline.Platform.Requisition.Application.Internal.CommandServices;
+using Buildline.Platform.Requisition.Application.Internal.OutboundServices;
 using Buildline.Platform.Requisition.Application.Internal.QueryServices;
 using Buildline.Platform.Requisition.Application.QueryServices;
 using Buildline.Platform.Requisition.Domain.Repositories;
@@ -175,6 +179,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IDemoDataSeeder, JsonDemoDataSeeder>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryQueryService, CategoryQueryService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -195,9 +200,11 @@ builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 builder.Services.AddScoped<IProjectsContextFacade, ProjectsContextFacade>();
 builder.Services.AddScoped<IRequisitionRepository, RequisitionRepository>();
 builder.Services.AddScoped<IRequisitionCommandService, RequisitionCommandService>();
+builder.Services.AddScoped<IProjectReferenceService, ProjectReferenceService>();
 builder.Services.AddScoped<IRequisitionQueryService, RequisitionQueryService>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<IPurchaseOrderCommandService, PurchaseOrderCommandService>();
+builder.Services.AddScoped<ISupplierDirectoryService, SupplierDirectoryService>();
 builder.Services.AddScoped<IPurchaseOrderQueryService, PurchaseOrderQueryService>();
 builder.Services.AddScoped<IQuotationRepository, QuotationRepository>();
 builder.Services.AddScoped<IQuotationCommandService, QuotationCommandService>();
@@ -207,6 +214,7 @@ builder.Services.AddScoped<IInventoryItemCommandService, InventoryItemCommandSer
 builder.Services.AddScoped<IInventoryItemQueryService, InventoryItemQueryService>();
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.AddScoped<IDeliveryCommandService, DeliveryCommandService>();
+builder.Services.AddScoped<IPurchaseOrderReferenceService, PurchaseOrderReferenceService>();
 builder.Services.AddScoped<IDeliveryQueryService, DeliveryQueryService>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierCommandService, SupplierCommandService>();
@@ -224,6 +232,7 @@ builder.Services.AddScoped<IMessageQueryService, MessageQueryService>();
 var app = builder.Build();
 
 app.UseGlobalExceptionHandler();
+app.UseRequestLogging();
 
 var supportedCultures = new[] { "en", "es" };
 var localizationOptions = new RequestLocalizationOptions()
@@ -246,7 +255,15 @@ app.UseAuthorization();
 
 app.MapGet("/api/v1/health", () => Results.Ok(new { status = "Healthy", service = "Buildline Platform API" }))
     .WithName("GetHealth");
+if (app.Environment.IsDevelopment())
+{
+    using var seedScope = app.Services.CreateScope();
+    var demoDataSeeder = seedScope.ServiceProvider.GetRequiredService<IDemoDataSeeder>();
+    await demoDataSeeder.SeedAsync();
+}
 app.MapControllers();
 
 app.Run();
+
+
 
