@@ -1,0 +1,51 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: buildline-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-buildline_root_2026}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-buildline_platform}
+      MYSQL_USER: ${MYSQL_USER:-buildline}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-buildline_pass_2026}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - buildline-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: buildline-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-buildline_platform}
+      MYSQL_USER: ${MYSQL_USER:-buildline}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-buildline_pass_2026}
+      BUILDLINE_JWT_SECRET: ${BUILDLINE_JWT_SECRET:-buildline-production-secret-key-with-at-least-32-chars!!}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - buildline-network
+
+volumes:
+  mysql_data:
+
+networks:
+  buildline-network:
+    driver: bridge
