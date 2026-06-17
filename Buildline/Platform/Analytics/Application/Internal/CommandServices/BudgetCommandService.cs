@@ -5,7 +5,9 @@ using Buildline.Platform.Analytics.Domain.Model.Commands;
 using Buildline.Platform.Analytics.Domain.Repositories;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Application.Model;
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
+using Cortex.Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
@@ -20,6 +22,7 @@ namespace Buildline.Platform.Analytics.Application.Internal.CommandServices;
 public class BudgetCommandService(
     IBudgetRepository repository,
     IUnitOfWork unitOfWork,
+    IMediator mediator,
     IStringLocalizer<ErrorMessages> localizer)
     : IBudgetCommandService
 {
@@ -37,6 +40,7 @@ public class BudgetCommandService(
         {
             await repository.AddAsync(aggregate, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result<Budget>.Success(aggregate);
         }
         catch (OperationCanceledException)
@@ -73,6 +77,7 @@ public class BudgetCommandService(
             aggregate.Apply(command);
             repository.Update(aggregate);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result<Budget>.Success(aggregate);
         }
         catch (OperationCanceledException)
@@ -92,6 +97,16 @@ public class BudgetCommandService(
             return Result<Budget>.Failure(
                 AnalyticsError.InternalServerError,
                 localizer[$"{nameof(AnalyticsError)}.{AnalyticsError.InternalServerError}"]);
+        }
+    }
+
+    private async Task PublishDomainEventsAsync(Budget aggregate, CancellationToken cancellationToken)
+    {
+        if (aggregate is IHasDomainEvents hasEvents && hasEvents.DomainEvents.Count != 0)
+        {
+            foreach (var domainEvent in hasEvents.DomainEvents)
+                await mediator.PublishAsync(domainEvent, cancellationToken);
+            hasEvents.ClearDomainEvents();
         }
     }
 }

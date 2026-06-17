@@ -6,7 +6,9 @@ using Buildline.Platform.Delivery.Domain.Model.Commands;
 using Buildline.Platform.Delivery.Domain.Repositories;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Application.Model;
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
+using Cortex.Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
@@ -27,6 +29,7 @@ public class DeliveryCommandService(
     IDeliveryRepository repository,
     IPurchaseOrderReferenceService purchaseOrderReferenceService,
     IUnitOfWork unitOfWork,
+    IMediator mediator,
     IStringLocalizer<ErrorMessages> localizer)
     : IDeliveryCommandService
 {
@@ -49,6 +52,7 @@ public class DeliveryCommandService(
         {
             await repository.AddAsync(aggregate, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result<DeliveryAggregate>.Success(aggregate);
         }
         catch (OperationCanceledException)
@@ -85,6 +89,7 @@ public class DeliveryCommandService(
             aggregate.Apply(command);
             repository.Update(aggregate);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result<DeliveryAggregate>.Success(aggregate);
         }
         catch (OperationCanceledException)
@@ -104,6 +109,16 @@ public class DeliveryCommandService(
             return Result<DeliveryAggregate>.Failure(
                 DeliveryError.InternalServerError,
                 localizer[$"{nameof(DeliveryError)}.{DeliveryError.InternalServerError}"]);
+        }
+    }
+
+    private async Task PublishDomainEventsAsync(DeliveryAggregate aggregate, CancellationToken cancellationToken)
+    {
+        if (aggregate is IHasDomainEvents hasEvents && hasEvents.DomainEvents.Count != 0)
+        {
+            foreach (var domainEvent in hasEvents.DomainEvents)
+                await mediator.PublishAsync(domainEvent, cancellationToken);
+            hasEvents.ClearDomainEvents();
         }
     }
 }

@@ -5,7 +5,9 @@ using Buildline.Platform.Communication.Domain.Model.Commands;
 using Buildline.Platform.Communication.Domain.Repositories;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Application.Model;
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
+using Cortex.Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
@@ -20,6 +22,7 @@ namespace Buildline.Platform.Communication.Application.Internal.CommandServices;
 public class MessageCommandService(
     IMessageRepository repository,
     IUnitOfWork unitOfWork,
+    IMediator mediator,
     IStringLocalizer<ErrorMessages> localizer)
     : IMessageCommandService
 {
@@ -37,6 +40,7 @@ public class MessageCommandService(
         {
             await repository.AddAsync(aggregate, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result<Message>.Success(aggregate);
         }
         catch (OperationCanceledException)
@@ -73,6 +77,7 @@ public class MessageCommandService(
             aggregate.Apply(command);
             repository.Update(aggregate);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result<Message>.Success(aggregate);
         }
         catch (OperationCanceledException)
@@ -107,6 +112,7 @@ public class MessageCommandService(
         {
             repository.Remove(aggregate);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result.Success();
         }
         catch (OperationCanceledException)
@@ -126,6 +132,16 @@ public class MessageCommandService(
             return Result.Failure(
                 CommunicationError.InternalServerError,
                 localizer[$"{nameof(CommunicationError)}.{CommunicationError.InternalServerError}"]);
+        }
+    }
+
+    private async Task PublishDomainEventsAsync(Message aggregate, CancellationToken cancellationToken)
+    {
+        if (aggregate is IHasDomainEvents hasEvents && hasEvents.DomainEvents.Count != 0)
+        {
+            foreach (var domainEvent in hasEvents.DomainEvents)
+                await mediator.PublishAsync(domainEvent, cancellationToken);
+            hasEvents.ClearDomainEvents();
         }
     }
 }

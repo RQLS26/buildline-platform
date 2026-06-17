@@ -1,3 +1,4 @@
+using Buildline.Platform.Shared.Infrastructure.Mediator.Cortex.Configuration;
 using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
 using Buildline.Platform.Suppliers.Application.Internal.CommandServices;
 using Buildline.Platform.Suppliers.Application.CommandServices;
@@ -79,6 +80,8 @@ using Buildline.Platform.Suppliers.Domain.Repositories;
 using Buildline.Platform.Suppliers.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Cortex.Mediator.Commands;
+using Cortex.Mediator.DependencyInjection;
 using Microsoft.OpenApi;
 using Microsoft.IdentityModel.Tokens;
 using ProblemDetailsFactory = Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
@@ -229,6 +232,9 @@ builder.Services.AddScoped<IBudgetQueryService, BudgetQueryService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IMessageCommandService, MessageCommandService>();
 builder.Services.AddScoped<IMessageQueryService, MessageQueryService>();
+
+builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCommandBehavior<>));
+builder.Services.AddCortexMediator([typeof(Program)]);
 
 var app = builder.Build();
 

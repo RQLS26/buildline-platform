@@ -6,7 +6,9 @@ using Buildline.Platform.Requisition.Domain.Model.Commands;
 using Buildline.Platform.Requisition.Domain.Repositories;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Application.Model;
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
+using Cortex.Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
@@ -28,6 +30,7 @@ public class RequisitionCommandService(
     IRequisitionRepository repository,
     IProjectReferenceService projectReferenceService,
     IUnitOfWork unitOfWork,
+    IMediator mediator,
     IStringLocalizer<ErrorMessages> localizer)
     : IRequisitionCommandService
 {
@@ -50,6 +53,7 @@ public class RequisitionCommandService(
         {
             await repository.AddAsync(aggregate, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result<RequisitionAggregate>.Success(aggregate);
         }
         catch (OperationCanceledException)
@@ -86,6 +90,7 @@ public class RequisitionCommandService(
             aggregate.Apply(command);
             repository.Update(aggregate);
             await unitOfWork.CompleteAsync(cancellationToken);
+            await PublishDomainEventsAsync(aggregate, cancellationToken);
             return Result<RequisitionAggregate>.Success(aggregate);
         }
         catch (OperationCanceledException)
@@ -105,6 +110,16 @@ public class RequisitionCommandService(
             return Result<RequisitionAggregate>.Failure(
                 RequisitionError.InternalServerError,
                 localizer[$"{nameof(RequisitionError)}.{RequisitionError.InternalServerError}"]);
+        }
+    }
+
+    private async Task PublishDomainEventsAsync(RequisitionAggregate aggregate, CancellationToken cancellationToken)
+    {
+        if (aggregate is IHasDomainEvents hasEvents && hasEvents.DomainEvents.Count != 0)
+        {
+            foreach (var domainEvent in hasEvents.DomainEvents)
+                await mediator.PublishAsync(domainEvent, cancellationToken);
+            hasEvents.ClearDomainEvents();
         }
     }
 }
