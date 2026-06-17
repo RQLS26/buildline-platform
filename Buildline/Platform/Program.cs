@@ -263,12 +263,15 @@ app.UseAuthorization();
 
 app.MapGet("/api/v1/health", () => Results.Ok(new { status = "Healthy", service = "Buildline Platform API" }))
     .WithName("GetHealth");
-if (app.Environment.IsDevelopment())
+
+using (var initScope = app.Services.CreateScope())
 {
-    using var seedScope = app.Services.CreateScope();
-    var demoDataSeeder = seedScope.ServiceProvider.GetRequiredService<IDemoDataSeeder>();
+    var dbContext = initScope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.EnsureCreatedAsync();
+    var demoDataSeeder = initScope.ServiceProvider.GetRequiredService<IDemoDataSeeder>();
     await demoDataSeeder.SeedAsync();
 }
+
 app.MapControllers();
 
 app.Run();
