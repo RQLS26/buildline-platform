@@ -18,6 +18,7 @@ namespace Buildline.Platform.Communication.Application.Internal.CommandServices;
 /// </summary>
 /// <param name="repository">Repository used to retrieve and persist aggregates.</param>
 /// <param name="unitOfWork">Unit of work used to commit aggregate changes transactionally.</param>
+/// <param name="mediator">Cortex mediator used to publish domain events after aggregate persistence.</param>
 /// <param name="localizer">Localizer used to resolve bounded-context error messages.</param>
 public class MessageCommandService(
     IMessageRepository repository,

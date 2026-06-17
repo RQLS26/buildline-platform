@@ -20,6 +20,7 @@ namespace Buildline.Platform.Requisition.Application.Internal.CommandServices;
 /// <param name="repository">Repository used to retrieve and persist requisition aggregates.</param>
 /// <param name="projectReferenceService">Outbound service used to validate project references owned by Analytics.</param>
 /// <param name="unitOfWork">Unit of work used to commit aggregate changes transactionally.</param>
+/// <param name="mediator">Cortex mediator used to publish domain events after aggregate persistence.</param>
 /// <param name="localizer">Localizer used to resolve bounded-context error messages.</param>
 /// <remarks>
 ///     The service keeps the controller thin, validates frontend payloads, checks cross-context references

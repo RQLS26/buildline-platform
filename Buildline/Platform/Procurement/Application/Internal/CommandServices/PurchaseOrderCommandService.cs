@@ -20,6 +20,7 @@ namespace Buildline.Platform.Procurement.Application.Internal.CommandServices;
 /// <param name="repository">Repository used to retrieve and persist purchase order aggregates.</param>
 /// <param name="supplierDirectoryService">Outbound service used to validate supplier references owned by Suppliers.</param>
 /// <param name="unitOfWork">Unit of work used to commit aggregate changes transactionally.</param>
+/// <param name="mediator">Cortex mediator used to publish domain events after aggregate persistence.</param>
 /// <param name="localizer">Localizer used to resolve bounded-context error messages.</param>
 /// <remarks>
 ///     The service centralizes purchase order invariants that depend on external context data, keeping the
