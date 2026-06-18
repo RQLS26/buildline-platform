@@ -249,7 +249,13 @@ var localizationOptions = new RequestLocalizationOptions()
 
 app.UseRequestLocalization(localizationOptions);
 
-if (app.Environment.IsDevelopment())
+var swaggerFlag = Environment.GetEnvironmentVariable("ENABLE_SWAGGER");
+var swaggerEnabled = app.Environment.IsDevelopment() ||
+                     (string.IsNullOrWhiteSpace(swaggerFlag)
+                         ? app.Configuration.GetValue<bool>("Swagger:Enabled")
+                         : string.Equals(swaggerFlag, "true", StringComparison.OrdinalIgnoreCase));
+
+if (swaggerEnabled)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -267,7 +273,20 @@ app.MapGet("/api/v1/health", () => Results.Ok(new { status = "Healthy", service 
 using (var initScope = app.Services.CreateScope())
 {
     var dbContext = initScope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await dbContext.Database.EnsureCreatedAsync();
+    var logger = initScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var hasExistingTables = await dbContext.Database.CanConnectAsync() &&
+                            (await dbContext.Database.GetAppliedMigrationsAsync()).Any() is false &&
+                            await DatabaseBootstrapper.HasApplicationTablesAsync(dbContext);
+
+    if (hasExistingTables)
+    {
+        logger.LogWarning("Existing application tables were found without EF migration history. Startup will preserve the current schema and data.");
+    }
+    else
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+
     var demoDataSeeder = initScope.ServiceProvider.GetRequiredService<IDemoDataSeeder>();
     await demoDataSeeder.SeedAsync();
 }
@@ -275,3 +294,42 @@ using (var initScope = app.Services.CreateScope())
 app.MapControllers();
 
 app.Run();
+/// <summary>
+///     Provides startup helpers for safe database initialization in container environments.
+/// </summary>
+file static class DatabaseBootstrapper
+{
+    /// <summary>
+    ///     Checks whether the current MySQL database already contains Buildline application tables.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to obtain the active connection.</param>
+    /// <returns><c>true</c> when at least one non-migration application table exists; otherwise <c>false</c>.</returns>
+    public static async Task<bool> HasApplicationTablesAsync(AppDbContext dbContext)
+    {
+        const string query = """
+            SELECT COUNT(*)
+            FROM information_schema.tables
+            WHERE table_schema = DATABASE()
+              AND table_type = 'BASE TABLE'
+              AND table_name <> '__EFMigrationsHistory'
+            """;
+
+        var connection = dbContext.Database.GetDbConnection();
+        var shouldCloseConnection = connection.State == System.Data.ConnectionState.Closed;
+        if (shouldCloseConnection)
+            await connection.OpenAsync();
+
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = query;
+            var result = await command.ExecuteScalarAsync();
+            return Convert.ToInt32(result) > 0;
+        }
+        finally
+        {
+            if (shouldCloseConnection)
+                await connection.CloseAsync();
+        }
+    }
+}
