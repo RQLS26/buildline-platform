@@ -22,13 +22,11 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
     /// <param name="context">HTTP context for the current request.</param>
     /// <param name="userQueryService">IAM query service used to load the authenticated user aggregate.</param>
     /// <param name="tokenService">Token service used to validate and decode the bearer token.</param>
-    /// <param name="cancellationToken">Token used to cancel user lookup when the request is aborted.</param>
     /// <returns>A task that completes when authorization and downstream middleware processing finish.</returns>
     public async Task InvokeAsync(
         HttpContext context,
         IUserQueryService userQueryService,
-        ITokenService tokenService,
-        CancellationToken cancellationToken)
+        ITokenService tokenService)
     {
         var endpoint = context.GetEndpoint();
         var allowsAnonymous = endpoint?.Metadata.GetMetadata<IAllowAnonymous>() is not null;
@@ -54,7 +52,7 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
             return;
         }
 
-        var user = await userQueryService.FindByIdAsync(userId.Value, cancellationToken);
+        var user = await userQueryService.FindByIdAsync(userId.Value, context.RequestAborted);
         if (user is null)
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
