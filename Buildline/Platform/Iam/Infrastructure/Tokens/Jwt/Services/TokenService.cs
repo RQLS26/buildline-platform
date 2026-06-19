@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Text;
 using Buildline.Platform.Iam.Application.Internal.OutboundServices;
 using Buildline.Platform.Iam.Domain.Model.Aggregates;
 using Buildline.Platform.Iam.Infrastructure.Tokens.Jwt.Configuration;
@@ -24,7 +23,6 @@ public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
     /// <inheritdoc />
     public string GenerateToken(User user)
     {
-        var key = Encoding.ASCII.GetBytes(_tokenSettings.Secret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[]
@@ -36,7 +34,7 @@ public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                new SigningCredentials(TokenSigningKeyFactory.CreateFromSecret(_tokenSettings.Secret), SecurityAlgorithms.HmacSha256Signature)
         };
         var tokenHandler = new JsonWebTokenHandler();
         return tokenHandler.CreateToken(tokenDescriptor);
@@ -48,14 +46,13 @@ public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
         if (string.IsNullOrWhiteSpace(token)) return null;
 
         var tokenHandler = new JsonWebTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_tokenSettings.Secret);
 
         try
         {
             var result = await tokenHandler.ValidateTokenAsync(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
+                IssuerSigningKey = TokenSigningKeyFactory.CreateFromSecret(_tokenSettings.Secret),
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ClockSkew = TimeSpan.Zero

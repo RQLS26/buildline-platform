@@ -15,7 +15,6 @@ using Buildline.Platform.Communication.Application.CommandServices;
 using Buildline.Platform.Analytics.Application.Internal.CommandServices;
 using Buildline.Platform.Analytics.Application.CommandServices;
 using System.Reflection;
-using System.Text;
 using Buildline.Platform.Analytics.Application.Internal.QueryServices;
 using Buildline.Platform.Analytics.Application.QueryServices;
 using Buildline.Platform.Analytics.Domain.Repositories;
@@ -124,8 +123,7 @@ builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("Toke
 
 var tokenSecret = Environment.ExpandEnvironmentVariables(
     builder.Configuration.GetSection("TokenSettings").Get<TokenSettings>()?.Secret ?? string.Empty);
-if (string.IsNullOrWhiteSpace(tokenSecret))
-    throw new InvalidOperationException("JWT token secret is not set in TokenSettings.");
+var tokenSigningKey = TokenSigningKeyFactory.CreateFromSecret(tokenSecret);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -135,7 +133,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenSecret)),
+            IssuerSigningKey = tokenSigningKey,
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
