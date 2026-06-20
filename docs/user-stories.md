@@ -4,16 +4,18 @@ This document contains API-focused technical stories and backend improvements fo
 
 Common conventions:
 - Base path: `/api/v1`.
+- Company-scoped operational base path: `/api/v1/companies/{companyId}`.
 - API implementation: ASP.NET Core / C#.
 - Frontend contexts: `iam`, `profiles`, `shared`, `requisition`, `procurement`, `inventory`, `delivery`, `suppliers`, `analytics-budgeting` and `communication`.
 - `Materials`, `Categories` and `Projects` are implemented as reference data inside existing frontend-aligned bounded contexts: `requisition`, `inventory` and `analytics-budgeting` respectively; they are not independent bounded contexts and are not part of the technical `Shared` kernel.
+- Authentication and the current-user projection remain global (`/api/v1/auth/*`, `/api/v1/users/me`), while operational resources are scoped by company to prevent cross-company data leakage.
 
 ---
 
 ### IMP-BE-001 - Backend foundations
 
-**Branch:** `feature/backend-foundations`  
-**Context / module:** shared / platform  
+**Branch:** `feature/backend-foundations`
+**Context / module:** shared / platform
 **Endpoint(s):** `GET /api/v1/health, Swagger/OpenAPI, JWT Bearer, Problem Details`
 
 As a frontend developer, I want to configure the ASP.NET Core platform foundation so every bounded context exposes secure, documented, versioned contracts.
@@ -26,8 +28,8 @@ Acceptance criteria:
 
 ### IMP-BE-002 - Persistence, migrations and seed data
 
-**Branch:** `feature/backend-persistence-migrations`  
-**Context / module:** shared persistence  
+**Branch:** `feature/backend-persistence-migrations`
+**Context / module:** shared persistence
 **Endpoint(s):** `EF Core DbContext, migrations, seed data`
 
 As a frontend developer, I want to configure transactional persistence, audit metadata, constraints and initial data compatible with the frontend mock contracts.
@@ -40,8 +42,8 @@ Acceptance criteria:
 
 ### TS-IAM-001 - Sign-in API
 
-**Branch:** `feature/TS-IAM-001-sign-in-api`  
-**Context / module:** iam  
+**Branch:** `feature/TS-IAM-001-sign-in-api`
+**Context / module:** iam
 **Endpoint(s):** `POST /api/v1/auth/sign-in`
 
 As a frontend developer, I want to authenticate users, obtain a JWT token and initialize the client session.
@@ -54,8 +56,8 @@ Acceptance criteria:
 
 ### TS-IAM-002 - Sign-up API
 
-**Branch:** `feature/TS-IAM-002-sign-up-api`  
-**Context / module:** iam  
+**Branch:** `feature/TS-IAM-002-sign-up-api`
+**Context / module:** iam
 **Endpoint(s):** `POST /api/v1/auth/sign-up`
 
 As a frontend developer, I want to register new users for controlled platform access.
@@ -68,23 +70,23 @@ Acceptance criteria:
 
 ### TS-IAM-003 - Users directory API
 
-**Branch:** `feature/TS-IAM-003-users-directory-api`  
-**Context / module:** iam  
-**Endpoint(s):** `GET /api/v1/users, POST /api/v1/users`
+**Branch:** `feature/TS-IAM-003-users-directory-api`
+**Context / module:** iam
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/users, POST /api/v1/companies/{companyId}/users`
 
 As a frontend developer, I want to list and create administrative users from the web application.
 
 Acceptance criteria:
-- Given users exist, when GET /api/v1/users is called, then the API returns a user collection.
-- Given a valid user payload, when POST /api/v1/users is called, then the API persists and returns the created resource.
+- Given users exist, when GET /api/v1/companies/{companyId}/users is called, then the API returns a user collection.
+- Given a valid user payload, when POST /api/v1/companies/{companyId}/users is called, then the API persists and returns the created resource.
 
 ---
 
 ### TS-IAM-004 - User detail and update API
 
-**Branch:** `feature/TS-IAM-004-user-detail-update-api`  
-**Context / module:** iam  
-**Endpoint(s):** `GET /api/v1/users/{id}, PATCH /api/v1/users/{id}`
+**Branch:** `feature/TS-IAM-004-user-detail-update-api`
+**Context / module:** iam
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/users/{id}, PATCH /api/v1/companies/{companyId}/users/{id}`
 
 As a frontend developer, I want to show user details and update editable role or status information.
 
@@ -96,8 +98,8 @@ Acceptance criteria:
 
 ### TS-PROF-001 - Profile read and update API
 
-**Branch:** `feature/TS-PROF-001-profile-api`  
-**Context / module:** profiles  
+**Branch:** `feature/TS-PROF-001-profile-api`
+**Context / module:** profiles
 **Endpoint(s):** `GET /api/v1/profiles, GET /api/v1/profiles/{id}, PUT/PATCH /api/v1/profiles/{id}`
 
 As a frontend developer, I want to display and update company or user profile information.
@@ -110,23 +112,23 @@ Acceptance criteria:
 
 ### TS-ANB-003 - Projects reference API
 
-**Branch:** `feature/TS-ANB-003-projects-reference-api`  
-**Context / module:** analytics-budgeting / projects reference data  
-**Endpoint(s):** `GET /api/v1/projects, GET /api/v1/projects/{id}`
+**Branch:** `feature/TS-ANB-003-projects-reference-api`
+**Context / module:** analytics-budgeting / projects reference data
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/projects, GET /api/v1/companies/{companyId}/projects/{id}`
 
 As a frontend developer, I want to provide project reference data for requisitions, inventory and dashboards.
 
 Acceptance criteria:
-- Given seeded projects exist, when GET /api/v1/projects is called, then the API returns a collection usable by frontend filters.
+- Given seeded projects exist, when GET /api/v1/companies/{companyId}/projects is called, then the API returns a collection usable by frontend filters.
 - Given an existing project id, when the detail endpoint is called, then the API returns the project reference resource.
 
 ---
 
 ### TS-REQ-004 - Materials reference API
 
-**Branch:** `feature/TS-REQ-004-materials-reference-api`  
-**Context / module:** requisition / materials reference data  
-**Endpoint(s):** `GET/POST /api/v1/materials, GET/PUT/PATCH/DELETE /api/v1/materials/{id}`
+**Branch:** `feature/TS-REQ-004-materials-reference-api`
+**Context / module:** requisition / materials reference data
+**Endpoint(s):** `GET/POST /api/v1/companies/{companyId}/materials, GET/PUT/PATCH/DELETE /api/v1/companies/{companyId}/materials/{id}`
 
 As a frontend developer, I want to provide material reference data for requisitions, procurement and inventory.
 
@@ -138,23 +140,23 @@ Acceptance criteria:
 
 ### TS-INV-003 - Categories reference API
 
-**Branch:** `feature/TS-INV-003-categories-reference-api`  
-**Context / module:** inventory / categories reference data  
-**Endpoint(s):** `GET /api/v1/categories, GET /api/v1/categories/{id}`
+**Branch:** `feature/TS-INV-003-categories-reference-api`
+**Context / module:** inventory / categories reference data
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/categories, GET /api/v1/companies/{companyId}/categories/{id}`
 
 As a frontend developer, I want to provide category reference data for material classification and inventory filters.
 
 Acceptance criteria:
-- Given categories exist, when GET /api/v1/categories is called, then the API returns stable reference data.
+- Given categories exist, when GET /api/v1/companies/{companyId}/categories is called, then the API returns stable reference data.
 - Given an existing category id, when the detail endpoint is called, then the API returns the category resource.
 
 ---
 
 ### TS-REQ-001 - Create requisition API
 
-**Branch:** `feature/TS-REQ-001-create-requisition-api`  
-**Context / module:** requisition  
-**Endpoint(s):** `POST /api/v1/requisitions`
+**Branch:** `feature/TS-REQ-001-create-requisition-api`
+**Context / module:** requisition
+**Endpoint(s):** `POST /api/v1/companies/{companyId}/requisitions`
 
 As a frontend developer, I want to register material requests from construction sites.
 
@@ -166,9 +168,9 @@ Acceptance criteria:
 
 ### TS-REQ-002 - List and detail requisitions API
 
-**Branch:** `feature/TS-REQ-002-list-detail-requisitions-api`  
-**Context / module:** requisition  
-**Endpoint(s):** `GET /api/v1/requisitions, GET /api/v1/requisitions/{id}`
+**Branch:** `feature/TS-REQ-002-list-detail-requisitions-api`
+**Context / module:** requisition
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/requisitions, GET /api/v1/companies/{companyId}/requisitions/{id}`
 
 As a frontend developer, I want to implement requisition list and detail screens.
 
@@ -180,9 +182,9 @@ Acceptance criteria:
 
 ### TS-REQ-003 - Update requisition API
 
-**Branch:** `feature/TS-REQ-003-update-requisition-api`  
-**Context / module:** requisition  
-**Endpoint(s):** `PATCH /api/v1/requisitions/{id}`
+**Branch:** `feature/TS-REQ-003-update-requisition-api`
+**Context / module:** requisition
+**Endpoint(s):** `PATCH /api/v1/companies/{companyId}/requisitions/{id}`
 
 As a frontend developer, I want to reflect status, priority and operational updates for material requests.
 
@@ -194,9 +196,9 @@ Acceptance criteria:
 
 ### TS-PROC-001 - Quotations list and create API
 
-**Branch:** `feature/TS-PROC-001-quotations-api`  
-**Context / module:** procurement  
-**Endpoint(s):** `GET /api/v1/quotations, POST /api/v1/quotations`
+**Branch:** `feature/TS-PROC-001-quotations-api`
+**Context / module:** procurement
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/quotations, POST /api/v1/companies/{companyId}/quotations`
 
 As a frontend developer, I want to register and compare supplier quotations.
 
@@ -208,9 +210,9 @@ Acceptance criteria:
 
 ### TS-PROC-002 - Quotation detail and update API
 
-**Branch:** `feature/TS-PROC-002-quotation-detail-update-api`  
-**Context / module:** procurement  
-**Endpoint(s):** `GET /api/v1/quotations/{id}, PATCH /api/v1/quotations/{id}`
+**Branch:** `feature/TS-PROC-002-quotation-detail-update-api`
+**Context / module:** procurement
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/quotations/{id}, PATCH /api/v1/companies/{companyId}/quotations/{id}`
 
 As a frontend developer, I want to review quotation details and update quotation state.
 
@@ -222,9 +224,9 @@ Acceptance criteria:
 
 ### TS-PROC-003 - Purchase orders list and create API
 
-**Branch:** `feature/TS-PROC-003-purchase-orders-api`  
-**Context / module:** procurement  
-**Endpoint(s):** `GET /api/v1/purchaseOrders, POST /api/v1/purchaseOrders`
+**Branch:** `feature/TS-PROC-003-purchase-orders-api`
+**Context / module:** procurement
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/purchaseOrders, POST /api/v1/companies/{companyId}/purchaseOrders`
 
 As a frontend developer, I want to formalize approved purchases and show purchase history.
 
@@ -236,9 +238,9 @@ Acceptance criteria:
 
 ### TS-PROC-004 - Purchase order detail and update API
 
-**Branch:** `feature/TS-PROC-004-purchase-order-update-api`  
-**Context / module:** procurement  
-**Endpoint(s):** `GET /api/v1/purchaseOrders/{id}, PATCH /api/v1/purchaseOrders/{id}`
+**Branch:** `feature/TS-PROC-004-purchase-order-update-api`
+**Context / module:** procurement
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/purchaseOrders/{id}, PATCH /api/v1/companies/{companyId}/purchaseOrders/{id}`
 
 As a frontend developer, I want to query purchase order details and approve or reject orders.
 
@@ -250,9 +252,9 @@ Acceptance criteria:
 
 ### TS-INV-001 - Inventory list and create API
 
-**Branch:** `feature/TS-INV-001-inventory-api`  
-**Context / module:** inventory  
-**Endpoint(s):** `GET /api/v1/inventory, POST /api/v1/inventory`
+**Branch:** `feature/TS-INV-001-inventory-api`
+**Context / module:** inventory
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/inventory, POST /api/v1/companies/{companyId}/inventory`
 
 As a frontend developer, I want to visualize and register stock per project.
 
@@ -264,9 +266,9 @@ Acceptance criteria:
 
 ### TS-INV-002 - Inventory stock update API
 
-**Branch:** `feature/TS-INV-002-inventory-stock-update-api`  
-**Context / module:** inventory  
-**Endpoint(s):** `PATCH /api/v1/inventory/{id}`
+**Branch:** `feature/TS-INV-002-inventory-stock-update-api`
+**Context / module:** inventory
+**Endpoint(s):** `PATCH /api/v1/companies/{companyId}/inventory/{id}`
 
 As a frontend developer, I want to reflect warehouse movements in stock values.
 
@@ -278,9 +280,9 @@ Acceptance criteria:
 
 ### TS-DEL-001 - Delivery tracking list and create API
 
-**Branch:** `feature/TS-DEL-001-delivery-tracking-api`  
-**Context / module:** delivery  
-**Endpoint(s):** `GET /api/v1/deliveries, POST /api/v1/deliveries`
+**Branch:** `feature/TS-DEL-001-delivery-tracking-api`
+**Context / module:** delivery
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/deliveries, POST /api/v1/companies/{companyId}/deliveries`
 
 As a frontend developer, I want to register and track deliveries linked to purchase orders.
 
@@ -292,9 +294,9 @@ Acceptance criteria:
 
 ### TS-DEL-002 - Delivery status update API
 
-**Branch:** `feature/TS-DEL-002-delivery-status-update-api`  
-**Context / module:** delivery  
-**Endpoint(s):** `PATCH /api/v1/deliveries/{id}`
+**Branch:** `feature/TS-DEL-002-delivery-status-update-api`
+**Context / module:** delivery
+**Endpoint(s):** `PATCH /api/v1/companies/{companyId}/deliveries/{id}`
 
 As a frontend developer, I want to reflect dispatched, delayed, in-transit or delivered states.
 
@@ -306,9 +308,9 @@ Acceptance criteria:
 
 ### TS-SUP-001 - Suppliers directory API
 
-**Branch:** `feature/TS-SUP-001-suppliers-directory-api`  
-**Context / module:** suppliers  
-**Endpoint(s):** `GET /api/v1/suppliers, POST /api/v1/suppliers`
+**Branch:** `feature/TS-SUP-001-suppliers-directory-api`
+**Context / module:** suppliers
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/suppliers, POST /api/v1/companies/{companyId}/suppliers`
 
 As a frontend developer, I want to maintain the supplier directory used by procurement and incidents.
 
@@ -320,9 +322,9 @@ Acceptance criteria:
 
 ### TS-SUP-002 - Supplier update and delete API
 
-**Branch:** `feature/TS-SUP-002-supplier-update-delete-api`  
-**Context / module:** suppliers  
-**Endpoint(s):** `PATCH /api/v1/suppliers/{id}, DELETE /api/v1/suppliers/{id}`
+**Branch:** `feature/TS-SUP-002-supplier-update-delete-api`
+**Context / module:** suppliers
+**Endpoint(s):** `PATCH /api/v1/companies/{companyId}/suppliers/{id}, DELETE /api/v1/companies/{companyId}/suppliers/{id}`
 
 As a frontend developer, I want to update supplier information and remove inactive suppliers from operational views.
 
@@ -334,9 +336,9 @@ Acceptance criteria:
 
 ### TS-SUP-003 - Incidents list and create API
 
-**Branch:** `feature/TS-SUP-003-incidents-api`  
-**Context / module:** suppliers  
-**Endpoint(s):** `GET /api/v1/incidents, POST /api/v1/incidents`
+**Branch:** `feature/TS-SUP-003-incidents-api`
+**Context / module:** suppliers
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/incidents, POST /api/v1/companies/{companyId}/incidents`
 
 As a frontend developer, I want to record operational problems related to suppliers or deliveries.
 
@@ -348,9 +350,9 @@ Acceptance criteria:
 
 ### TS-SUP-004 - Incident status update API
 
-**Branch:** `feature/TS-SUP-004-incident-status-update-api`  
-**Context / module:** suppliers  
-**Endpoint(s):** `PATCH /api/v1/incidents/{id}`
+**Branch:** `feature/TS-SUP-004-incident-status-update-api`
+**Context / module:** suppliers
+**Endpoint(s):** `PATCH /api/v1/companies/{companyId}/incidents/{id}`
 
 As a frontend developer, I want to close, escalate or update incident status.
 
@@ -362,9 +364,9 @@ Acceptance criteria:
 
 ### TS-ANB-001 - Budget dashboard API
 
-**Branch:** `feature/TS-ANB-001-budget-dashboard-api`  
-**Context / module:** analytics-budgeting  
-**Endpoint(s):** `GET /api/v1/budgets, POST /api/v1/budgets`
+**Branch:** `feature/TS-ANB-001-budget-dashboard-api`
+**Context / module:** analytics-budgeting
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/budgets, POST /api/v1/companies/{companyId}/budgets`
 
 As a frontend developer, I want to feed analytics-budgeting dashboards with budget and spending indicators.
 
@@ -376,9 +378,9 @@ Acceptance criteria:
 
 ### TS-ANB-002 - Budget update API
 
-**Branch:** `feature/TS-ANB-002-budget-update-api`  
-**Context / module:** analytics-budgeting  
-**Endpoint(s):** `PATCH /api/v1/budgets/{id}`
+**Branch:** `feature/TS-ANB-002-budget-update-api`
+**Context / module:** analytics-budgeting
+**Endpoint(s):** `PATCH /api/v1/companies/{companyId}/budgets/{id}`
 
 As a frontend developer, I want to update financial values used to calculate budget deviation states.
 
@@ -390,9 +392,9 @@ Acceptance criteria:
 
 ### TS-COM-001 - Messages inbox API
 
-**Branch:** `feature/TS-COM-001-messages-inbox-api`  
-**Context / module:** communication  
-**Endpoint(s):** `GET /api/v1/messages, POST /api/v1/messages`
+**Branch:** `feature/TS-COM-001-messages-inbox-api`
+**Context / module:** communication
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/messages, POST /api/v1/companies/{companyId}/messages`
 
 As a frontend developer, I want to show the internal inbox and create operational notifications.
 
@@ -404,9 +406,9 @@ Acceptance criteria:
 
 ### TS-COM-002 - Message state and delete API
 
-**Branch:** `feature/TS-COM-002-message-state-delete-api`  
-**Context / module:** communication  
-**Endpoint(s):** `PATCH /api/v1/messages/{id}, DELETE /api/v1/messages/{id}`
+**Branch:** `feature/TS-COM-002-message-state-delete-api`
+**Context / module:** communication
+**Endpoint(s):** `PATCH /api/v1/companies/{companyId}/messages/{id}, DELETE /api/v1/companies/{companyId}/messages/{id}`
 
 As a frontend developer, I want to mark messages as read/starred or remove them from the inbox.
 
@@ -418,8 +420,8 @@ Acceptance criteria:
 
 ### IMP-BE-003 - Deployment and integration readiness
 
-**Branch:** `feature/backend-deployment-readiness`  
-**Context / module:** deployment  
+**Branch:** `feature/backend-deployment-readiness`
+**Context / module:** deployment
 **Endpoint(s):** `Dockerfile, appsettings.Production.json, Buildline.Platform.http smoke requests`
 
 As a frontend developer, I want to prepare the Web Services for deployment and frontend integration smoke testing.
@@ -427,6 +429,3 @@ As a frontend developer, I want to prepare the Web Services for deployment and f
 Acceptance criteria:
 - Given production variables are provided, when the API is built or containerized, then it starts with production-safe configuration.
 - Given the frontend replaces json-server, when smoke requests are executed, then the prioritized endpoints respond with the documented contracts.
-
-
-

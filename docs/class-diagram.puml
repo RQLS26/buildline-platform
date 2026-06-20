@@ -1,0 +1,294 @@
+@startuml
+title Buildline Platform - Backend Class Diagram
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "Shared Kernel" {
+  interface IAuditableEntity {
+    +CreatedAt: DateTimeOffset?
+    +UpdatedAt: DateTimeOffset?
+  }
+
+  interface IBaseRepository<T> {
+    +ListAsync(cancellationToken): Task<IEnumerable<T>>
+    +FindByIdAsync(id, cancellationToken): Task<T?>
+    +AddAsync(entity, cancellationToken): Task
+    +Update(entity): void
+    +Remove(entity): void
+  }
+
+  interface IUnitOfWork {
+    +CompleteAsync(cancellationToken): Task
+  }
+}
+
+package "IAM" {
+  class User {
+    +Id: int
+    +Name: string
+    +Email: string
+    +Role: string
+    +Department: string
+    +Phone: string
+    +AvatarColor: string
+    +IsActive: bool
+    +LastLogin: string
+    +TwoFactorEnabled: bool
+    +CompanyId: int?
+    +MembershipStatus: string
+    +UpdateLastLogin(lastLogin): User
+    +UpdateAccountInformation(...): User
+    +ChangePasswordHash(passwordHash): User
+  }
+
+  class UserCommandService {
+    +Handle(command: CreateUserCommand): Task<Result<User>>
+    +Handle(command: UpdateUserCommand): Task<Result<User>>
+    +Handle(command: ChangePasswordCommand): Task<Result<User>>
+    +Handle(command: SignInCommand): Task<Result<(User, string)>>
+    +Handle(command: SignUpCommand): Task<Result<(User, string)>>
+  }
+
+  class UsersController
+  class AuthenticationController
+  interface IUserRepository
+  interface IUserCommandService
+  interface IUserQueryService
+  interface IHashingService
+  interface ITokenService
+}
+
+package "Profiles" {
+  class Profile {
+    +Id: int
+    +CompanyName: string
+    +Ruc: string
+    +FiscalAddress: string
+    +ContactPhone: string
+    +EmailAddress: string
+    +Update(...): Profile
+  }
+
+  class ProfilesController
+  interface IProfileRepository
+}
+
+package "Analytics Budgeting" {
+  class Project {
+    +Id: int
+    +Name: string
+    +Status: string
+    +CompanyId: int?
+  }
+
+  class Budget {
+    +Id: int
+    +Project: string
+    +TotalBudget: decimal
+    +Spent: decimal
+    +Allocated: decimal
+    +Status: string
+    +CompanyId: int?
+    +Update(...): Budget
+  }
+
+  class ProjectsController
+  class BudgetsController
+}
+
+package "Requisition" {
+  class Material {
+    +Id: int
+    +Name: string
+    +Sku: string
+    +Unit: string
+    +Category: string
+    +CompanyId: int?
+    +Update(...): Material
+  }
+
+  class Requisition {
+    +Id: int
+    +ReqId: string
+    +Material: string
+    +Project: string
+    +Quantity: decimal
+    +Unit: string
+    +Priority: string
+    +Status: string
+    +CompanyId: int?
+    +Update(...): Requisition
+  }
+
+  class MaterialsController
+  class RequisitionsController
+}
+
+package "Procurement" {
+  class Quotation {
+    +Id: int
+    +QuotationId: string
+    +Supplier: string
+    +Material: string
+    +Amount: decimal
+    +Status: string
+    +CompanyId: int?
+    +Update(...): Quotation
+  }
+
+  class PurchaseOrder {
+    +Id: int
+    +OrderId: string
+    +Supplier: string
+    +Project: string
+    +Material: string
+    +Amount: decimal
+    +Status: string
+    +CompanyId: int?
+    +Update(...): PurchaseOrder
+  }
+
+  class QuotationsController
+  class PurchaseOrdersController
+}
+
+package "Inventory" {
+  class Category {
+    +Id: int
+    +Name: string
+    +CompanyId: int?
+  }
+
+  class InventoryItem {
+    +Id: int
+    +Sku: string
+    +Material: string
+    +Category: string
+    +Project: string
+    +CurrentStock: decimal
+    +MinimumStock: decimal
+    +MaximumStock: decimal
+    +CompanyId: int?
+    +Update(...): InventoryItem
+  }
+
+  class CategoriesController
+  class InventoryController
+}
+
+package "Delivery" {
+  class Delivery {
+    +Id: int
+    +TrackingId: string
+    +PurchaseOrderId: string
+    +Supplier: string
+    +Material: string
+    +Origin: string
+    +Destination: string
+    +Eta: DateTime
+    +Status: string
+    +CompanyId: int?
+    +Update(...): Delivery
+  }
+
+  class DeliveriesController
+}
+
+package "Suppliers" {
+  class Supplier {
+    +Id: int
+    +CompanyName: string
+    +Ruc: string
+    +Category: string
+    +ContactName: string
+    +ContactEmail: string
+    +Rating: decimal
+    +OnTimePercentage: decimal
+    +Status: string
+    +CompanyId: int?
+    +Update(...): Supplier
+  }
+
+  class SupplierIncident {
+    +Id: int
+    +IncidentId: string
+    +Supplier: string
+    +Severity: string
+    +Status: string
+    +Description: string
+    +CompanyId: int?
+    +Update(...): SupplierIncident
+  }
+
+  class SuppliersController
+  class IncidentsController
+}
+
+package "Communication" {
+  class Message {
+    +Id: int
+    +Sender: string
+    +Subject: string
+    +Category: string
+    +Read: bool
+    +Starred: bool
+    +Archived: bool
+    +CompanyId: int?
+    +Update(...): Message
+  }
+
+  class MessagesController
+}
+
+IAuditableEntity <|.. User
+IAuditableEntity <|.. Profile
+IAuditableEntity <|.. Project
+IAuditableEntity <|.. Budget
+IAuditableEntity <|.. Material
+IAuditableEntity <|.. Requisition
+IAuditableEntity <|.. Quotation
+IAuditableEntity <|.. PurchaseOrder
+IAuditableEntity <|.. InventoryItem
+IAuditableEntity <|.. Delivery
+IAuditableEntity <|.. Supplier
+IAuditableEntity <|.. SupplierIncident
+IAuditableEntity <|.. Message
+
+IBaseRepository <|-- IUserRepository
+IBaseRepository <|-- IProfileRepository
+
+UserCommandService --> IUserRepository
+UserCommandService --> IProfileRepository
+UserCommandService --> IHashingService
+UserCommandService --> ITokenService
+UserCommandService --> IUnitOfWork
+
+AuthenticationController --> IUserCommandService
+UsersController --> IUserCommandService
+UsersController --> IUserQueryService
+
+User "0..*" --> "0..1" Profile : CompanyId
+Project "0..*" --> "0..1" Profile : CompanyId
+Material "0..*" --> "0..1" Profile : CompanyId
+Requisition "0..*" --> "0..1" Profile : CompanyId
+Quotation "0..*" --> "0..1" Profile : CompanyId
+PurchaseOrder "0..*" --> "0..1" Profile : CompanyId
+InventoryItem "0..*" --> "0..1" Profile : CompanyId
+Delivery "0..*" --> "0..1" Profile : CompanyId
+Supplier "0..*" --> "0..1" Profile : CompanyId
+SupplierIncident "0..*" --> "0..1" Profile : CompanyId
+Budget "0..*" --> "0..1" Profile : CompanyId
+Message "0..*" --> "0..1" Profile : CompanyId
+
+Requisition --> Material : requests
+Quotation --> Supplier : offered by
+PurchaseOrder --> Supplier : issued to
+Delivery --> PurchaseOrder : tracks
+InventoryItem --> Material : stocks
+SupplierIncident --> Supplier : reports
+Budget --> Project : controls
+Message --> User : recipient
+
+@enduml
