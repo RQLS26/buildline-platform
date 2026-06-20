@@ -11,6 +11,7 @@ namespace Buildline.Platform.Requisition.Domain.Model.Commands;
 /// <param name="CurrentStock">Initial available stock quantity.</param>
 /// <param name="MinStock">Minimum stock threshold.</param>
 /// <param name="MaxStock">Maximum stock threshold.</param>
+/// <param name="CompanyId">Company profile identifier that owns the created operational record.</param>
 /// <remarks>
 ///     This command supports TS-05 and keeps REST resources decoupled from the domain aggregate.
 /// </remarks>
@@ -22,7 +23,8 @@ public record CreateMaterialCommand(
     string Project,
     int CurrentStock,
     int MinStock,
-    int MaxStock);
+    int MaxStock,
+    int CompanyId = 1);
 
 
 

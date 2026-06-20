@@ -12,6 +12,7 @@ namespace Buildline.Platform.Suppliers.Domain.Model.Commands;
 /// <param name="IsActive">Write value for the IsActive field in the frontend-compatible contract.</param>
 /// <param name="Category">Write value for the Category field in the frontend-compatible contract.</param>
 /// <param name="DeliveryRate">Write value for the DeliveryRate field in the frontend-compatible contract.</param>
+/// <param name="CompanyId">Company profile identifier that owns the created operational record.</param>
 /// <remarks>
 ///     The command keeps HTTP resources outside the domain model and lets the application service own
 ///     validation, persistence coordination and error translation.
@@ -25,4 +26,5 @@ public record CreateSupplierCommand(
     int? Rating,
     bool? IsActive,
     string? Category,
-    int? DeliveryRate);
+    int? DeliveryRate,
+    int CompanyId = 1);

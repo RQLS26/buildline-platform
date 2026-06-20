@@ -12,6 +12,7 @@ public static class ModelBuilderExtensions
     {
         builder.Entity<Budget>().HasKey(budget => budget.Id);
         builder.Entity<Budget>().Property(budget => budget.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Budget>().Property(budget => budget.CompanyId).IsRequired();
         builder.Entity<Budget>().Property(budget => budget.Project).IsRequired().HasMaxLength(120);
         builder.Entity<Budget>().Property(budget => budget.TotalBudget).IsRequired().HasPrecision(12, 2);
         builder.Entity<Budget>().Property(budget => budget.Spent).IsRequired().HasPrecision(12, 2);

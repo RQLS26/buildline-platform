@@ -28,6 +28,8 @@ public static class CreateUserCommandFromResourceAssembler
             resource.Phone,
             string.IsNullOrWhiteSpace(resource.AvatarColor) ? "#3d63a1" : resource.AvatarColor,
             resource.IsActive,
-            "Never");
+            "Never",
+            resource.CompanyId,
+            string.IsNullOrWhiteSpace(resource.MembershipStatus) ? "active" : resource.MembershipStatus);
     }
 }

@@ -10,6 +10,7 @@ namespace Buildline.Platform.Procurement.Domain.Model.Commands;
 /// <param name="Project">Write value for the Project field in the frontend-compatible contract.</param>
 /// <param name="TotalAmount">Write value for the TotalAmount field in the frontend-compatible contract.</param>
 /// <param name="Status">Write value for the Status field in the frontend-compatible contract.</param>
+/// <param name="CompanyId">Company profile identifier that owns the created operational record.</param>
 /// <remarks>
 ///     The command keeps HTTP resources outside the domain model and lets the application service own
 ///     validation, persistence coordination and error translation.
@@ -21,4 +22,5 @@ public record CreatePurchaseOrderCommand(
     string? Material,
     string? Project,
     decimal? TotalAmount,
-    string? Status);
+    string? Status,
+    int CompanyId = 1);

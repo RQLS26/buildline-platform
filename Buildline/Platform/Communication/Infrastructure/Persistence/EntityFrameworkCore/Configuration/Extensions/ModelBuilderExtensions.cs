@@ -12,6 +12,7 @@ public static class ModelBuilderExtensions
     {
         builder.Entity<Message>().HasKey(message => message.Id);
         builder.Entity<Message>().Property(message => message.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Message>().Property(message => message.CompanyId).IsRequired();
         builder.Entity<Message>().Property(message => message.Sender).IsRequired().HasMaxLength(120);
         builder.Entity<Message>().Property(message => message.Subject).IsRequired().HasMaxLength(180);
         builder.Entity<Message>().Property(message => message.Preview).HasMaxLength(500);

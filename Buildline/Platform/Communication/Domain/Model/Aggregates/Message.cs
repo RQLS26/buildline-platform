@@ -33,6 +33,7 @@ public partial class Message : IAuditableEntity, IHasDomainEvents
     /// <param name="command">Command carrying message values accepted by the application layer.</param>
     public Message(CreateMessageCommand command)
     {
+        CompanyId = command.CompanyId;
         var inboxState = InboxState.From(command.IsRead, command.Starred);
         Sender = command.Sender?.Trim() ?? "System";
         Subject = command.Subject?.Trim() ?? string.Empty;
@@ -50,6 +51,9 @@ public partial class Message : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the database-generated message identifier.</summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>Gets the sender display name.</summary>
     public string Sender { get; private set; }

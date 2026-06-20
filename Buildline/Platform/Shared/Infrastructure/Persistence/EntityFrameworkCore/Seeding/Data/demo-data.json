@@ -9,7 +9,7 @@
       "phone": "+51 987 654 321",
       "avatarColor": "#3d63a1",
       "isActive": true,
-      "lastLogin": "May 19, 2026"
+      "lastLogin": ""
     },
     {
       "name": "Carlos Mendoza",
@@ -20,7 +20,7 @@
       "phone": "+51 912 345 678",
       "avatarColor": "#F96116",
       "isActive": true,
-      "lastLogin": "May 18, 2026"
+      "lastLogin": ""
     }
   ],
   "profiles": [

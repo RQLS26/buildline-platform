@@ -11,9 +11,10 @@ public static class CreateDeliveryCommandFromResourceAssembler
     /// <summary>
     ///     Builds a create command from the HTTP request body.
     /// </summary>
+    /// <param name="companyId">Company profile identifier resolved from the company-scoped route.</param>
     /// <param name="resource">Resource received by the REST endpoint.</param>
     /// <returns>A command containing the same write values without exposing REST types to the domain.</returns>
-    public static CreateDeliveryCommand ToCommandFromResource(DeliveryWriteResource resource)
+    public static CreateDeliveryCommand ToCommandFromResource(DeliveryWriteResource resource, int companyId = 1)
     {
         return new CreateDeliveryCommand(
             resource.TrackingId,
@@ -25,6 +26,7 @@ public static class CreateDeliveryCommandFromResourceAssembler
             resource.Eta,
             resource.DispatchDate,
             resource.Items,
-            resource.Material);
+            resource.Material,
+            companyId);
     }
 }

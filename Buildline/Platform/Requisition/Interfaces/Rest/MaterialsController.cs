@@ -3,6 +3,7 @@ using Buildline.Platform.Requisition.Application.CommandServices;
 using Buildline.Platform.Requisition.Application.QueryServices;
 using Buildline.Platform.Requisition.Interfaces.Rest.Resources;
 using Buildline.Platform.Requisition.Interfaces.Rest.Transform;
+using Buildline.Platform.Shared.Interfaces.Rest.Company;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Buildline.Platform.Shared.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Authorization;
@@ -11,171 +12,86 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Buildline.Platform.Requisition.Interfaces.Rest;
 
-/// <summary>
-///     REST controller that exposes the material reference data required by requisitions and inventory.
-/// </summary>
-/// <remarks>
-///     The controller satisfies TS-04 through TS-08, replacing the Sprint 2 mock material service with
-///     versioned .NET Web Services aligned to the current frontend fields.
-/// </remarks>
+/// <summary>REST controller for company-scoped material reference resources.</summary>
 [ApiController]
 [Authorize]
+[Route("api/v1/companies/{companyId:int}/materials")]
 [Route("api/v1/materials")]
 [Produces(MediaTypeNames.Application.Json)]
-[SwaggerTag("Available material reference endpoints for requisitions and inventory.")]
+[SwaggerTag("Company-scoped material reference endpoints.")]
 public class MaterialsController(
     IMaterialCommandService materialCommandService,
     IMaterialQueryService materialQueryService,
-    ProblemDetailsFactory problemDetailsFactory)
-    : ControllerBase
+    ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
-    /// <summary>
-    ///     Gets every registered material.
-    /// </summary>
-    /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
-    /// <returns>
-    ///     <c>200 OK</c> with material resources when records exist; otherwise <c>204 No Content</c>.
-    /// </returns>
+    /// <summary>Gets every material owned by the route company.</summary>
     [HttpGet]
-    [SwaggerOperation(
-        Summary = "Get all materials",
-        Description = "Gets all registered materials available for requisitions and inventory workflows.",
-        OperationId = "GetAllMaterials")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The materials were found and returned.", typeof(IEnumerable<MaterialResource>))]
-    [SwaggerResponse(StatusCodes.Status204NoContent, "No materials are currently registered.")]
-    public async Task<IActionResult> GetAllMaterials(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllMaterials([FromRoute] int? companyId, CancellationToken cancellationToken)
     {
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
         var materials = await materialQueryService.ListAsync(cancellationToken);
-        return Ok(materials.Select(MaterialResourceFromEntityAssembler.ToResourceFromEntity));
+        return Ok(materials.Where(material => material.CompanyId == resolvedCompanyId).Select(MaterialResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
-    /// <summary>
-    ///     Gets one material by identifier.
-    /// </summary>
-    /// <param name="materialId">Identifier of the material requested by the API client.</param>
-    /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
-    /// <returns>
-    ///     <c>200 OK</c> with the material resource when found; otherwise <c>404 Not Found</c> Problem Details.
-    /// </returns>
+    /// <summary>Gets one material owned by the route company.</summary>
     [HttpGet("{materialId:int}")]
-    [SwaggerOperation(
-        Summary = "Get material by id",
-        Description = "Gets a material from the Buildline material references by its unique identifier.",
-        OperationId = "GetMaterialById")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The material was found and returned.", typeof(MaterialResource))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
-    public async Task<IActionResult> GetMaterialById(int materialId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMaterialById([FromRoute] int? companyId, int materialId, CancellationToken cancellationToken)
     {
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
         var material = await materialQueryService.FindByIdAsync(materialId, cancellationToken);
-        return material is null
+        return material is null || material.CompanyId != resolvedCompanyId
             ? this.NotFoundProblem("Material", materialId)
             : Ok(MaterialResourceFromEntityAssembler.ToResourceFromEntity(material));
     }
 
-    /// <summary>
-    ///     Creates a new material reference record.
-    /// </summary>
-    /// <param name="resource">Request body containing reference and stock fields.</param>
-    /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
-    /// <returns>
-    ///     <c>201 Created</c> with the created material resource when successful; otherwise a Problem Details response.
-    /// </returns>
+    /// <summary>Creates a material owned by the route company.</summary>
     [HttpPost]
-    [SwaggerOperation(
-        Summary = "Create material",
-        Description = "Registers a material in the Buildline material references.",
-        OperationId = "CreateMaterial")]
-    [SwaggerResponse(StatusCodes.Status201Created, "The material was created.", typeof(MaterialResource))]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "The material data was invalid.")]
-    public async Task<IActionResult> CreateMaterial(
-        [FromBody] CreateMaterialResource resource,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateMaterial([FromRoute] int? companyId, [FromBody] CreateMaterialResource resource, CancellationToken cancellationToken)
     {
-        var command = CreateMaterialCommandFromResourceAssembler.ToCommandFromResource(resource);
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var command = CreateMaterialCommandFromResourceAssembler.ToCommandFromResource(resource, resolvedCompanyId);
         var result = await materialCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
-            createdMaterial => CreatedAtAction(
-                nameof(GetMaterialById),
-                new { materialId = createdMaterial.Id },
-                MaterialResourceFromEntityAssembler.ToResourceFromEntity(createdMaterial)));
+            item => CreatedAtAction(nameof(GetMaterialById), new { companyId = resolvedCompanyId, materialId = item.Id }, MaterialResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 
-    /// <summary>
-    ///     Replaces reference and stock information for an existing material.
-    /// </summary>
-    /// <param name="materialId">Identifier of the material that must be updated.</param>
-    /// <param name="resource">Request body containing replacement reference and stock values.</param>
-    /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
-    /// <returns>
-    ///     <c>200 OK</c> with the updated material resource when successful; otherwise a Problem Details response.
-    /// </returns>
+    /// <summary>Replaces material information for a record owned by the route company.</summary>
     [HttpPut("{materialId:int}")]
-    [SwaggerOperation(
-        Summary = "Update material by id",
-        Description = "Updates a material from the Buildline material references by its unique identifier.",
-        OperationId = "UpdateMaterialById")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The material was updated.", typeof(MaterialResource))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
-    public async Task<IActionResult> UpdateMaterialById(
-        int materialId,
-        [FromBody] UpdateMaterialResource resource,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateMaterialById([FromRoute] int? companyId, int materialId, [FromBody] UpdateMaterialResource resource, CancellationToken cancellationToken)
     {
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var existing = await materialQueryService.FindByIdAsync(materialId, cancellationToken);
+        if (existing is null || existing.CompanyId != resolvedCompanyId)
+            return this.NotFoundProblem("Material", materialId);
+
         var command = UpdateMaterialCommandFromResourceAssembler.ToCommandFromResource(materialId, resource);
         var result = await materialCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
-            updatedMaterial => Ok(MaterialResourceFromEntityAssembler.ToResourceFromEntity(updatedMaterial)));
+            item => Ok(MaterialResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 
-    /// <summary>
-    ///     Provides PATCH-compatible material updates for the frontend contract.
-    /// </summary>
-    /// <param name="materialId">Identifier of the material that must be updated.</param>
-    /// <param name="resource">Request body containing the material values sent by the frontend form.</param>
-    /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
-    /// <returns>
-    ///     <c>200 OK</c> with the updated material resource when successful; otherwise a Problem Details response.
-    /// </returns>
-    /// <remarks>
-    ///     The current frontend sends complete material payloads, so PATCH delegates to the PUT
-    ///     implementation while preserving the endpoint expected by the mock-service contract.
-    /// </remarks>
+    /// <summary>Applies a PATCH-compatible material update for the route company.</summary>
     [HttpPatch("{materialId:int}")]
-    [SwaggerOperation(
-        Summary = "Patch material by id",
-        Description = "Partially-compatible update endpoint for the current inventory and material reference frontend.",
-        OperationId = "PatchMaterialById")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The material was updated.", typeof(MaterialResource))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
-    public async Task<IActionResult> PatchMaterialById(
-        int materialId,
-        [FromBody] UpdateMaterialResource resource,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> PatchMaterialById([FromRoute] int? companyId, int materialId, [FromBody] UpdateMaterialResource resource, CancellationToken cancellationToken)
     {
-        return await UpdateMaterialById(materialId, resource, cancellationToken);
+        return await UpdateMaterialById(companyId, materialId, resource, cancellationToken);
     }
 
-    /// <summary>
-    ///     Deletes an existing material by identifier.
-    /// </summary>
-    /// <param name="materialId">Identifier of the material that must be removed.</param>
-    /// <param name="cancellationToken">Token used to cancel the command when the HTTP request is aborted.</param>
-    /// <returns>
-    ///     <c>204 No Content</c> when deletion succeeds; otherwise a Problem Details response.
-    /// </returns>
+    /// <summary>Deletes a material owned by the route company.</summary>
     [HttpDelete("{materialId:int}")]
-    [SwaggerOperation(
-        Summary = "Delete material by id",
-        Description = "Deletes a material from the Buildline material references by its unique identifier.",
-        OperationId = "DeleteMaterialById")]
-    [SwaggerResponse(StatusCodes.Status204NoContent, "The material was deleted.")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "The material was not found.")]
-    public async Task<IActionResult> DeleteMaterialById(int materialId, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteMaterialById([FromRoute] int? companyId, int materialId, CancellationToken cancellationToken)
     {
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var existing = await materialQueryService.FindByIdAsync(materialId, cancellationToken);
+        if (existing is null || existing.CompanyId != resolvedCompanyId)
+            return this.NotFoundProblem("Material", materialId);
+
         var result = await materialCommandService.HandleDelete(materialId, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory, NoContent);
     }
 }
-
-
-

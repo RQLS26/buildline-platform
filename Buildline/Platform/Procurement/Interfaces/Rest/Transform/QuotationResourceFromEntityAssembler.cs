@@ -17,6 +17,7 @@ public static class QuotationResourceFromEntityAssembler
     {
         return new QuotationResource(
             quotation.Id,
+            quotation.CompanyId,
             quotation.QuotationId,
             quotation.Supplier,
             quotation.Material,

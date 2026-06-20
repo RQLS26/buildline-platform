@@ -13,6 +13,7 @@ namespace Buildline.Platform.Delivery.Domain.Model.Commands;
 /// <param name="DispatchDate">Write value for the DispatchDate field in the frontend-compatible contract.</param>
 /// <param name="Items">Write value for the Items field in the frontend-compatible contract.</param>
 /// <param name="Material">Write value for the Material field in the frontend-compatible contract.</param>
+/// <param name="CompanyId">Company profile identifier that owns the created operational record.</param>
 /// <remarks>
 ///     The command keeps HTTP resources outside the domain model and lets the application service own
 ///     validation, persistence coordination and error translation.
@@ -27,4 +28,5 @@ public record CreateDeliveryCommand(
     string? Eta,
     string? DispatchDate,
     string? Items,
-    string? Material);
+    string? Material,
+    int CompanyId = 1);

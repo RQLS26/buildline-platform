@@ -11,6 +11,8 @@ namespace Buildline.Platform.Iam.Interfaces.Rest.Resources;
 /// <param name="Phone">Contact phone shown in the frontend users table.</param>
 /// <param name="AvatarColor">Frontend avatar fallback color token.</param>
 /// <param name="IsActive">Flag indicating whether the account can authenticate.</param>
+/// <param name="CompanyId">Company profile identifier inherited from the owner who creates the user.</param>
+/// <param name="MembershipStatus">Initial membership state; administration-created users normally start active.</param>
 /// <remarks>
 ///     The initial last-login value is assigned by the assembler because it is backend-owned session
 ///     metadata, not an editable frontend field during user creation.
@@ -23,4 +25,6 @@ public record CreateUserResource(
     string Department,
     string Phone,
     string AvatarColor,
-    bool IsActive);
+    bool IsActive,
+    int? CompanyId,
+    string? MembershipStatus);

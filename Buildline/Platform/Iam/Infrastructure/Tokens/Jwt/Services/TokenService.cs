@@ -31,7 +31,9 @@ public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
                 new Claim(ClaimTypes.Sid, user.Id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Email),
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("company_id", user.CompanyId?.ToString() ?? string.Empty),
+                new Claim("membership_status", user.MembershipStatus)
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials =

@@ -15,6 +15,7 @@ public static class ModelBuilderExtensions
     {
         builder.Entity<Domain.Model.Aggregates.Requisition>().HasKey(requisition => requisition.Id);
         builder.Entity<Domain.Model.Aggregates.Requisition>().Property(requisition => requisition.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Domain.Model.Aggregates.Requisition>().Property(requisition => requisition.CompanyId).IsRequired();
         builder.Entity<Domain.Model.Aggregates.Requisition>().Property(requisition => requisition.ReqId).IsRequired().HasMaxLength(32);
         builder.Entity<Domain.Model.Aggregates.Requisition>().Property(requisition => requisition.Material).IsRequired().HasMaxLength(120);
         builder.Entity<Domain.Model.Aggregates.Requisition>().Property(requisition => requisition.Project).IsRequired().HasMaxLength(120);

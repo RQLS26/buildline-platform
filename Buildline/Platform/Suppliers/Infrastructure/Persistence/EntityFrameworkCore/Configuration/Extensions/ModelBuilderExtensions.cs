@@ -16,6 +16,7 @@ public static class ModelBuilderExtensions
     {
         builder.Entity<Supplier>().HasKey(supplier => supplier.Id);
         builder.Entity<Supplier>().Property(supplier => supplier.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Supplier>().Property(supplier => supplier.CompanyId).IsRequired();
         builder.Entity<Supplier>().Property(supplier => supplier.Ruc).IsRequired().HasMaxLength(11);
         builder.Entity<Supplier>().Property(supplier => supplier.CompanyName).IsRequired().HasMaxLength(160);
         builder.Entity<Supplier>().Property(supplier => supplier.ContactName).HasMaxLength(120);
@@ -28,6 +29,7 @@ public static class ModelBuilderExtensions
 
         builder.Entity<SupplierIncident>().HasKey(incident => incident.Id);
         builder.Entity<SupplierIncident>().Property(incident => incident.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<SupplierIncident>().Property(incident => incident.CompanyId).IsRequired();
         builder.Entity<SupplierIncident>().Property(incident => incident.IncidentId).IsRequired().HasMaxLength(24);
         builder.Entity<SupplierIncident>().Property(incident => incident.Title).IsRequired().HasMaxLength(160);
         builder.Entity<SupplierIncident>().Property(incident => incident.Description).HasMaxLength(800);

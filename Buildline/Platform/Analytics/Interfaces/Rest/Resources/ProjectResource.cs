@@ -3,6 +3,7 @@ namespace Buildline.Platform.Analytics.Interfaces.Rest.Resources;
 /// <summary>
 ///     REST resource returned by project endpoints.
 /// </summary>
+/// <param name="CompanyId">Company profile identifier that owns the resource.</param>
 /// <param name="Id">Project identifier used by frontend filters and related records.</param>
 /// <param name="Name">Project name displayed in UI lists.</param>
 /// <param name="Location">Project site location.</param>
@@ -13,6 +14,7 @@ namespace Buildline.Platform.Analytics.Interfaces.Rest.Resources;
 /// <param name="Progress">Completion percentage shown by dashboard widgets.</param>
 public record ProjectResource(
     int Id,
+    int CompanyId,
     string Name,
     string Location,
     decimal Budget,

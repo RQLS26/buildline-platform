@@ -3,6 +3,7 @@ using Buildline.Platform.Procurement.Application.CommandServices;
 using Buildline.Platform.Procurement.Application.QueryServices;
 using Buildline.Platform.Procurement.Interfaces.Rest.Resources;
 using Buildline.Platform.Procurement.Interfaces.Rest.Transform;
+using Buildline.Platform.Shared.Interfaces.Rest.Company;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Buildline.Platform.Shared.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Authorization;
@@ -11,50 +12,65 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Buildline.Platform.Procurement.Interfaces.Rest;
 
-/// <summary>REST controller for quotation comparison workflows in the Procurement bounded context.</summary>
+/// <summary>REST controller for company-scoped quotations resources.</summary>
 [ApiController]
 [Authorize]
+[Route("api/v1/companies/{companyId:int}/quotations")]
 [Route("api/v1/quotations")]
 [Produces(MediaTypeNames.Application.Json)]
-[SwaggerTag("Quotation endpoints for supplier comparison and procurement decision workflows.")]
+[SwaggerTag("Company-scoped quotations endpoints.")]
 public class QuotationsController(
     IQuotationCommandService quotationCommandService,
     IQuotationQueryService quotationQueryService,
     ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
-    /// <summary>Gets every quotation.</summary>
+    /// <summary>Gets every quotation owned by the route company.</summary>
     [HttpGet]
-    public async Task<IActionResult> GetAllQuotations(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllQuotations([FromRoute] int? companyId, CancellationToken cancellationToken)
     {
-        var quotations = await quotationQueryService.ListAsync(cancellationToken);
-        return Ok(quotations.Select(QuotationResourceFromEntityAssembler.ToResourceFromEntity));
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var items = await quotationQueryService.ListAsync(cancellationToken);
+        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(QuotationResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
-    /// <summary>Gets one quotation by identifier.</summary>
+    /// <summary>Gets one quotation owned by the route company.</summary>
     [HttpGet("{quotationId:int}")]
-    public async Task<IActionResult> GetQuotationById(int quotationId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetQuotationById([FromRoute] int? companyId, int quotationId, CancellationToken cancellationToken)
     {
-        var quotation = await quotationQueryService.FindByIdAsync(quotationId, cancellationToken);
-        return quotation is null ? this.NotFoundProblem("Quotation", quotationId) : Ok(QuotationResourceFromEntityAssembler.ToResourceFromEntity(quotation));
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var item = await quotationQueryService.FindByIdAsync(quotationId, cancellationToken);
+        return item is null || item.CompanyId != resolvedCompanyId
+            ? this.NotFoundProblem("Quotation", quotationId)
+            : Ok(QuotationResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
 
-    /// <summary>Creates a quotation through the application command service.</summary>
+    /// <summary>Creates a quotation owned by the route company.</summary>
     [HttpPost]
-    public async Task<IActionResult> CreateQuotation([FromBody] QuotationWriteResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateQuotation([FromRoute] int? companyId, [FromBody] QuotationWriteResource resource, CancellationToken cancellationToken)
     {
-        var command = CreateQuotationCommandFromResourceAssembler.ToCommandFromResource(resource);
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var command = CreateQuotationCommandFromResourceAssembler.ToCommandFromResource(resource, resolvedCompanyId);
         var result = await quotationCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
-            quotation => CreatedAtAction(nameof(GetQuotationById), new { quotationId = quotation.Id }, QuotationResourceFromEntityAssembler.ToResourceFromEntity(quotation)));
+            item => CreatedAtAction(nameof(GetQuotationById), new { companyId = resolvedCompanyId, quotationId = item.Id }, QuotationResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 
-    /// <summary>Applies a partial quotation update through the application command service.</summary>
+    /// <summary>Applies a partial update to a quotation owned by the route company.</summary>
     [HttpPatch("{quotationId:int}")]
-    public async Task<IActionResult> PatchQuotationById(int quotationId, [FromBody] QuotationWriteResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> PatchQuotationById([FromRoute] int? companyId, int quotationId, [FromBody] QuotationWriteResource resource, CancellationToken cancellationToken)
     {
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var existing = await quotationQueryService.FindByIdAsync(quotationId, cancellationToken);
+        if (existing is null || existing.CompanyId != resolvedCompanyId)
+            return this.NotFoundProblem("Quotation", quotationId);
+
         var command = UpdateQuotationCommandFromResourceAssembler.ToCommandFromResource(quotationId, resource);
         var result = await quotationCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
-            quotation => Ok(QuotationResourceFromEntityAssembler.ToResourceFromEntity(quotation)));
+            item => Ok(QuotationResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 }

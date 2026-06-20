@@ -1,9 +1,12 @@
+using System.Globalization;
 using Buildline.Platform.Iam.Application.CommandServices;
 using Buildline.Platform.Iam.Application.Internal.OutboundServices;
 using Buildline.Platform.Iam.Domain.Model;
 using Buildline.Platform.Iam.Domain.Model.Aggregates;
 using Buildline.Platform.Iam.Domain.Model.Commands;
 using Buildline.Platform.Iam.Domain.Repositories;
+using Buildline.Platform.Profiles.Domain.Model.Aggregates;
+using Buildline.Platform.Profiles.Domain.Repositories;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -24,6 +27,7 @@ namespace Buildline.Platform.Iam.Application.Internal.CommandServices;
 /// </remarks>
 public class UserCommandService(
     IUserRepository userRepository,
+    IProfileRepository profileRepository,
     IHashingService hashingService,
     ITokenService tokenService,
     IUnitOfWork unitOfWork,
@@ -31,9 +35,23 @@ public class UserCommandService(
     : IUserCommandService
 {
     private static readonly string[] SupportedRoles = ["owner", "admin", "viewer"];
+    private static readonly string[] SupportedMembershipStates = ["active", "pending", "rejected"];
 
     private static bool IsSupportedRole(string role) =>
         SupportedRoles.Any(supportedRole => string.Equals(supportedRole, role, StringComparison.OrdinalIgnoreCase));
+
+    private static bool IsSupportedMembershipStatus(string membershipStatus) =>
+        SupportedMembershipStates.Any(supportedStatus => string.Equals(supportedStatus, membershipStatus, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    ///     Builds the canonical timestamp stored after a successful authentication event.
+    /// </summary>
+    /// <returns>Current UTC timestamp formatted as ISO-8601.</returns>
+    /// <remarks>
+    ///     <c>LastLogin</c> remains a string for compatibility with the current migration, but this
+    ///     method guarantees the value is real, sortable and parseable by API clients.
+    /// </remarks>
+    private static string CurrentLoginTimestamp() => DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture);
 
     private Result<User>? ValidateManagedRole(string requestedRole, string? currentRole = null)
     {
@@ -81,6 +99,11 @@ public class UserCommandService(
                 IamError.WeakPassword,
                 localizer[$"{nameof(IamError)}.{IamError.WeakPassword}"]);
 
+        if (!IsSupportedMembershipStatus(command.MembershipStatus))
+            return Result<User>.Failure(
+                IamError.InvalidRole,
+                localizer[$"{nameof(IamError)}.{IamError.InvalidRole}"]);
+
         if (await userRepository.ExistsByEmailAsync(command.Email, cancellationToken))
             return Result<User>.Failure(
                 IamError.EmailAlreadyTaken,
@@ -95,7 +118,10 @@ public class UserCommandService(
             command.Phone,
             command.AvatarColor,
             command.IsActive,
-            command.LastLogin);
+            command.LastLogin,
+            false,
+            command.CompanyId,
+            command.MembershipStatus);
 
         try
         {
@@ -164,7 +190,9 @@ public class UserCommandService(
                 command.Phone,
                 command.AvatarColor,
                 command.IsActive,
-                command.TwoFactorEnabled);
+                command.TwoFactorEnabled,
+                command.CompanyId,
+                command.MembershipStatus);
             userRepository.Update(user);
             await unitOfWork.CompleteAsync(cancellationToken);
             return Result<User>.Success(user);
@@ -258,6 +286,10 @@ public class UserCommandService(
                 IamError.InvalidCredentials,
                 localizer[$"{nameof(IamError)}.{IamError.InvalidCredentials}"]);
 
+        user.UpdateLastLogin(CurrentLoginTimestamp());
+        userRepository.Update(user);
+        await unitOfWork.CompleteAsync(cancellationToken);
+
         var token = tokenService.GenerateToken(user);
         return Result<(User user, string token)>.Success((user, token));
     }
@@ -277,7 +309,10 @@ public class UserCommandService(
     /// </remarks>
     public async Task<Result<(User user, string token)>> Handle(SignUpCommand command, CancellationToken cancellationToken = default)
     {
-        if (!IsSupportedRole(command.Role) || string.Equals(command.Role, "owner", StringComparison.OrdinalIgnoreCase))
+        var isCreatingCompany = !command.CompanyId.HasValue && !string.IsNullOrWhiteSpace(command.CompanyName);
+        var initialRole = isCreatingCompany ? "owner" : "viewer";
+        var membershipStatus = isCreatingCompany ? "active" : command.MembershipStatus;
+        if (!IsSupportedRole(initialRole) || !IsSupportedMembershipStatus(membershipStatus))
             return Result<(User user, string token)>.Failure(
                 IamError.InvalidRole,
                 localizer[$"{nameof(IamError)}.{IamError.InvalidRole}"]);
@@ -293,12 +328,60 @@ public class UserCommandService(
                 localizer[$"{nameof(IamError)}.{IamError.EmailAlreadyTaken}"]);
 
         var passwordHash = hashingService.HashPassword(command.Password);
-        var user = new User(command, passwordHash);
+        var companyId = command.CompanyId;
+        Profile? profile = null;
+
+        if (isCreatingCompany)
+        {
+            profile = new Profile(
+                command.CompanyName!.Trim(),
+                string.Empty,
+                string.Empty,
+                command.Phone,
+                command.Email);
+            await profileRepository.AddAsync(profile, cancellationToken);
+        }
+        else if (!companyId.HasValue)
+        {
+            return Result<(User user, string token)>.Failure(
+                IamError.InvalidRole,
+                localizer[$"{nameof(IamError)}.{IamError.InvalidRole}"]);
+        }
+
+        var user = new User(
+            command.Name,
+            command.Email,
+            passwordHash,
+            initialRole,
+            command.Department,
+            command.Phone,
+            command.AvatarColor,
+            command.IsActive,
+            CurrentLoginTimestamp(),
+            false,
+            companyId,
+            membershipStatus);
 
         try
         {
             await userRepository.AddAsync(user, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
+            if (profile is not null)
+            {
+                user.UpdateAccountInformation(
+                    user.Name,
+                    user.Email,
+                    user.Role,
+                    user.Department,
+                    user.Phone,
+                    user.AvatarColor,
+                    user.IsActive,
+                    user.TwoFactorEnabled,
+                    profile.Id,
+                    user.MembershipStatus);
+                userRepository.Update(user);
+                await unitOfWork.CompleteAsync(cancellationToken);
+            }
             var token = tokenService.GenerateToken(user);
             return Result<(User user, string token)>.Success((user, token));
         }

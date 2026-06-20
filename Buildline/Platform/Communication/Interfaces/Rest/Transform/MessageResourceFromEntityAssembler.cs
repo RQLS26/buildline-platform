@@ -13,6 +13,7 @@ public static class MessageResourceFromEntityAssembler
     {
         return new MessageResource(
             message.Id,
+            message.CompanyId,
             message.Sender,
             message.Subject,
             message.Preview,

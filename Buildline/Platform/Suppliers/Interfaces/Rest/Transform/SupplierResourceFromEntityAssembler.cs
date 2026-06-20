@@ -17,6 +17,7 @@ public static class SupplierResourceFromEntityAssembler
     {
         return new SupplierResource(
             supplier.Id,
+            supplier.CompanyId,
             supplier.Ruc,
             supplier.CompanyName,
             supplier.ContactName,

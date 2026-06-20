@@ -10,6 +10,8 @@ namespace Buildline.Platform.Iam.Interfaces.Rest.Resources;
 /// <param name="Department">Operational department associated with the account.</param>
 /// <param name="Phone">Contact phone shown in user-management views.</param>
 /// <param name="AvatarColor">Frontend avatar fallback color token.</param>
+/// <param name="CompanyId">Existing company profile requested by the user, when joining a company.</param>
+/// <param name="CompanyName">New company name requested by the user, when creating a company during registration.</param>
 public record SignUpResource(
     string Name,
     string Email,
@@ -17,4 +19,6 @@ public record SignUpResource(
     string Role,
     string Department,
     string Phone,
-    string AvatarColor);
+    string AvatarColor,
+    int? CompanyId,
+    string? CompanyName);

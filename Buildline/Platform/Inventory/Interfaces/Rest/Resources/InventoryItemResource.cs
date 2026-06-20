@@ -5,6 +5,7 @@ namespace Buildline.Platform.Inventory.Interfaces.Rest.Resources;
 /// </summary>
 public record InventoryItemResource(
     int Id,
+    int CompanyId,
     string Sku,
     string Name,
     string Project,

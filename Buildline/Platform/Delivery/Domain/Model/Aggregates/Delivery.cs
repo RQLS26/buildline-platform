@@ -32,6 +32,7 @@ public partial class Delivery : IAuditableEntity, IHasDomainEvents
     /// <param name="command">Command carrying delivery values accepted by the application layer.</param>
     public Delivery(CreateDeliveryCommand command)
     {
+        CompanyId = command.CompanyId;
         TrackingId = TrackingCode.From(command.TrackingId).Value;
         PurchaseOrder = command.PurchaseOrder?.Trim() ?? string.Empty;
         Supplier = command.Supplier?.Trim() ?? string.Empty;
@@ -45,6 +46,9 @@ public partial class Delivery : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the database-generated delivery identifier.</summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>Gets the business tracking code.</summary>
     public string TrackingId { get; private set; }

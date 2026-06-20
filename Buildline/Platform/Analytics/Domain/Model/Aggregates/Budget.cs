@@ -25,6 +25,7 @@ public partial class Budget : IAuditableEntity, IHasDomainEvents
     /// <param name="command">Command carrying budget values accepted by the application layer.</param>
     public Budget(CreateBudgetCommand command)
     {
+        CompanyId = command.CompanyId;
         Project = command.Project?.Trim() ?? string.Empty;
         TotalBudget = command.TotalBudget ?? 0m;
         Spent = command.Spent ?? 0m;
@@ -34,6 +35,9 @@ public partial class Budget : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the database-generated budget identifier.</summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>Gets the project represented by this budget row.</summary>
     public string Project { get; private set; }

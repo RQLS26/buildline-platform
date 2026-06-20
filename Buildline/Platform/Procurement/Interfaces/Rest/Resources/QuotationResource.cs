@@ -3,6 +3,7 @@ namespace Buildline.Platform.Procurement.Interfaces.Rest.Resources;
 /// <summary>
 ///     REST resource returned by quotation endpoints.
 /// </summary>
+/// <param name="CompanyId">Company profile identifier that owns the resource.</param>
 /// <param name="Id">Persistence identifier used by the frontend.</param>
 /// <param name="QuotationId">Business quotation code.</param>
 /// <param name="Supplier">Supplier that submitted the quotation.</param>
@@ -13,6 +14,7 @@ namespace Buildline.Platform.Procurement.Interfaces.Rest.Resources;
 /// <param name="Date">Display date.</param>
 public record QuotationResource(
     int Id,
+    int CompanyId,
     string QuotationId,
     string Supplier,
     string Material,

@@ -11,9 +11,10 @@ public static class CreateSupplierCommandFromResourceAssembler
     /// <summary>
     ///     Builds a create command from the HTTP request body.
     /// </summary>
+    /// <param name="companyId">Company profile identifier resolved from the company-scoped route.</param>
     /// <param name="resource">Resource received by the REST endpoint.</param>
     /// <returns>A command containing the same write values without exposing REST types to the domain.</returns>
-    public static CreateSupplierCommand ToCommandFromResource(SupplierWriteResource resource)
+    public static CreateSupplierCommand ToCommandFromResource(SupplierWriteResource resource, int companyId = 1)
     {
         return new CreateSupplierCommand(
             resource.Ruc,
@@ -24,6 +25,7 @@ public static class CreateSupplierCommandFromResourceAssembler
             resource.Rating,
             resource.IsActive,
             resource.Category,
-            resource.DeliveryRate);
+            resource.DeliveryRate,
+            companyId);
     }
 }

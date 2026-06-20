@@ -15,9 +15,10 @@ public static class CreateMaterialCommandFromResourceAssembler
     /// <summary>
     ///     Builds a create-material command from the request resource.
     /// </summary>
+    /// <param name="companyId">Company profile identifier resolved from the company-scoped route.</param>
     /// <param name="resource">Resource received by the create-material endpoint.</param>
     /// <returns>A command ready for validation and persistence by the command service.</returns>
-    public static CreateMaterialCommand ToCommandFromResource(CreateMaterialResource resource)
+    public static CreateMaterialCommand ToCommandFromResource(CreateMaterialResource resource, int companyId = 1)
     {
         return new CreateMaterialCommand(
             resource.Sku,
@@ -27,7 +28,8 @@ public static class CreateMaterialCommandFromResourceAssembler
             resource.Project,
             resource.CurrentStock,
             resource.MinStock,
-            resource.MaxStock);
+            resource.MaxStock,
+            companyId);
     }
 }
 

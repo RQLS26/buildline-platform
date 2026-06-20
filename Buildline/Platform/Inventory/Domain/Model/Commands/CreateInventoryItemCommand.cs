@@ -11,6 +11,7 @@ namespace Buildline.Platform.Inventory.Domain.Model.Commands;
 /// <param name="MaxStock">Write value for the MaxStock field in the frontend-compatible contract.</param>
 /// <param name="MinStock">Write value for the MinStock field in the frontend-compatible contract.</param>
 /// <param name="LastUpdated">Write value for the LastUpdated field in the frontend-compatible contract.</param>
+/// <param name="CompanyId">Company profile identifier that owns the created operational record.</param>
 /// <remarks>
 ///     The command keeps HTTP resources outside the domain model and lets the application service own
 ///     validation, persistence coordination and error translation.
@@ -23,4 +24,5 @@ public record CreateInventoryItemCommand(
     int? CurrentStock,
     int? MaxStock,
     int? MinStock,
-    string? LastUpdated);
+    string? LastUpdated,
+    int CompanyId = 1);

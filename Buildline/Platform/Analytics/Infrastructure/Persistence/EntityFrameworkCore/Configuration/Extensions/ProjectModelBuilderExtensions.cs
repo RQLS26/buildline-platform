@@ -16,6 +16,7 @@ public static class ProjectModelBuilderExtensions
     {
         builder.Entity<Project>().HasKey(project => project.Id);
         builder.Entity<Project>().Property(project => project.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Project>().Property(project => project.CompanyId).IsRequired();
         builder.Entity<Project>().Property(project => project.Name).IsRequired().HasMaxLength(120);
         builder.Entity<Project>().Property(project => project.Location).IsRequired().HasMaxLength(120);
         builder.Entity<Project>().Property(project => project.Budget).IsRequired().HasPrecision(12, 2);

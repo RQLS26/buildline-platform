@@ -16,6 +16,7 @@ public static class MaterialModelBuilderExtensions
     {
         builder.Entity<Material>().HasKey(material => material.Id);
         builder.Entity<Material>().Property(material => material.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Material>().Property(material => material.CompanyId).IsRequired();
         builder.Entity<Material>().Property(material => material.Sku).IsRequired().HasMaxLength(24);
         builder.Entity<Material>().Property(material => material.Name).IsRequired().HasMaxLength(120);
         builder.Entity<Material>().Property(material => material.Category).IsRequired().HasMaxLength(60);

@@ -29,6 +29,7 @@ public partial class PurchaseOrder : IAuditableEntity, IHasDomainEvents
     /// <param name="command">Command carrying purchase order values accepted by the application layer.</param>
     public PurchaseOrder(CreatePurchaseOrderCommand command)
     {
+        CompanyId = command.CompanyId;
         OrderId = string.IsNullOrWhiteSpace(command.OrderId) ? $"PO-{DateTime.UtcNow:yyyyMMddHHmmss}" : command.OrderId.Trim();
         Date = command.Date?.Trim() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
         SupplierName = command.SupplierName?.Trim() ?? string.Empty;
@@ -41,6 +42,9 @@ public partial class PurchaseOrder : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the database-generated purchase order identifier.</summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>Gets the business purchase order code.</summary>
     public string OrderId { get; private set; }

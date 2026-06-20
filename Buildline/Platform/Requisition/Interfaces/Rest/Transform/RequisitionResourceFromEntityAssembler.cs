@@ -16,6 +16,7 @@ public static class RequisitionResourceFromEntityAssembler
     {
         return new RequisitionResource(
             requisition.Id,
+            requisition.CompanyId,
             requisition.ReqId,
             requisition.Material,
             requisition.Project,
