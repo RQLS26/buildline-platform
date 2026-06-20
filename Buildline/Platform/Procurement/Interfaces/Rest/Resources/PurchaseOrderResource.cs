@@ -3,6 +3,7 @@ namespace Buildline.Platform.Procurement.Interfaces.Rest.Resources;
 /// <summary>
 ///     REST resource returned by purchase order endpoints.
 /// </summary>
+/// <param name="CompanyId">Company profile identifier that owns the resource.</param>
 /// <param name="Id">Persistence identifier used by the frontend.</param>
 /// <param name="OrderId">Business purchase order code.</param>
 /// <param name="Date">Display date.</param>
@@ -13,6 +14,7 @@ namespace Buildline.Platform.Procurement.Interfaces.Rest.Resources;
 /// <param name="Status">Approval workflow status.</param>
 public record PurchaseOrderResource(
     int Id,
+    int CompanyId,
     string OrderId,
     string Date,
     string SupplierName,

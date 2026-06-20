@@ -13,6 +13,7 @@ public static class InventoryItemResourceFromEntityAssembler
     {
         return new InventoryItemResource(
             item.Id,
+            item.CompanyId,
             item.Sku,
             item.Name,
             item.Project,

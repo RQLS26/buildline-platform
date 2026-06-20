@@ -11,9 +11,10 @@ public static class CreateInventoryItemCommandFromResourceAssembler
     /// <summary>
     ///     Builds a create command from the HTTP request body.
     /// </summary>
+    /// <param name="companyId">Company profile identifier resolved from the company-scoped route.</param>
     /// <param name="resource">Resource received by the REST endpoint.</param>
     /// <returns>A command containing the same write values without exposing REST types to the domain.</returns>
-    public static CreateInventoryItemCommand ToCommandFromResource(InventoryItemWriteResource resource)
+    public static CreateInventoryItemCommand ToCommandFromResource(InventoryItemWriteResource resource, int companyId = 1)
     {
         return new CreateInventoryItemCommand(
             resource.Sku,
@@ -23,6 +24,7 @@ public static class CreateInventoryItemCommandFromResourceAssembler
             resource.CurrentStock,
             resource.MaxStock,
             resource.MinStock,
-            resource.LastUpdated);
+            resource.LastUpdated,
+            companyId);
     }
 }

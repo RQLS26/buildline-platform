@@ -3,6 +3,7 @@ namespace Buildline.Platform.Requisition.Interfaces.Rest.Resources;
 /// <summary>
 ///     REST resource returned by material requisition endpoints.
 /// </summary>
+/// <param name="CompanyId">Company profile identifier that owns the resource.</param>
 /// <param name="Id">Persistence identifier used by the frontend.</param>
 /// <param name="ReqId">Business requisition code.</param>
 /// <param name="Material">Requested material name.</param>
@@ -16,6 +17,7 @@ namespace Buildline.Platform.Requisition.Interfaces.Rest.Resources;
 /// <param name="RequestedBy">Employee who created the requisition.</param>
 public record RequisitionResource(
     int Id,
+    int CompanyId,
     string ReqId,
     string Material,
     string Project,

@@ -28,6 +28,8 @@ public static class UserResourceFromEntityAssembler
             user.AvatarColor,
             user.IsActive,
             user.LastLogin,
-            user.TwoFactorEnabled);
+            user.TwoFactorEnabled,
+            user.CompanyId,
+            user.MembershipStatus);
     }
 }

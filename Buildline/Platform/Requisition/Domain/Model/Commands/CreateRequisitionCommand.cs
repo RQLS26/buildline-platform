@@ -13,6 +13,7 @@ namespace Buildline.Platform.Requisition.Domain.Model.Commands;
 /// <param name="RequestedOn">Write value for the RequestedOn field in the frontend-compatible contract.</param>
 /// <param name="DeliveryDate">Write value for the DeliveryDate field in the frontend-compatible contract.</param>
 /// <param name="RequestedBy">Write value for the RequestedBy field in the frontend-compatible contract.</param>
+/// <param name="CompanyId">Company profile identifier that owns the created operational record.</param>
 /// <remarks>
 ///     The command keeps HTTP resources outside the domain model and lets the application service own
 ///     validation, persistence coordination and error translation.
@@ -27,4 +28,5 @@ public record CreateRequisitionCommand(
     string? Status,
     string? RequestedOn,
     string? DeliveryDate,
-    string? RequestedBy);
+    string? RequestedBy,
+    int CompanyId = 1);

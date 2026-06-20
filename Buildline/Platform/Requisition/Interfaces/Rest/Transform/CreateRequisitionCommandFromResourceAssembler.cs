@@ -11,9 +11,10 @@ public static class CreateRequisitionCommandFromResourceAssembler
     /// <summary>
     ///     Builds a create command from the HTTP request body.
     /// </summary>
+    /// <param name="companyId">Company profile identifier resolved from the company-scoped route.</param>
     /// <param name="resource">Resource received by the REST endpoint.</param>
     /// <returns>A command containing the same write values without exposing REST types to the domain.</returns>
-    public static CreateRequisitionCommand ToCommandFromResource(RequisitionWriteResource resource)
+    public static CreateRequisitionCommand ToCommandFromResource(RequisitionWriteResource resource, int companyId = 1)
     {
         return new CreateRequisitionCommand(
             resource.ReqId,
@@ -25,6 +26,7 @@ public static class CreateRequisitionCommandFromResourceAssembler
             resource.Status,
             resource.RequestedOn,
             resource.DeliveryDate,
-            resource.RequestedBy);
+            resource.RequestedBy,
+            companyId);
     }
 }

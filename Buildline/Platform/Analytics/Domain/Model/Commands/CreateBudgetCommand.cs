@@ -8,6 +8,7 @@ namespace Buildline.Platform.Analytics.Domain.Model.Commands;
 /// <param name="Spent">Write value for the Spent field in the frontend-compatible contract.</param>
 /// <param name="Allocated">Write value for the Allocated field in the frontend-compatible contract.</param>
 /// <param name="Status">Write value for the Status field in the frontend-compatible contract.</param>
+/// <param name="CompanyId">Company profile identifier that owns the created operational record.</param>
 /// <remarks>
 ///     The command keeps HTTP resources outside the domain model and lets the application service own
 ///     validation, persistence coordination and error translation.
@@ -17,4 +18,5 @@ public record CreateBudgetCommand(
     decimal? TotalBudget,
     decimal? Spent,
     decimal? Allocated,
-    string? Status);
+    string? Status,
+    int CompanyId = 1);

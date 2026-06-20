@@ -22,6 +22,10 @@ public static class SignUpCommandFromResourceAssembler
             string.IsNullOrWhiteSpace(resource.Role) ? "viewer" : resource.Role,
             string.IsNullOrWhiteSpace(resource.Department) ? "General" : resource.Department,
             resource.Phone,
-            string.IsNullOrWhiteSpace(resource.AvatarColor) ? "#3d63a1" : resource.AvatarColor);
+            string.IsNullOrWhiteSpace(resource.AvatarColor) ? "#3d63a1" : resource.AvatarColor,
+            resource.CompanyId,
+            resource.CompanyName,
+            true,
+            resource.CompanyId.HasValue ? "pending" : "active");
     }
 }

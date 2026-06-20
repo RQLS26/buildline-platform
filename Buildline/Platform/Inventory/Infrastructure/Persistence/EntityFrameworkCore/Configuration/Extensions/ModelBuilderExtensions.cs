@@ -12,6 +12,7 @@ public static class ModelBuilderExtensions
     {
         builder.Entity<InventoryItem>().HasKey(item => item.Id);
         builder.Entity<InventoryItem>().Property(item => item.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<InventoryItem>().Property(item => item.CompanyId).IsRequired();
         builder.Entity<InventoryItem>().Property(item => item.Sku).IsRequired().HasMaxLength(24);
         builder.Entity<InventoryItem>().Property(item => item.Name).IsRequired().HasMaxLength(120);
         builder.Entity<InventoryItem>().Property(item => item.Project).IsRequired().HasMaxLength(120);

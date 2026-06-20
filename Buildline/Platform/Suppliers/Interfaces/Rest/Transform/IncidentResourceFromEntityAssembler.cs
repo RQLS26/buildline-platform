@@ -17,6 +17,7 @@ public static class IncidentResourceFromEntityAssembler
     {
         return new IncidentResource(
             incident.Id,
+            incident.CompanyId,
             incident.IncidentId,
             incident.Title,
             incident.Description,

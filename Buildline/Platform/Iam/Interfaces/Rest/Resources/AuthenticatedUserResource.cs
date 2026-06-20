@@ -13,6 +13,8 @@ namespace Buildline.Platform.Iam.Interfaces.Rest.Resources;
 /// <param name="IsActive">Flag indicating whether the account is active.</param>
 /// <param name="LastLogin">Last-login display value.</param>
 /// <param name="TwoFactorEnabled">Two-factor authentication preference for the authenticated account.</param>
+/// <param name="CompanyId">Company profile identifier assigned to the authenticated account.</param>
+/// <param name="MembershipStatus">Membership state that determines whether the account can enter operational screens.</param>
 /// <param name="Token">Signed JWT access token to send in the Authorization header.</param>
 public record AuthenticatedUserResource(
     int Id,
@@ -25,4 +27,6 @@ public record AuthenticatedUserResource(
     bool IsActive,
     string LastLogin,
     bool TwoFactorEnabled,
+    int? CompanyId,
+    string MembershipStatus,
     string Token);

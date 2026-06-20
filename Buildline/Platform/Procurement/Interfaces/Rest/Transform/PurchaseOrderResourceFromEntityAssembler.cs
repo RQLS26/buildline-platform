@@ -17,6 +17,7 @@ public static class PurchaseOrderResourceFromEntityAssembler
     {
         return new PurchaseOrderResource(
             purchaseOrder.Id,
+            purchaseOrder.CompanyId,
             purchaseOrder.OrderId,
             purchaseOrder.Date,
             purchaseOrder.SupplierName,

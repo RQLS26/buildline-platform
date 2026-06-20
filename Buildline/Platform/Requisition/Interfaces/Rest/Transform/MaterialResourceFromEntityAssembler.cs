@@ -21,6 +21,7 @@ public static class MaterialResourceFromEntityAssembler
     {
         return new MaterialResource(
             material.Id,
+            material.CompanyId,
             material.Sku,
             material.Name,
             material.Category,

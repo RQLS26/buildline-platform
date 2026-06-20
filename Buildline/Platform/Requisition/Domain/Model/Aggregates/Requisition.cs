@@ -32,6 +32,7 @@ public partial class Requisition : IAuditableEntity, IHasDomainEvents
     /// <param name="command">Command carrying requisition values accepted by the application layer.</param>
     public Requisition(CreateRequisitionCommand command)
     {
+        CompanyId = command.CompanyId;
         var materialDescriptor = MaterialDescriptor.From(command.Material, command.Unit, string.Empty);
         ReqId = string.IsNullOrWhiteSpace(command.ReqId) ? $"MR-{DateTime.UtcNow:yyyyMMddHHmmss}" : command.ReqId.Trim();
         Material = materialDescriptor.Name;
@@ -48,6 +49,9 @@ public partial class Requisition : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the database-generated requisition identifier.</summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>Gets the business requisition code displayed in operations screens.</summary>
     public string ReqId { get; private set; }

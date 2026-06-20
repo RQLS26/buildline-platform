@@ -25,6 +25,7 @@ public partial class Quotation : IAuditableEntity
     /// <param name="command">Quotation payload entered by logistics staff.</param>
     public Quotation(CreateQuotationCommand command)
     {
+        CompanyId = command.CompanyId;
         QuotationId = string.IsNullOrWhiteSpace(command.QuotationId) ? $"QT-{DateTime.UtcNow:yyyyMMddHHmmss}" : command.QuotationId.Trim();
         Supplier = command.Supplier?.Trim() ?? string.Empty;
         Material = command.Material?.Trim() ?? string.Empty;
@@ -36,6 +37,9 @@ public partial class Quotation : IAuditableEntity
 
     /// <summary>Gets the database-generated quotation identifier.</summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>Gets the business quotation code displayed in comparison tables.</summary>
     public string QuotationId { get; private set; }

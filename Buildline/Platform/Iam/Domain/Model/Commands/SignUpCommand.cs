@@ -10,6 +10,10 @@ namespace Buildline.Platform.Iam.Domain.Model.Commands;
 /// <param name="Department">Operational department associated with the user.</param>
 /// <param name="Phone">Contact phone provided during registration.</param>
 /// <param name="AvatarColor">Frontend avatar fallback color token.</param>
+/// <param name="CompanyId">Existing company profile requested by the user when joining a company.</param>
+/// <param name="CompanyName">New company name requested by the user when creating a company.</param>
+/// <param name="IsActive">Initial account access state.</param>
+/// <param name="MembershipStatus">Initial company membership state.</param>
 /// <remarks>
 ///     This command supports TS-12 and returns an authenticated session token after successful
 ///     registration in the current Sprint 3 scope.
@@ -21,4 +25,8 @@ public record SignUpCommand(
     string Role,
     string Department,
     string Phone,
-    string AvatarColor);
+    string AvatarColor,
+    int? CompanyId,
+    string? CompanyName,
+    bool IsActive,
+    string MembershipStatus);

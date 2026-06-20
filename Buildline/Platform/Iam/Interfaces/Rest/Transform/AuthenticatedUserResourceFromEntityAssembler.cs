@@ -27,6 +27,8 @@ public static class AuthenticatedUserResourceFromEntityAssembler
             user.IsActive,
             user.LastLogin,
             user.TwoFactorEnabled,
+            user.CompanyId,
+            user.MembershipStatus,
             token);
     }
 }

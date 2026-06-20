@@ -15,6 +15,7 @@ namespace Buildline.Platform.Communication.Domain.Model.Commands;
 /// <param name="Category">Write value for the Category field in the frontend-compatible contract.</param>
 /// <param name="Time">Write value for the Time field in the frontend-compatible contract.</param>
 /// <param name="Date">Write value for the Date field in the frontend-compatible contract.</param>
+/// <param name="CompanyId">Company profile identifier that owns the created operational record.</param>
 /// <remarks>
 ///     The command keeps HTTP resources outside the domain model and lets the application service own
 ///     validation, persistence coordination and error translation.
@@ -31,4 +32,5 @@ public record CreateMessageCommand(
     bool? Starred,
     string? Category,
     string? Time,
-    string? Date);
+    string? Date,
+    int CompanyId = 1);

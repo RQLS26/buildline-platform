@@ -3,6 +3,7 @@ namespace Buildline.Platform.Suppliers.Interfaces.Rest.Resources;
 /// <summary>
 ///     REST resource returned by supplier directory endpoints.
 /// </summary>
+/// <param name="CompanyId">Company profile identifier that owns the resource.</param>
 /// <param name="Id">Supplier identifier used by the frontend.</param>
 /// <param name="Ruc">Peruvian tax identifier for supplier validation.</param>
 /// <param name="CompanyName">Supplier company name.</param>
@@ -15,6 +16,7 @@ namespace Buildline.Platform.Suppliers.Interfaces.Rest.Resources;
 /// <param name="DeliveryRate">Historical on-time delivery percentage.</param>
 public record SupplierResource(
     int Id,
+    int CompanyId,
     string Ruc,
     string CompanyName,
     string ContactName,

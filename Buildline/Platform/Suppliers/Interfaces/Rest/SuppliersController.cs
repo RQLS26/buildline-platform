@@ -1,67 +1,89 @@
 using System.Net.Mime;
-using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
-using Buildline.Platform.Shared.Interfaces.Rest.Transform;
 using Buildline.Platform.Suppliers.Application.CommandServices;
 using Buildline.Platform.Suppliers.Application.QueryServices;
 using Buildline.Platform.Suppliers.Interfaces.Rest.Resources;
 using Buildline.Platform.Suppliers.Interfaces.Rest.Transform;
+using Buildline.Platform.Shared.Interfaces.Rest.Company;
+using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Buildline.Platform.Shared.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Buildline.Platform.Suppliers.Interfaces.Rest;
 
-/// <summary>REST controller for the Suppliers bounded context.</summary>
+/// <summary>REST controller for company-scoped suppliers resources.</summary>
 [ApiController]
 [Authorize]
+[Route("api/v1/companies/{companyId:int}/suppliers")]
 [Route("api/v1/suppliers")]
 [Produces(MediaTypeNames.Application.Json)]
-[SwaggerTag("Supplier directory endpoints for procurement risk and supplier performance workflows.")]
+[SwaggerTag("Company-scoped suppliers endpoints.")]
 public class SuppliersController(
     ISupplierCommandService supplierCommandService,
     ISupplierQueryService supplierQueryService,
     ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
-    /// <summary>Gets every supplier registered in the directory.</summary>
+    /// <summary>Gets every supplier owned by the route company.</summary>
     [HttpGet]
-    public async Task<IActionResult> GetAllSuppliers(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllSuppliers([FromRoute] int? companyId, CancellationToken cancellationToken)
     {
-        var suppliers = await supplierQueryService.ListAsync(cancellationToken);
-        return Ok(suppliers.Select(SupplierResourceFromEntityAssembler.ToResourceFromEntity));
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var items = await supplierQueryService.ListAsync(cancellationToken);
+        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(SupplierResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
-    /// <summary>Gets a supplier by identifier.</summary>
+    /// <summary>Gets one supplier owned by the route company.</summary>
     [HttpGet("{supplierId:int}")]
-    public async Task<IActionResult> GetSupplierById(int supplierId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSupplierById([FromRoute] int? companyId, int supplierId, CancellationToken cancellationToken)
     {
-        var supplier = await supplierQueryService.FindByIdAsync(supplierId, cancellationToken);
-        return supplier is null ? this.NotFoundProblem("Supplier", supplierId) : Ok(SupplierResourceFromEntityAssembler.ToResourceFromEntity(supplier));
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var item = await supplierQueryService.FindByIdAsync(supplierId, cancellationToken);
+        return item is null || item.CompanyId != resolvedCompanyId
+            ? this.NotFoundProblem("Supplier", supplierId)
+            : Ok(SupplierResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
 
-    /// <summary>Creates a supplier directory entry through the application command service.</summary>
+    /// <summary>Creates a supplier owned by the route company.</summary>
     [HttpPost]
-    public async Task<IActionResult> CreateSupplier([FromBody] SupplierWriteResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateSupplier([FromRoute] int? companyId, [FromBody] SupplierWriteResource resource, CancellationToken cancellationToken)
     {
-        var command = CreateSupplierCommandFromResourceAssembler.ToCommandFromResource(resource);
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var command = CreateSupplierCommandFromResourceAssembler.ToCommandFromResource(resource, resolvedCompanyId);
         var result = await supplierCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
-            supplier => CreatedAtAction(nameof(GetSupplierById), new { supplierId = supplier.Id }, SupplierResourceFromEntityAssembler.ToResourceFromEntity(supplier)));
+            item => CreatedAtAction(nameof(GetSupplierById), new { companyId = resolvedCompanyId, supplierId = item.Id }, SupplierResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 
-    /// <summary>Applies a partial supplier update through the application command service.</summary>
+    /// <summary>Applies a partial update to a supplier owned by the route company.</summary>
     [HttpPatch("{supplierId:int}")]
-    public async Task<IActionResult> PatchSupplierById(int supplierId, [FromBody] SupplierWriteResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> PatchSupplierById([FromRoute] int? companyId, int supplierId, [FromBody] SupplierWriteResource resource, CancellationToken cancellationToken)
     {
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var existing = await supplierQueryService.FindByIdAsync(supplierId, cancellationToken);
+        if (existing is null || existing.CompanyId != resolvedCompanyId)
+            return this.NotFoundProblem("Supplier", supplierId);
+
         var command = UpdateSupplierCommandFromResourceAssembler.ToCommandFromResource(supplierId, resource);
         var result = await supplierCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
-            supplier => Ok(SupplierResourceFromEntityAssembler.ToResourceFromEntity(supplier)));
+            item => Ok(SupplierResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 
-    /// <summary>Deletes a supplier directory entry through the application command service.</summary>
+    /// <summary>Deletes a supplier owned by the route company.</summary>
     [HttpDelete("{supplierId:int}")]
-    public async Task<IActionResult> DeleteSupplierById(int supplierId, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteSupplierById([FromRoute] int? companyId, int supplierId, CancellationToken cancellationToken)
     {
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var existing = await supplierQueryService.FindByIdAsync(supplierId, cancellationToken);
+        if (existing is null || existing.CompanyId != resolvedCompanyId)
+            return this.NotFoundProblem("Supplier", supplierId);
+
         var result = await supplierCommandService.HandleDelete(supplierId, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory, NoContent);
     }

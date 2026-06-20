@@ -13,6 +13,7 @@ public static class DeliveryResourceFromEntityAssembler
     {
         return new DeliveryResource(
             delivery.Id,
+            delivery.CompanyId,
             delivery.TrackingId,
             delivery.PurchaseOrder,
             delivery.Supplier,

@@ -11,6 +11,8 @@ namespace Buildline.Platform.Iam.Interfaces.Rest.Resources;
 /// <param name="AvatarColor">Optional replacement frontend avatar color token.</param>
 /// <param name="IsActive">Optional replacement access-status flag.</param>
 /// <param name="TwoFactorEnabled">Optional replacement two-factor authentication preference.</param>
+/// <param name="CompanyId">Optional replacement company membership profile identifier.</param>
+/// <param name="MembershipStatus">Optional replacement company membership state.</param>
 /// <remarks>
 ///     Every property is nullable because the endpoint is a PATCH contract used by the frontend
 ///     users module. Missing fields keep their current persisted value in the assembler before an
@@ -24,4 +26,6 @@ public record UpdateUserResource(
     string? Phone,
     string? AvatarColor,
     bool? IsActive,
-    bool? TwoFactorEnabled);
+    bool? TwoFactorEnabled,
+    int? CompanyId,
+    string? MembershipStatus);

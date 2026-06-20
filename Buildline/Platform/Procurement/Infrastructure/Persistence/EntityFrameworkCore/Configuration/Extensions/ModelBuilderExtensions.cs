@@ -16,6 +16,7 @@ public static class ModelBuilderExtensions
     {
         builder.Entity<PurchaseOrder>().HasKey(order => order.Id);
         builder.Entity<PurchaseOrder>().Property(order => order.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<PurchaseOrder>().Property(order => order.CompanyId).IsRequired();
         builder.Entity<PurchaseOrder>().Property(order => order.OrderId).IsRequired().HasMaxLength(32);
         builder.Entity<PurchaseOrder>().Property(order => order.Date).IsRequired().HasMaxLength(30);
         builder.Entity<PurchaseOrder>().Property(order => order.SupplierName).IsRequired().HasMaxLength(160);
@@ -26,6 +27,7 @@ public static class ModelBuilderExtensions
 
         builder.Entity<Quotation>().HasKey(quotation => quotation.Id);
         builder.Entity<Quotation>().Property(quotation => quotation.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Quotation>().Property(quotation => quotation.CompanyId).IsRequired();
         builder.Entity<Quotation>().Property(quotation => quotation.QuotationId).IsRequired().HasMaxLength(32);
         builder.Entity<Quotation>().Property(quotation => quotation.Supplier).IsRequired().HasMaxLength(160);
         builder.Entity<Quotation>().Property(quotation => quotation.Material).IsRequired().HasMaxLength(160);

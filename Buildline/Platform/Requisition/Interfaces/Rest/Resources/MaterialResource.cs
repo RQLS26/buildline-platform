@@ -3,6 +3,7 @@ namespace Buildline.Platform.Requisition.Interfaces.Rest.Resources;
 /// <summary>
 ///     REST resource returned by material reference endpoints.
 /// </summary>
+/// <param name="CompanyId">Company profile identifier that owns the resource.</param>
 /// <param name="Id">Material identifier used by API clients.</param>
 /// <param name="Sku">Business SKU displayed in material tables.</param>
 /// <param name="Name">Material display name.</param>
@@ -14,6 +15,7 @@ namespace Buildline.Platform.Requisition.Interfaces.Rest.Resources;
 /// <param name="MaxStock">Maximum stock threshold.</param>
 public record MaterialResource(
     int Id,
+    int CompanyId,
     string Sku,
     string Name,
     string Category,

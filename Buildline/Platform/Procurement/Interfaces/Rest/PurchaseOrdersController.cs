@@ -3,6 +3,7 @@ using Buildline.Platform.Procurement.Application.CommandServices;
 using Buildline.Platform.Procurement.Application.QueryServices;
 using Buildline.Platform.Procurement.Interfaces.Rest.Resources;
 using Buildline.Platform.Procurement.Interfaces.Rest.Transform;
+using Buildline.Platform.Shared.Interfaces.Rest.Company;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Buildline.Platform.Shared.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Authorization;
@@ -11,50 +12,65 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Buildline.Platform.Procurement.Interfaces.Rest;
 
-/// <summary>REST controller for purchase order workflows in the Procurement bounded context.</summary>
+/// <summary>REST controller for company-scoped purchaseOrders resources.</summary>
 [ApiController]
 [Authorize]
+[Route("api/v1/companies/{companyId:int}/purchaseOrders")]
 [Route("api/v1/purchaseOrders")]
 [Produces(MediaTypeNames.Application.Json)]
-[SwaggerTag("Purchase order endpoints for procurement approval and purchase history workflows.")]
+[SwaggerTag("Company-scoped purchaseOrders endpoints.")]
 public class PurchaseOrdersController(
     IPurchaseOrderCommandService purchaseOrderCommandService,
     IPurchaseOrderQueryService purchaseOrderQueryService,
     ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
-    /// <summary>Gets every purchase order.</summary>
+    /// <summary>Gets every purchase order owned by the route company.</summary>
     [HttpGet]
-    public async Task<IActionResult> GetAllPurchaseOrders(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllPurchaseOrders([FromRoute] int? companyId, CancellationToken cancellationToken)
     {
-        var orders = await purchaseOrderQueryService.ListAsync(cancellationToken);
-        return Ok(orders.Select(PurchaseOrderResourceFromEntityAssembler.ToResourceFromEntity));
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var items = await purchaseOrderQueryService.ListAsync(cancellationToken);
+        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(PurchaseOrderResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
-    /// <summary>Gets one purchase order by identifier.</summary>
+    /// <summary>Gets one purchase order owned by the route company.</summary>
     [HttpGet("{purchaseOrderId:int}")]
-    public async Task<IActionResult> GetPurchaseOrderById(int purchaseOrderId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetPurchaseorderById([FromRoute] int? companyId, int purchaseOrderId, CancellationToken cancellationToken)
     {
-        var order = await purchaseOrderQueryService.FindByIdAsync(purchaseOrderId, cancellationToken);
-        return order is null ? this.NotFoundProblem("Purchase order", purchaseOrderId) : Ok(PurchaseOrderResourceFromEntityAssembler.ToResourceFromEntity(order));
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var item = await purchaseOrderQueryService.FindByIdAsync(purchaseOrderId, cancellationToken);
+        return item is null || item.CompanyId != resolvedCompanyId
+            ? this.NotFoundProblem("Purchase order", purchaseOrderId)
+            : Ok(PurchaseOrderResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
 
-    /// <summary>Creates a purchase order through the application command service.</summary>
+    /// <summary>Creates a purchase order owned by the route company.</summary>
     [HttpPost]
-    public async Task<IActionResult> CreatePurchaseOrder([FromBody] PurchaseOrderWriteResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreatePurchaseorder([FromRoute] int? companyId, [FromBody] PurchaseOrderWriteResource resource, CancellationToken cancellationToken)
     {
-        var command = CreatePurchaseOrderCommandFromResourceAssembler.ToCommandFromResource(resource);
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var command = CreatePurchaseOrderCommandFromResourceAssembler.ToCommandFromResource(resource, resolvedCompanyId);
         var result = await purchaseOrderCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
-            order => CreatedAtAction(nameof(GetPurchaseOrderById), new { purchaseOrderId = order.Id }, PurchaseOrderResourceFromEntityAssembler.ToResourceFromEntity(order)));
+            item => CreatedAtAction(nameof(GetPurchaseorderById), new { companyId = resolvedCompanyId, purchaseOrderId = item.Id }, PurchaseOrderResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 
-    /// <summary>Applies a partial purchase order update through the application command service.</summary>
+    /// <summary>Applies a partial update to a purchase order owned by the route company.</summary>
     [HttpPatch("{purchaseOrderId:int}")]
-    public async Task<IActionResult> PatchPurchaseOrderById(int purchaseOrderId, [FromBody] PurchaseOrderWriteResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> PatchPurchaseorderById([FromRoute] int? companyId, int purchaseOrderId, [FromBody] PurchaseOrderWriteResource resource, CancellationToken cancellationToken)
     {
+        if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
+
+        var existing = await purchaseOrderQueryService.FindByIdAsync(purchaseOrderId, cancellationToken);
+        if (existing is null || existing.CompanyId != resolvedCompanyId)
+            return this.NotFoundProblem("Purchase order", purchaseOrderId);
+
         var command = UpdatePurchaseOrderCommandFromResourceAssembler.ToCommandFromResource(purchaseOrderId, resource);
         var result = await purchaseOrderCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
-            order => Ok(PurchaseOrderResourceFromEntityAssembler.ToResourceFromEntity(order)));
+            item => Ok(PurchaseOrderResourceFromEntityAssembler.ToResourceFromEntity(item)));
     }
 }

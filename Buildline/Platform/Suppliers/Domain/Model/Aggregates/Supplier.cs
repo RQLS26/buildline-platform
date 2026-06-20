@@ -33,6 +33,7 @@ public partial class Supplier : IAuditableEntity
     /// <param name="command">Supplier payload submitted from the supplier directory screen.</param>
     public Supplier(CreateSupplierCommand command)
     {
+        CompanyId = command.CompanyId;
         Ruc = command.Ruc?.Trim() ?? string.Empty;
         CompanyName = command.CompanyName?.Trim() ?? string.Empty;
         ContactName = command.ContactName?.Trim() ?? string.Empty;
@@ -48,6 +49,9 @@ public partial class Supplier : IAuditableEntity
     ///     Gets the database-generated supplier identifier.
     /// </summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>
     ///     Gets the Peruvian tax identifier used for supplier validation workflows.

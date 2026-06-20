@@ -11,6 +11,7 @@ public static class ModelBuilderExtensions
     {
         builder.Entity<Domain.Model.Aggregates.Delivery>().HasKey(delivery => delivery.Id);
         builder.Entity<Domain.Model.Aggregates.Delivery>().Property(delivery => delivery.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Domain.Model.Aggregates.Delivery>().Property(delivery => delivery.CompanyId).IsRequired();
         builder.Entity<Domain.Model.Aggregates.Delivery>().Property(delivery => delivery.TrackingId).IsRequired().HasMaxLength(32);
         builder.Entity<Domain.Model.Aggregates.Delivery>().Property(delivery => delivery.PurchaseOrder).IsRequired().HasMaxLength(40);
         builder.Entity<Domain.Model.Aggregates.Delivery>().Property(delivery => delivery.Supplier).IsRequired().HasMaxLength(160);

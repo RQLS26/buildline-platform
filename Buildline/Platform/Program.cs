@@ -357,7 +357,78 @@ file static class DatabaseBootstrapper
             logger.LogInformation("Added missing compatibility column users.two_factor_enabled.");
         }
 
+        if (!await ColumnExistsAsync(dbContext, "users", "company_id"))
+        {
+            await ExecuteNonQueryAsync(dbContext, "ALTER TABLE `users` ADD COLUMN `company_id` int NULL");
+            logger.LogInformation("Added missing compatibility column users.company_id.");
+        }
+
+        if (!await ColumnExistsAsync(dbContext, "users", "membership_status"))
+        {
+            await ExecuteNonQueryAsync(dbContext, "ALTER TABLE `users` ADD COLUMN `membership_status` varchar(20) NOT NULL DEFAULT 'active'");
+            logger.LogInformation("Added missing compatibility column users.membership_status.");
+        }
+
+        var companyScopedOperationalTables = new[]
+        {
+            "projects",
+            "budgets",
+            "materials",
+            "requisitions",
+            "purchase_orders",
+            "quotations",
+            "inventory_items",
+            "deliveries",
+            "suppliers",
+            "supplier_incidents",
+            "messages"
+        };
+
+        foreach (var tableName in companyScopedOperationalTables)
+        {
+            if (await TableExistsAsync(dbContext, tableName) &&
+                !await ColumnExistsAsync(dbContext, tableName, "company_id"))
+            {
+                await ExecuteNonQueryAsync(dbContext, $"ALTER TABLE `{tableName}` ADD COLUMN `company_id` int NOT NULL DEFAULT 1");
+                logger.LogInformation("Added missing compatibility column {TableName}.company_id.", tableName);
+            }
+        }
+
+        await EnsureDefaultCompanyMembershipAsync(dbContext, logger);
+
         await EnsureSingleOwnerAsync(dbContext, logger);
+    }
+
+    /// <summary>
+    ///     Assigns legacy users to the first available company profile when old Railway data predates tenancy fields.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to execute compatibility SQL.</param>
+    /// <param name="logger">Startup logger used to report data corrections.</param>
+    /// <returns>A task that completes once legacy membership rows are normalized.</returns>
+    private static async Task EnsureDefaultCompanyMembershipAsync(AppDbContext dbContext, ILogger logger)
+    {
+        const string firstProfileQuery = "SELECT `id` FROM `profiles` ORDER BY `id` LIMIT 1";
+        var firstProfileId = await ExecuteScalarAsync(dbContext, firstProfileQuery);
+        if (firstProfileId is null || firstProfileId == DBNull.Value)
+            return;
+
+        const string assignLegacyUsersCommand = """
+            UPDATE `users`
+            SET `company_id` = @companyId,
+                `membership_status` = COALESCE(NULLIF(`membership_status`, ''), 'active')
+            WHERE `company_id` IS NULL
+            """;
+
+        var affectedRows = await ExecuteNonQueryAsync(dbContext, assignLegacyUsersCommand, command =>
+        {
+            var companyParameter = command.CreateParameter();
+            companyParameter.ParameterName = "@companyId";
+            companyParameter.Value = firstProfileId;
+            command.Parameters.Add(companyParameter);
+        });
+
+        if (affectedRows > 0)
+            logger.LogInformation("Assigned {AffectedRows} legacy user(s) to the default company profile.", affectedRows);
     }
 
     /// <summary>
@@ -433,6 +504,32 @@ file static class DatabaseBootstrapper
             columnParameter.ParameterName = "@columnName";
             columnParameter.Value = columnName;
             command.Parameters.Add(columnParameter);
+        });
+
+        return Convert.ToInt32(result) > 0;
+    }
+
+    /// <summary>
+    ///     Checks whether a table exists in the active MySQL database.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to obtain the active connection.</param>
+    /// <param name="tableName">Database table name to inspect.</param>
+    /// <returns><c>true</c> when the table exists; otherwise <c>false</c>.</returns>
+    private static async Task<bool> TableExistsAsync(AppDbContext dbContext, string tableName)
+    {
+        const string query = """
+            SELECT COUNT(*)
+            FROM information_schema.tables
+            WHERE table_schema = DATABASE()
+              AND table_name = @tableName
+            """;
+
+        var result = await ExecuteScalarAsync(dbContext, query, command =>
+        {
+            var tableParameter = command.CreateParameter();
+            tableParameter.ParameterName = "@tableName";
+            tableParameter.Value = tableName;
+            command.Parameters.Add(tableParameter);
         });
 
         return Convert.ToInt32(result) > 0;

@@ -3,6 +3,7 @@ namespace Buildline.Platform.Suppliers.Interfaces.Rest.Resources;
 /// <summary>
 ///     REST resource returned by supplier incident endpoints.
 /// </summary>
+/// <param name="CompanyId">Company profile identifier that owns the resource.</param>
 /// <param name="Id">Incident persistence identifier.</param>
 /// <param name="IncidentId">Business incident code displayed in the frontend.</param>
 /// <param name="Title">Short incident title.</param>
@@ -16,6 +17,7 @@ namespace Buildline.Platform.Suppliers.Interfaces.Rest.Resources;
 /// <param name="Time">Display time.</param>
 public record IncidentResource(
     int Id,
+    int CompanyId,
     string IncidentId,
     string Title,
     string Description,

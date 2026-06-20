@@ -32,6 +32,7 @@ public partial class SupplierIncident : IAuditableEntity, IHasDomainEvents
     /// <param name="command">Command carrying incident values accepted by the application layer.</param>
     public SupplierIncident(CreateSupplierIncidentCommand command)
     {
+        CompanyId = command.CompanyId;
         IncidentId = string.IsNullOrWhiteSpace(command.IncidentId) ? "INC-DRAFT" : command.IncidentId.Trim();
         Title = command.Title?.Trim() ?? string.Empty;
         Description = command.Description?.Trim() ?? string.Empty;
@@ -47,6 +48,9 @@ public partial class SupplierIncident : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the database-generated incident identifier.</summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>Gets the business incident code shown in operational lists.</summary>
     public string IncidentId { get; private set; }

@@ -28,6 +28,7 @@ public partial class InventoryItem : IAuditableEntity, IHasDomainEvents
     /// <param name="command">Command carrying inventory values accepted by the application layer.</param>
     public InventoryItem(CreateInventoryItemCommand command)
     {
+        CompanyId = command.CompanyId;
         var stockLevel = StockLevel.From(command.CurrentStock, command.MinStock, command.MaxStock);
         Sku = command.Sku?.Trim() ?? string.Empty;
         Name = command.Name?.Trim() ?? string.Empty;
@@ -41,6 +42,9 @@ public partial class InventoryItem : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the database-generated inventory item identifier.</summary>
     public int Id { get; private set; }
+
+    /// <summary>Gets the company profile identifier that owns this operational record.</summary>
+    public int CompanyId { get; private set; }
 
     /// <summary>Gets the stock keeping unit displayed by inventory tables.</summary>
     public string Sku { get; private set; }

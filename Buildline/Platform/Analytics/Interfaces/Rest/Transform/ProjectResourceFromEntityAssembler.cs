@@ -21,6 +21,7 @@ public static class ProjectResourceFromEntityAssembler
     {
         return new ProjectResource(
             project.Id,
+            project.CompanyId,
             project.Name,
             project.Location,
             project.Budget,
