@@ -33,6 +33,7 @@ public partial class User : IAuditableEntity
         Phone = string.Empty;
         AvatarColor = string.Empty;
         LastLogin = string.Empty;
+        TwoFactorEnabled = false;
     }
 
     /// <summary>
@@ -47,6 +48,7 @@ public partial class User : IAuditableEntity
     /// <param name="avatarColor">UI color token used by the frontend avatar fallback.</param>
     /// <param name="isActive">Flag that controls whether the account can authenticate.</param>
     /// <param name="lastLogin">Human-readable last-login value expected by the current frontend contract.</param>
+    /// <param name="twoFactorEnabled">Two-factor authentication preference stored for the Settings screen.</param>
     public User(
         string name,
         string email,
@@ -56,7 +58,8 @@ public partial class User : IAuditableEntity
         string phone,
         string avatarColor,
         bool isActive,
-        string lastLogin)
+        string lastLogin,
+        bool twoFactorEnabled = false)
     {
         Name = name;
         Email = email;
@@ -67,6 +70,7 @@ public partial class User : IAuditableEntity
         AvatarColor = avatarColor;
         IsActive = isActive;
         LastLogin = lastLogin;
+        TwoFactorEnabled = twoFactorEnabled;
     }
 
     /// <summary>
@@ -148,6 +152,15 @@ public partial class User : IAuditableEntity
     public string LastLogin { get; private set; }
 
     /// <summary>
+    ///     Gets a value indicating whether the account has two-factor authentication enabled.
+    /// </summary>
+    /// <remarks>
+    ///     Sprint 3 stores the security preference so the frontend Settings screen is backed by the
+    ///     IAM context. The actual OTP challenge can be added later without changing this contract.
+    /// </remarks>
+    public bool TwoFactorEnabled { get; private set; }
+
+    /// <summary>
     ///     Gets or sets the audit timestamp captured when the aggregate is first persisted.
     /// </summary>
     public DateTimeOffset? CreatedAt { get; set; }
@@ -178,6 +191,7 @@ public partial class User : IAuditableEntity
     /// <param name="phone">Updated contact phone value.</param>
     /// <param name="avatarColor">Updated frontend avatar color token.</param>
     /// <param name="isActive">Updated access status used by the sign-in command service.</param>
+    /// <param name="twoFactorEnabled">Updated two-factor authentication preference.</param>
     /// <returns>The same aggregate instance with user-management fields replaced.</returns>
     /// <remarks>
     ///     Password and last-login data are intentionally excluded so role/status maintenance cannot
@@ -190,7 +204,8 @@ public partial class User : IAuditableEntity
         string department,
         string phone,
         string avatarColor,
-        bool isActive)
+        bool isActive,
+        bool twoFactorEnabled)
     {
         Name = name;
         Email = email;
@@ -199,6 +214,18 @@ public partial class User : IAuditableEntity
         Phone = phone;
         AvatarColor = avatarColor;
         IsActive = isActive;
+        TwoFactorEnabled = twoFactorEnabled;
+        return this;
+    }
+
+    /// <summary>
+    ///     Replaces the stored password hash after the current password has been verified by the application service.
+    /// </summary>
+    /// <param name="passwordHash">New BCrypt password hash.</param>
+    /// <returns>The same aggregate instance with the credential hash replaced.</returns>
+    public User ChangePasswordHash(string passwordHash)
+    {
+        PasswordHash = passwordHash;
         return this;
     }
 }

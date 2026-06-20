@@ -24,6 +24,26 @@ public enum IamError
     InvalidCredentials,
 
     /// <summary>
+    ///     The submitted current password does not match the stored credential.
+    /// </summary>
+    InvalidCurrentPassword,
+
+    /// <summary>
+    ///     The submitted password does not meet minimum security requirements.
+    /// </summary>
+    WeakPassword,
+
+    /// <summary>
+    ///     The requested role transition is not allowed by the IAM role catalog.
+    /// </summary>
+    InvalidRole,
+
+    /// <summary>
+    ///     The authenticated user is not allowed to perform the requested IAM operation.
+    /// </summary>
+    ForbiddenOperation,
+
+    /// <summary>
     ///     The IAM operation was cancelled before completion.
     /// </summary>
     OperationCancelled,

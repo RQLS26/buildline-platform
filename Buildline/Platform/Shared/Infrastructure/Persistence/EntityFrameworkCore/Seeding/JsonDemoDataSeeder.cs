@@ -99,8 +99,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedUsersAsync(IReadOnlyCollection<UserSeed> users, CancellationToken cancellationToken)
     {
-        if (await context.Set<User>().AnyAsync(cancellationToken) || users.Count == 0) return false;
-        context.Set<User>().AddRange(users.Select(seed => new User(
+        var existingEmails = await context.Set<User>().Select(user => user.Email).ToListAsync(cancellationToken);
+        var pendingUsers = users.Where(seed => !existingEmails.Contains(seed.Email, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingUsers.Count == 0) return false;
+        context.Set<User>().AddRange(pendingUsers.Select(seed => new User(
             seed.Name,
             seed.Email,
             seed.PasswordHash,
@@ -115,29 +117,37 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedProfilesAsync(IReadOnlyCollection<ProfileSeed> profiles, CancellationToken cancellationToken)
     {
-        if (await context.Set<Profile>().AnyAsync(cancellationToken) || profiles.Count == 0) return false;
-        context.Set<Profile>().AddRange(profiles.Select(seed => new Profile(seed.CompanyName, seed.Ruc, seed.Address, seed.Phone, seed.Email)));
+        var existingRucs = await context.Set<Profile>().Select(profile => profile.Ruc).ToListAsync(cancellationToken);
+        var pendingProfiles = profiles.Where(seed => !existingRucs.Contains(seed.Ruc, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingProfiles.Count == 0) return false;
+        context.Set<Profile>().AddRange(pendingProfiles.Select(seed => new Profile(seed.CompanyName, seed.Ruc, seed.Address, seed.Phone, seed.Email)));
         return true;
     }
 
     private async Task<bool> SeedProjectsAsync(IReadOnlyCollection<ProjectSeed> projects, CancellationToken cancellationToken)
     {
-        if (await context.Set<Project>().AnyAsync(cancellationToken) || projects.Count == 0) return false;
-        context.Set<Project>().AddRange(projects.Select(seed => new Project(seed.Name, seed.Location, seed.Budget, seed.Spent, seed.Date, seed.Status, seed.Progress)));
+        var existingNames = await context.Set<Project>().Select(project => project.Name).ToListAsync(cancellationToken);
+        var pendingProjects = projects.Where(seed => !existingNames.Contains(seed.Name, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingProjects.Count == 0) return false;
+        context.Set<Project>().AddRange(pendingProjects.Select(seed => new Project(seed.Name, seed.Location, seed.Budget, seed.Spent, seed.Date, seed.Status, seed.Progress)));
         return true;
     }
 
     private async Task<bool> SeedCategoriesAsync(IReadOnlyCollection<CategorySeed> categories, CancellationToken cancellationToken)
     {
-        if (await context.Set<Category>().AnyAsync(cancellationToken) || categories.Count == 0) return false;
-        context.Set<Category>().AddRange(categories.Select(seed => new Category(seed.Name, seed.Description)));
+        var existingNames = await context.Set<Category>().Select(category => category.Name).ToListAsync(cancellationToken);
+        var pendingCategories = categories.Where(seed => !existingNames.Contains(seed.Name, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingCategories.Count == 0) return false;
+        context.Set<Category>().AddRange(pendingCategories.Select(seed => new Category(seed.Name, seed.Description)));
         return true;
     }
 
     private async Task<bool> SeedMaterialsAsync(IReadOnlyCollection<MaterialSeed> materials, CancellationToken cancellationToken)
     {
-        if (await context.Set<Material>().AnyAsync(cancellationToken) || materials.Count == 0) return false;
-        context.Set<Material>().AddRange(materials.Select(seed => new Material(new CreateMaterialCommand(
+        var existingSkus = await context.Set<Material>().Select(material => material.Sku).ToListAsync(cancellationToken);
+        var pendingMaterials = materials.Where(seed => !existingSkus.Contains(seed.Sku, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingMaterials.Count == 0) return false;
+        context.Set<Material>().AddRange(pendingMaterials.Select(seed => new Material(new CreateMaterialCommand(
             seed.Sku,
             seed.Name,
             seed.Category,
@@ -151,8 +161,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedRequisitionsAsync(IReadOnlyCollection<RequisitionSeed> requisitions, CancellationToken cancellationToken)
     {
-        if (await context.Set<RequisitionAggregate>().AnyAsync(cancellationToken) || requisitions.Count == 0) return false;
-        context.Set<RequisitionAggregate>().AddRange(requisitions.Select(seed => new RequisitionAggregate(new CreateRequisitionCommand(
+        var existingIds = await context.Set<RequisitionAggregate>().Select(requisition => requisition.ReqId).ToListAsync(cancellationToken);
+        var pendingRequisitions = requisitions.Where(seed => !existingIds.Contains(seed.ReqId, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingRequisitions.Count == 0) return false;
+        context.Set<RequisitionAggregate>().AddRange(pendingRequisitions.Select(seed => new RequisitionAggregate(new CreateRequisitionCommand(
             seed.ReqId,
             seed.Material,
             seed.Project,
@@ -168,8 +180,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedPurchaseOrdersAsync(IReadOnlyCollection<PurchaseOrderSeed> orders, CancellationToken cancellationToken)
     {
-        if (await context.Set<PurchaseOrder>().AnyAsync(cancellationToken) || orders.Count == 0) return false;
-        context.Set<PurchaseOrder>().AddRange(orders.Select(seed => new PurchaseOrder(new CreatePurchaseOrderCommand(
+        var existingIds = await context.Set<PurchaseOrder>().Select(order => order.OrderId).ToListAsync(cancellationToken);
+        var pendingOrders = orders.Where(seed => !existingIds.Contains(seed.OrderId, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingOrders.Count == 0) return false;
+        context.Set<PurchaseOrder>().AddRange(pendingOrders.Select(seed => new PurchaseOrder(new CreatePurchaseOrderCommand(
             seed.OrderId,
             seed.Date,
             seed.SupplierName,
@@ -182,8 +196,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedQuotationsAsync(IReadOnlyCollection<QuotationSeed> quotations, CancellationToken cancellationToken)
     {
-        if (await context.Set<Quotation>().AnyAsync(cancellationToken) || quotations.Count == 0) return false;
-        context.Set<Quotation>().AddRange(quotations.Select(seed => new Quotation(new CreateQuotationCommand(
+        var existingIds = await context.Set<Quotation>().Select(quotation => quotation.QuotationId).ToListAsync(cancellationToken);
+        var pendingQuotations = quotations.Where(seed => !existingIds.Contains(seed.QuotationId, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingQuotations.Count == 0) return false;
+        context.Set<Quotation>().AddRange(pendingQuotations.Select(seed => new Quotation(new CreateQuotationCommand(
             seed.QuotationId,
             seed.Supplier,
             seed.Material,
@@ -196,8 +212,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedInventoryItemsAsync(IReadOnlyCollection<InventoryItemSeed> items, CancellationToken cancellationToken)
     {
-        if (await context.Set<InventoryItem>().AnyAsync(cancellationToken) || items.Count == 0) return false;
-        context.Set<InventoryItem>().AddRange(items.Select(seed => new InventoryItem(new CreateInventoryItemCommand(
+        var existingSkus = await context.Set<InventoryItem>().Select(item => item.Sku).ToListAsync(cancellationToken);
+        var pendingItems = items.Where(seed => !existingSkus.Contains(seed.Sku, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingItems.Count == 0) return false;
+        context.Set<InventoryItem>().AddRange(pendingItems.Select(seed => new InventoryItem(new CreateInventoryItemCommand(
             seed.Sku,
             seed.Name,
             seed.Project,
@@ -211,8 +229,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedDeliveriesAsync(IReadOnlyCollection<DeliverySeed> deliveries, CancellationToken cancellationToken)
     {
-        if (await context.Set<DeliveryAggregate>().AnyAsync(cancellationToken) || deliveries.Count == 0) return false;
-        context.Set<DeliveryAggregate>().AddRange(deliveries.Select(seed => new DeliveryAggregate(new CreateDeliveryCommand(
+        var existingIds = await context.Set<DeliveryAggregate>().Select(delivery => delivery.TrackingId).ToListAsync(cancellationToken);
+        var pendingDeliveries = deliveries.Where(seed => !existingIds.Contains(seed.TrackingId, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingDeliveries.Count == 0) return false;
+        context.Set<DeliveryAggregate>().AddRange(pendingDeliveries.Select(seed => new DeliveryAggregate(new CreateDeliveryCommand(
             seed.TrackingId,
             seed.PurchaseOrder,
             seed.Supplier,
@@ -228,8 +248,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedSuppliersAsync(IReadOnlyCollection<SupplierSeed> suppliers, CancellationToken cancellationToken)
     {
-        if (await context.Set<Supplier>().AnyAsync(cancellationToken) || suppliers.Count == 0) return false;
-        context.Set<Supplier>().AddRange(suppliers.Select(seed => new Supplier(new CreateSupplierCommand(
+        var existingRucs = await context.Set<Supplier>().Select(supplier => supplier.Ruc).ToListAsync(cancellationToken);
+        var pendingSuppliers = suppliers.Where(seed => !existingRucs.Contains(seed.Ruc, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingSuppliers.Count == 0) return false;
+        context.Set<Supplier>().AddRange(pendingSuppliers.Select(seed => new Supplier(new CreateSupplierCommand(
             seed.Ruc,
             seed.CompanyName,
             seed.ContactName,
@@ -244,8 +266,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedSupplierIncidentsAsync(IReadOnlyCollection<SupplierIncidentSeed> incidents, CancellationToken cancellationToken)
     {
-        if (await context.Set<SupplierIncident>().AnyAsync(cancellationToken) || incidents.Count == 0) return false;
-        context.Set<SupplierIncident>().AddRange(incidents.Select(seed => new SupplierIncident(new CreateSupplierIncidentCommand(
+        var existingIds = await context.Set<SupplierIncident>().Select(incident => incident.IncidentId).ToListAsync(cancellationToken);
+        var pendingIncidents = incidents.Where(seed => !existingIds.Contains(seed.IncidentId, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingIncidents.Count == 0) return false;
+        context.Set<SupplierIncident>().AddRange(pendingIncidents.Select(seed => new SupplierIncident(new CreateSupplierIncidentCommand(
             seed.IncidentId,
             seed.Title,
             seed.Description,
@@ -261,8 +285,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedBudgetsAsync(IReadOnlyCollection<BudgetSeed> budgets, CancellationToken cancellationToken)
     {
-        if (await context.Set<Budget>().AnyAsync(cancellationToken) || budgets.Count == 0) return false;
-        context.Set<Budget>().AddRange(budgets.Select(seed => new Budget(new CreateBudgetCommand(
+        var existingProjects = await context.Set<Budget>().Select(budget => budget.Project).ToListAsync(cancellationToken);
+        var pendingBudgets = budgets.Where(seed => !existingProjects.Contains(seed.Project, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingBudgets.Count == 0) return false;
+        context.Set<Budget>().AddRange(pendingBudgets.Select(seed => new Budget(new CreateBudgetCommand(
             seed.Project,
             seed.TotalBudget,
             seed.Spent,
@@ -273,8 +299,10 @@ public sealed class JsonDemoDataSeeder(
 
     private async Task<bool> SeedMessagesAsync(IReadOnlyCollection<MessageSeed> messages, CancellationToken cancellationToken)
     {
-        if (await context.Set<Message>().AnyAsync(cancellationToken) || messages.Count == 0) return false;
-        context.Set<Message>().AddRange(messages.Select(seed => new Message(new CreateMessageCommand(
+        var existingSubjects = await context.Set<Message>().Select(message => message.Subject).ToListAsync(cancellationToken);
+        var pendingMessages = messages.Where(seed => !existingSubjects.Contains(seed.Subject, StringComparer.OrdinalIgnoreCase)).ToList();
+        if (pendingMessages.Count == 0) return false;
+        context.Set<Message>().AddRange(pendingMessages.Select(seed => new Message(new CreateMessageCommand(
             seed.Sender,
             seed.Subject,
             seed.Preview,

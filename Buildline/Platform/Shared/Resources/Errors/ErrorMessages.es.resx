@@ -213,4 +213,16 @@
   <data name="DeliveryError.PurchaseOrderReferenceNotFound" xml:space="preserve">
     <value>La orden de compra referenciada por la entrega no fue encontrada.</value>
   </data>
+  <data name="IamError.InvalidCurrentPassword" xml:space="preserve">
+    <value>La contraseña actual es incorrecta.</value>
+  </data>
+  <data name="IamError.WeakPassword" xml:space="preserve">
+    <value>La nueva contraseña debe contener al menos 6 caracteres.</value>
+  </data>
+  <data name="IamError.InvalidRole" xml:space="preserve">
+    <value>El rol solicitado no está permitido.</value>
+  </data>
+  <data name="IamError.ForbiddenOperation" xml:space="preserve">
+    <value>No tiene permisos para ejecutar esta operación IAM.</value>
+  </data>
 </root>

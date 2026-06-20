@@ -12,6 +12,7 @@ namespace Buildline.Platform.Iam.Interfaces.Rest.Resources;
 /// <param name="AvatarColor">Frontend avatar fallback color token.</param>
 /// <param name="IsActive">Flag indicating whether the account is active.</param>
 /// <param name="LastLogin">Last-login display value.</param>
+/// <param name="TwoFactorEnabled">Two-factor authentication preference for the authenticated account.</param>
 /// <param name="Token">Signed JWT access token to send in the Authorization header.</param>
 public record AuthenticatedUserResource(
     int Id,
@@ -23,4 +24,5 @@ public record AuthenticatedUserResource(
     string AvatarColor,
     bool IsActive,
     string LastLogin,
+    bool TwoFactorEnabled,
     string Token);

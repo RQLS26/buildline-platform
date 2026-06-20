@@ -353,6 +353,10 @@ namespace Buildline.Platform.Migrations
                         .HasColumnType("varchar(30)")
                         .HasColumnName("role");
 
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("two_factor_enabled");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");

@@ -30,6 +30,12 @@ public interface IUserCommandService
     /// <returns>A result containing the updated user or an IAM error describing why the update failed.</returns>
     Task<Result<User>> Handle(UpdateUserCommand command, CancellationToken cancellationToken = default);
 
+    /// <summary>Changes a user's password after verifying the current credential.</summary>
+    /// <param name="command">Credential change command.</param>
+    /// <param name="cancellationToken">Token used to cancel persistence work.</param>
+    /// <returns>A result with the updated user or an IAM error.</returns>
+    Task<Result<User>> Handle(ChangePasswordCommand command, CancellationToken cancellationToken = default);
+
     /// <summary>
     ///     Authenticates an existing active user and issues a JWT token.
     /// </summary>

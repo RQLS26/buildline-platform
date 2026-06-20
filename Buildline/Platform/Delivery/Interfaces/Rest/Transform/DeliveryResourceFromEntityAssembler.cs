@@ -1,3 +1,4 @@
+using System.Globalization;
 using Buildline.Platform.Delivery.Interfaces.Rest.Resources;
 
 namespace Buildline.Platform.Delivery.Interfaces.Rest.Transform;
@@ -17,9 +18,40 @@ public static class DeliveryResourceFromEntityAssembler
             delivery.Supplier,
             delivery.Origin,
             delivery.Destination,
-            delivery.Status,
+            ResolveStatus(delivery),
             delivery.Eta,
             delivery.DispatchDate,
             delivery.Items);
     }
+
+    /// <summary>
+    ///     Resolves the display status using persisted dates and the current UTC date.
+    /// </summary>
+    /// <param name="delivery">Delivery aggregate whose tracking dates are evaluated.</param>
+    /// <returns>Computed operational status shown by the frontend tracking timeline.</returns>
+    /// <remarks>
+    ///     The stored status remains available for manual corrections, but read models progress from
+    ///     Shipped to In Transit and Delivered as calendar days pass. This keeps demo data alive
+    ///     without requiring a background worker in Sprint 3.
+    /// </remarks>
+    private static string ResolveStatus(Domain.Model.Aggregates.Delivery delivery)
+    {
+        if (string.Equals(delivery.Status, "Delayed", StringComparison.OrdinalIgnoreCase)) return delivery.Status;
+        var today = DateTime.UtcNow.Date;
+        if (TryParseDate(delivery.Eta, out var eta) && today >= eta.Date) return "Delivered";
+        if (TryParseDate(delivery.DispatchDate, out var dispatchDate))
+        {
+            if (today > dispatchDate.Date) return "In Transit";
+            if (today == dispatchDate.Date) return "Shipped";
+            return "Confirmed";
+        }
+        return string.IsNullOrWhiteSpace(delivery.Status) ? "Confirmed" : delivery.Status;
+    }
+
+    private static bool TryParseDate(string value, out DateTime date)
+    {
+        return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out date) ||
+               DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal, out date);
+    }
+
 }

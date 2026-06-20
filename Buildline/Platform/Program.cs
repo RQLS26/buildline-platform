@@ -140,7 +140,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ManageUsers", policy => policy.RequireRole("owner", "admin"));
+    options.AddPolicy("OwnUsers", policy => policy.RequireRole("owner"));
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -285,6 +289,8 @@ using (var initScope = app.Services.CreateScope())
         await dbContext.Database.MigrateAsync();
     }
 
+    await DatabaseBootstrapper.EnsureCompatibilitySchemaAsync(dbContext, logger);
+
     var demoDataSeeder = initScope.ServiceProvider.GetRequiredService<IDemoDataSeeder>();
     await demoDataSeeder.SeedAsync();
 }
@@ -323,6 +329,169 @@ file static class DatabaseBootstrapper
             command.CommandText = query;
             var result = await command.ExecuteScalarAsync();
             return Convert.ToInt32(result) > 0;
+        }
+        finally
+        {
+            if (shouldCloseConnection)
+                await connection.CloseAsync();
+        }
+    }
+    /// <summary>
+    ///     Adds narrowly scoped compatibility columns required by newer application code when a
+    ///     pre-migration Railway database already contains Buildline tables without EF history.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to execute metadata and DDL commands.</param>
+    /// <param name="logger">Startup logger used to report non-destructive compatibility actions.</param>
+    /// <returns>A task that completes once every required compatibility column exists.</returns>
+    /// <remarks>
+    ///     This method intentionally does not run the full EF migration pipeline against legacy
+    ///     databases, because those environments may already contain manually created tables and
+    ///     seeded demo evidence. It only creates columns that are known to be backward-compatible
+    ///     and required by mapped entities loaded during authentication.
+    /// </remarks>
+    public static async Task EnsureCompatibilitySchemaAsync(AppDbContext dbContext, ILogger logger)
+    {
+        if (!await ColumnExistsAsync(dbContext, "users", "two_factor_enabled"))
+        {
+            await ExecuteNonQueryAsync(dbContext, "ALTER TABLE `users` ADD COLUMN `two_factor_enabled` tinyint(1) NOT NULL DEFAULT 0");
+            logger.LogInformation("Added missing compatibility column users.two_factor_enabled.");
+        }
+
+        await EnsureSingleOwnerAsync(dbContext, logger);
+    }
+
+    /// <summary>
+    ///     Repairs legacy IAM data so the company account keeps exactly one project owner.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to query and update IAM users.</param>
+    /// <param name="logger">Startup logger used to report compatibility data corrections.</param>
+    /// <returns>A task that completes once duplicated owner rows, if any, have been normalized.</returns>
+    /// <remarks>
+    ///     Older frontend builds allowed promoting regular users to <c>owner</c>. The current IAM
+    ///     command service already blocks new duplicate owners; this startup guard only repairs
+    ///     existing Railway data by preserving <c>admin@buildline.com</c> when present, or otherwise
+    ///     preserving the earliest owner row and demoting the rest to <c>admin</c>.
+    /// </remarks>
+    private static async Task EnsureSingleOwnerAsync(AppDbContext dbContext, ILogger logger)
+    {
+        const string ownerKeeperQuery = """
+            SELECT `id`
+            FROM `users`
+            WHERE LOWER(`role`) = 'owner'
+            ORDER BY CASE WHEN LOWER(`email`) = 'admin@buildline.com' THEN 0 ELSE 1 END, `id`
+            LIMIT 1
+            """;
+
+        var ownerKeeperId = await ExecuteScalarAsync(dbContext, ownerKeeperQuery);
+        if (ownerKeeperId is null || ownerKeeperId == DBNull.Value)
+            return;
+
+        const string demoteDuplicateOwnersCommand = """
+            UPDATE `users`
+            SET `role` = 'admin'
+            WHERE LOWER(`role`) = 'owner'
+              AND `id` <> @ownerKeeperId
+            """;
+
+        var affectedRows = await ExecuteNonQueryAsync(dbContext, demoteDuplicateOwnersCommand, command =>
+        {
+            var ownerKeeperParameter = command.CreateParameter();
+            ownerKeeperParameter.ParameterName = "@ownerKeeperId";
+            ownerKeeperParameter.Value = ownerKeeperId;
+            command.Parameters.Add(ownerKeeperParameter);
+        });
+
+        if (affectedRows > 0)
+            logger.LogWarning("Demoted {AffectedRows} duplicated owner user(s) to admin during IAM compatibility repair.", affectedRows);
+    }
+
+    /// <summary>
+    ///     Checks whether a column exists in the active MySQL database.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to obtain the active connection.</param>
+    /// <param name="tableName">Database table name to inspect.</param>
+    /// <param name="columnName">Database column name to inspect.</param>
+    /// <returns><c>true</c> when the column exists; otherwise <c>false</c>.</returns>
+    private static async Task<bool> ColumnExistsAsync(AppDbContext dbContext, string tableName, string columnName)
+    {
+        const string query = """
+            SELECT COUNT(*)
+            FROM information_schema.columns
+            WHERE table_schema = DATABASE()
+              AND table_name = @tableName
+              AND column_name = @columnName
+            """;
+
+        var result = await ExecuteScalarAsync(dbContext, query, command =>
+        {
+            var tableParameter = command.CreateParameter();
+            tableParameter.ParameterName = "@tableName";
+            tableParameter.Value = tableName;
+            command.Parameters.Add(tableParameter);
+
+            var columnParameter = command.CreateParameter();
+            columnParameter.ParameterName = "@columnName";
+            columnParameter.Value = columnName;
+            command.Parameters.Add(columnParameter);
+        });
+
+        return Convert.ToInt32(result) > 0;
+    }
+
+    /// <summary>
+    ///     Executes a scalar database command while preserving the caller's connection state.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to obtain the active connection.</param>
+    /// <param name="commandText">SQL command text to execute.</param>
+    /// <param name="configureCommand">Optional callback used to add command parameters.</param>
+    /// <returns>The first column of the first row returned by the command.</returns>
+    private static async Task<object?> ExecuteScalarAsync(
+        AppDbContext dbContext,
+        string commandText,
+        Action<System.Data.Common.DbCommand>? configureCommand = null)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        var shouldCloseConnection = connection.State == System.Data.ConnectionState.Closed;
+        if (shouldCloseConnection)
+            await connection.OpenAsync();
+
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            configureCommand?.Invoke(command);
+            return await command.ExecuteScalarAsync();
+        }
+        finally
+        {
+            if (shouldCloseConnection)
+                await connection.CloseAsync();
+        }
+    }
+
+    /// <summary>
+    ///     Executes a non-query database command while preserving the caller's connection state.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to obtain the active connection.</param>
+    /// <param name="commandText">SQL command text to execute.</param>
+    /// <param name="configureCommand">Optional callback used to add command parameters.</param>
+    /// <returns>The number of affected rows reported by the database provider.</returns>
+    private static async Task<int> ExecuteNonQueryAsync(
+        AppDbContext dbContext,
+        string commandText,
+        Action<System.Data.Common.DbCommand>? configureCommand = null)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        var shouldCloseConnection = connection.State == System.Data.ConnectionState.Closed;
+        if (shouldCloseConnection)
+            await connection.OpenAsync();
+
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            configureCommand?.Invoke(command);
+            return await command.ExecuteNonQueryAsync();
         }
         finally
         {

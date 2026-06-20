@@ -25,6 +25,7 @@ public static class ModelBuilderExtensions
         builder.Entity<User>().Property(user => user.Phone).HasMaxLength(24);
         builder.Entity<User>().Property(user => user.AvatarColor).IsRequired().HasMaxLength(12);
         builder.Entity<User>().Property(user => user.IsActive).IsRequired();
+        builder.Entity<User>().Property(user => user.TwoFactorEnabled).IsRequired();
         builder.Entity<User>().Property(user => user.LastLogin).IsRequired().HasMaxLength(40);
     }
 }

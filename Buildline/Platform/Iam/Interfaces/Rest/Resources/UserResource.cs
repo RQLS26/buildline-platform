@@ -12,6 +12,7 @@ namespace Buildline.Platform.Iam.Interfaces.Rest.Resources;
 /// <param name="AvatarColor">Frontend avatar fallback color token.</param>
 /// <param name="IsActive">Flag indicating whether the account can authenticate.</param>
 /// <param name="LastLogin">Last-login display value expected by the frontend table.</param>
+/// <param name="TwoFactorEnabled">Two-factor authentication preference shown in Settings.</param>
 public record UserResource(
     int Id,
     string Name,
@@ -21,4 +22,5 @@ public record UserResource(
     string Phone,
     string AvatarColor,
     bool IsActive,
-    string LastLogin);
+    string LastLogin,
+    bool TwoFactorEnabled);

@@ -1,6 +1,8 @@
 using System.Net.Mime;
+using System.Security.Claims;
 using Buildline.Platform.Iam.Application.CommandServices;
 using Buildline.Platform.Iam.Application.QueryServices;
+using Buildline.Platform.Iam.Domain.Model.Commands;
 using Buildline.Platform.Iam.Interfaces.Rest.Resources;
 using Buildline.Platform.Iam.Interfaces.Rest.Transform;
 using Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails;
@@ -39,6 +41,7 @@ public class UsersController(
     ///     <c>200 OK</c> with user resources when accounts exist; otherwise <c>204 No Content</c>.
     /// </returns>
     [HttpGet]
+    [Authorize(Roles = "owner,admin")]
     [SwaggerOperation(
         Summary = "Get all users",
         Description = "Gets all registered Buildline users without password hashes.",
@@ -60,6 +63,7 @@ public class UsersController(
     ///     <c>200 OK</c> with the user resource when found; otherwise <c>404 Not Found</c> Problem Details.
     /// </returns>
     [HttpGet("{userId:int}")]
+    [Authorize(Roles = "owner,admin")]
     [SwaggerOperation(
         Summary = "Get user by id",
         Description = "Gets a registered Buildline user by identifier.",
@@ -88,6 +92,7 @@ public class UsersController(
     ///     leaves the IAM bounded context.
     /// </remarks>
     [HttpPost]
+    [Authorize(Roles = "owner")]
     [SwaggerOperation(
         Summary = "Create user",
         Description = "Registers a Buildline user from the user management module.",
@@ -135,9 +140,55 @@ public class UsersController(
         if (currentUser is null)
             return this.NotFoundProblem("User", userId);
 
+        if (!CanPatchUser(userId, resource))
+            return Forbid();
+
         var command = UpdateUserCommandFromResourceAssembler.ToCommandFromResource(userId, currentUser, resource);
         var result = await userCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             updatedUser => Ok(UserResourceFromEntityAssembler.ToResourceFromEntity(updatedUser)));
     }
+
+    /// <summary>
+    ///     Changes a user's password after verifying the current password.
+    /// </summary>
+    /// <param name="userId">Identifier of the account whose password must be changed.</param>
+    /// <param name="resource">Current and new password values.</param>
+    /// <param name="cancellationToken">Token used to cancel the command.</param>
+    /// <returns><c>200 OK</c> with the updated user resource, or a Problem Details response.</returns>
+    [HttpPatch("{userId:int}/password")]
+    [SwaggerOperation(
+        Summary = "Change user password",
+        Description = "Changes the authenticated user's password after validating the current password.",
+        OperationId = "ChangeUserPassword")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The password was changed.", typeof(UserResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "The current or new password is invalid.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "The authenticated user cannot change another user's password.")]
+    public async Task<IActionResult> ChangePassword(
+        int userId,
+        [FromBody] ChangePasswordResource resource,
+        CancellationToken cancellationToken)
+    {
+        if (!IsSelf(userId)) return Forbid();
+
+        var command = new ChangePasswordCommand(userId, resource.CurrentPassword, resource.NewPassword);
+        var result = await userCommandService.Handle(command, cancellationToken);
+        return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+            updatedUser => Ok(UserResourceFromEntityAssembler.ToResourceFromEntity(updatedUser)));
+    }
+
+    private int? CurrentUserId => int.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var id) ? id : null;
+
+    private bool IsSelf(int userId) => CurrentUserId == userId;
+
+    private bool IsOwner => User.IsInRole("owner");
+
+    private bool CanPatchUser(int userId, UpdateUserResource resource)
+    {
+        var changesRoleOrStatus = resource.Role is not null || resource.IsActive is not null;
+        if (changesRoleOrStatus) return IsOwner && !IsSelf(userId);
+
+        return IsSelf(userId) || IsOwner;
+    }
+
 }

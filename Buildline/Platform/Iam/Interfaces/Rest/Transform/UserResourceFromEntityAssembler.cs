@@ -27,6 +27,7 @@ public static class UserResourceFromEntityAssembler
             user.Phone,
             user.AvatarColor,
             user.IsActive,
-            user.LastLogin);
+            user.LastLogin,
+            user.TwoFactorEnabled);
     }
 }

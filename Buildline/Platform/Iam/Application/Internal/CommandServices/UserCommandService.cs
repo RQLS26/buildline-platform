@@ -30,6 +30,33 @@ public class UserCommandService(
     IStringLocalizer<ErrorMessages> localizer)
     : IUserCommandService
 {
+    private static readonly string[] SupportedRoles = ["owner", "admin", "viewer"];
+
+    private static bool IsSupportedRole(string role) =>
+        SupportedRoles.Any(supportedRole => string.Equals(supportedRole, role, StringComparison.OrdinalIgnoreCase));
+
+    private Result<User>? ValidateManagedRole(string requestedRole, string? currentRole = null)
+    {
+        if (!IsSupportedRole(requestedRole))
+            return Result<User>.Failure(
+                IamError.InvalidRole,
+                localizer[$"{nameof(IamError)}.{IamError.InvalidRole}"]);
+
+        if (string.Equals(requestedRole, "owner", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(currentRole, "owner", StringComparison.OrdinalIgnoreCase))
+            return Result<User>.Failure(
+                IamError.InvalidRole,
+                localizer[$"{nameof(IamError)}.{IamError.InvalidRole}"]);
+
+        if (string.Equals(currentRole, "owner", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(requestedRole, "owner", StringComparison.OrdinalIgnoreCase))
+            return Result<User>.Failure(
+                IamError.InvalidRole,
+                localizer[$"{nameof(IamError)}.{IamError.InvalidRole}"]);
+
+        return null;
+    }
+
     /// <summary>
     ///     Handles user creation from the administration module.
     /// </summary>
@@ -46,6 +73,14 @@ public class UserCommandService(
     /// </remarks>
     public async Task<Result<User>> Handle(CreateUserCommand command, CancellationToken cancellationToken = default)
     {
+        var roleValidation = ValidateManagedRole(command.Role);
+        if (roleValidation is not null) return roleValidation;
+
+        if (string.IsNullOrWhiteSpace(command.Password) || command.Password.Length < 6)
+            return Result<User>.Failure(
+                IamError.WeakPassword,
+                localizer[$"{nameof(IamError)}.{IamError.WeakPassword}"]);
+
         if (await userRepository.ExistsByEmailAsync(command.Email, cancellationToken))
             return Result<User>.Failure(
                 IamError.EmailAlreadyTaken,
@@ -110,6 +145,9 @@ public class UserCommandService(
                 IamError.UserNotFound,
                 localizer[$"{nameof(IamError)}.{IamError.UserNotFound}"]);
 
+        var roleValidation = ValidateManagedRole(command.Role, user.Role);
+        if (roleValidation is not null) return roleValidation;
+
         var userWithSameEmail = await userRepository.FindByEmailAsync(command.Email, cancellationToken);
         if (userWithSameEmail is not null && userWithSameEmail.Id != command.UserId)
             return Result<User>.Failure(
@@ -125,7 +163,59 @@ public class UserCommandService(
                 command.Department,
                 command.Phone,
                 command.AvatarColor,
-                command.IsActive);
+                command.IsActive,
+                command.TwoFactorEnabled);
+            userRepository.Update(user);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return Result<User>.Success(user);
+        }
+        catch (OperationCanceledException)
+        {
+            return Result<User>.Failure(
+                IamError.OperationCancelled,
+                localizer[$"{nameof(IamError)}.{IamError.OperationCancelled}"]);
+        }
+        catch (DbUpdateException)
+        {
+            return Result<User>.Failure(
+                IamError.DatabaseError,
+                localizer[$"{nameof(IamError)}.{IamError.DatabaseError}"]);
+        }
+        catch (Exception)
+        {
+            return Result<User>.Failure(
+                IamError.InternalServerError,
+                localizer[$"{nameof(IamError)}.{IamError.InternalServerError}"]);
+        }
+    }
+
+    /// <summary>
+    ///     Handles password changes requested from the authenticated user's Settings screen.
+    /// </summary>
+    /// <param name="command">Password change command containing the current and new plain passwords.</param>
+    /// <param name="cancellationToken">Token used to cancel lookup and persistence work.</param>
+    /// <returns>A successful result with the updated user, or an IAM error when validation fails.</returns>
+    public async Task<Result<User>> Handle(ChangePasswordCommand command, CancellationToken cancellationToken = default)
+    {
+        var user = await userRepository.FindByIdAsync(command.UserId, cancellationToken);
+        if (user is null)
+            return Result<User>.Failure(
+                IamError.UserNotFound,
+                localizer[$"{nameof(IamError)}.{IamError.UserNotFound}"]);
+
+        if (!hashingService.VerifyPassword(command.CurrentPassword, user.PasswordHash))
+            return Result<User>.Failure(
+                IamError.InvalidCurrentPassword,
+                localizer[$"{nameof(IamError)}.{IamError.InvalidCurrentPassword}"]);
+
+        if (string.IsNullOrWhiteSpace(command.NewPassword) || command.NewPassword.Length < 6)
+            return Result<User>.Failure(
+                IamError.WeakPassword,
+                localizer[$"{nameof(IamError)}.{IamError.WeakPassword}"]);
+
+        try
+        {
+            user.ChangePasswordHash(hashingService.HashPassword(command.NewPassword));
             userRepository.Update(user);
             await unitOfWork.CompleteAsync(cancellationToken);
             return Result<User>.Success(user);
@@ -187,6 +277,16 @@ public class UserCommandService(
     /// </remarks>
     public async Task<Result<(User user, string token)>> Handle(SignUpCommand command, CancellationToken cancellationToken = default)
     {
+        if (!IsSupportedRole(command.Role) || string.Equals(command.Role, "owner", StringComparison.OrdinalIgnoreCase))
+            return Result<(User user, string token)>.Failure(
+                IamError.InvalidRole,
+                localizer[$"{nameof(IamError)}.{IamError.InvalidRole}"]);
+
+        if (string.IsNullOrWhiteSpace(command.Password) || command.Password.Length < 6)
+            return Result<(User user, string token)>.Failure(
+                IamError.WeakPassword,
+                localizer[$"{nameof(IamError)}.{IamError.WeakPassword}"]);
+
         if (await userRepository.ExistsByEmailAsync(command.Email, cancellationToken))
             return Result<(User user, string token)>.Failure(
                 IamError.EmailAlreadyTaken,

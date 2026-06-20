@@ -26,6 +26,7 @@ public static class AuthenticatedUserResourceFromEntityAssembler
             user.AvatarColor,
             user.IsActive,
             user.LastLogin,
+            user.TwoFactorEnabled,
             token);
     }
 }
