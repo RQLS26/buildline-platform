@@ -1,3 +1,4 @@
+using System.Globalization;
 using Buildline.Platform.Iam.Application.CommandServices;
 using Buildline.Platform.Iam.Application.Internal.OutboundServices;
 using Buildline.Platform.Iam.Domain.Model;
@@ -41,6 +42,16 @@ public class UserCommandService(
 
     private static bool IsSupportedMembershipStatus(string membershipStatus) =>
         SupportedMembershipStates.Any(supportedStatus => string.Equals(supportedStatus, membershipStatus, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    ///     Builds the canonical timestamp stored after a successful authentication event.
+    /// </summary>
+    /// <returns>Current UTC timestamp formatted as ISO-8601.</returns>
+    /// <remarks>
+    ///     <c>LastLogin</c> remains a string for compatibility with the current migration, but this
+    ///     method guarantees the value is real, sortable and parseable by API clients.
+    /// </remarks>
+    private static string CurrentLoginTimestamp() => DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture);
 
     private Result<User>? ValidateManagedRole(string requestedRole, string? currentRole = null)
     {
@@ -275,6 +286,10 @@ public class UserCommandService(
                 IamError.InvalidCredentials,
                 localizer[$"{nameof(IamError)}.{IamError.InvalidCredentials}"]);
 
+        user.UpdateLastLogin(CurrentLoginTimestamp());
+        userRepository.Update(user);
+        await unitOfWork.CompleteAsync(cancellationToken);
+
         var token = tokenService.GenerateToken(user);
         return Result<(User user, string token)>.Success((user, token));
     }
@@ -342,7 +357,7 @@ public class UserCommandService(
             command.Phone,
             command.AvatarColor,
             command.IsActive,
-            "Never",
+            CurrentLoginTimestamp(),
             false,
             companyId,
             membershipStatus);
