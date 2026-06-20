@@ -307,6 +307,10 @@ namespace Buildline.Platform.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int")
+                        .HasColumnName("company_id");
+
                     b.Property<string>("Department")
                         .IsRequired()
                         .HasMaxLength(80)
@@ -328,6 +332,12 @@ namespace Buildline.Platform.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("varchar(40)")
                         .HasColumnName("last_login");
+
+                    b.Property<string>("MembershipStatus")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("membership_status");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -12,6 +12,8 @@ namespace Buildline.Platform.Iam.Domain.Model.Commands;
 /// <param name="AvatarColor">Frontend avatar fallback color token.</param>
 /// <param name="IsActive">Flag that determines whether the account can authenticate.</param>
 /// <param name="LastLogin">Initial last-login display value.</param>
+/// <param name="CompanyId">Company profile identifier that scopes the account.</param>
+/// <param name="MembershipStatus">Initial membership state for the managed user.</param>
 /// <remarks>
 ///     This command supports US-022 and keeps the users-management REST payload outside the domain
 ///     aggregate constructor.
@@ -25,4 +27,6 @@ public record CreateUserCommand(
     string Phone,
     string AvatarColor,
     bool IsActive,
-    string LastLogin);
+    string LastLogin,
+    int? CompanyId,
+    string MembershipStatus);

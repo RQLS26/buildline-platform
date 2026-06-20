@@ -65,6 +65,7 @@ public class ProfilesController(
     ///     <c>200 OK</c> with the updated profile resource when successful; otherwise a Problem Details response.
     /// </returns>
     [HttpPut("{profileId:int}")]
+    [Authorize(Roles = "owner")]
     [SwaggerOperation(
         Summary = "Update profile by id",
         Description = "Updates the Buildline company profile by its unique identifier.",
@@ -96,6 +97,7 @@ public class ProfilesController(
     ///     implementation while preserving the endpoint shape planned in TS-02.
     /// </remarks>
     [HttpPatch("{profileId:int}")]
+    [Authorize(Roles = "owner")]
     [SwaggerOperation(
         Summary = "Patch profile by id",
         Description = "Partially-compatible update endpoint for the current frontend profile form.",
@@ -118,6 +120,7 @@ public class ProfilesController(
     ///     <c>200 OK</c> with profile resources when records exist; otherwise <c>204 No Content</c>.
     /// </returns>
     [HttpGet]
+    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Get all profiles",
         Description = "Gets the available Buildline company profiles.",

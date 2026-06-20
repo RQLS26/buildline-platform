@@ -10,6 +10,7 @@ using Buildline.Platform.Shared.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using UserAggregate = Buildline.Platform.Iam.Domain.Model.Aggregates.User;
 
 namespace Buildline.Platform.Iam.Interfaces.Rest;
 
@@ -50,8 +51,28 @@ public class UsersController(
     [SwaggerResponse(StatusCodes.Status204NoContent, "No users are currently registered.")]
     public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken)
     {
+        var actor = await GetCurrentUserAsync(cancellationToken);
+        if (actor is null) return Forbid();
         var users = await userQueryService.ListAsync(cancellationToken);
-        return Ok(users.Select(UserResourceFromEntityAssembler.ToResourceFromEntity));
+        var companyUsers = users.Where(user => user.CompanyId == actor.CompanyId);
+        return Ok(companyUsers.Select(UserResourceFromEntityAssembler.ToResourceFromEntity));
+    }
+
+    /// <summary>
+    ///     Gets the authenticated user's own IAM projection.
+    /// </summary>
+    /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
+    /// <returns><c>200 OK</c> with the authenticated user resource, or <c>403 Forbidden</c> when the token is invalid.</returns>
+    [HttpGet("me")]
+    [SwaggerOperation(
+        Summary = "Get current user",
+        Description = "Gets the authenticated user's own account and company membership state.",
+        OperationId = "GetCurrentUser")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The current user was returned.", typeof(UserResource))]
+    public async Task<IActionResult> GetCurrentUser(CancellationToken cancellationToken)
+    {
+        var currentUser = await GetCurrentUserAsync(cancellationToken);
+        return currentUser is null ? Forbid() : Ok(UserResourceFromEntityAssembler.ToResourceFromEntity(currentUser));
     }
 
     /// <summary>
@@ -101,7 +122,10 @@ public class UsersController(
     [SwaggerResponse(StatusCodes.Status409Conflict, "The email address is already registered.")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserResource resource, CancellationToken cancellationToken)
     {
-        var command = CreateUserCommandFromResourceAssembler.ToCommandFromResource(resource);
+        var actor = await GetCurrentUserAsync(cancellationToken);
+        if (actor is null || actor.CompanyId is null) return Forbid();
+        var scopedResource = resource with { CompanyId = actor.CompanyId, MembershipStatus = "active" };
+        var command = CreateUserCommandFromResourceAssembler.ToCommandFromResource(scopedResource);
         var result = await userCommandService.Handle(command, cancellationToken);
         return ApplicationResultActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             createdUser => CreatedAtAction(
@@ -140,7 +164,8 @@ public class UsersController(
         if (currentUser is null)
             return this.NotFoundProblem("User", userId);
 
-        if (!CanPatchUser(userId, resource))
+        var actor = await GetCurrentUserAsync(cancellationToken);
+        if (actor is null || !CanPatchUser(userId, currentUser, actor, resource))
             return Forbid();
 
         var command = UpdateUserCommandFromResourceAssembler.ToCommandFromResource(userId, currentUser, resource);
@@ -183,9 +208,19 @@ public class UsersController(
 
     private bool IsOwner => User.IsInRole("owner");
 
-    private bool CanPatchUser(int userId, UpdateUserResource resource)
+    private async Task<UserAggregate?> GetCurrentUserAsync(CancellationToken cancellationToken)
+    {
+        return CurrentUserId is null
+            ? null
+            : await userQueryService.FindByIdAsync(CurrentUserId.Value, cancellationToken);
+    }
+
+    private bool CanPatchUser(int userId, UserAggregate targetUser, UserAggregate actor, UpdateUserResource resource)
     {
         var changesRoleOrStatus = resource.Role is not null || resource.IsActive is not null;
+        var changesMembership = resource.CompanyId is not null || resource.MembershipStatus is not null;
+        if (targetUser.CompanyId != actor.CompanyId && !IsSelf(userId)) return false;
+        if (changesMembership && (!IsOwner || IsSelf(userId))) return false;
         if (changesRoleOrStatus) return IsOwner && !IsSelf(userId);
 
         return IsSelf(userId) || IsOwner;

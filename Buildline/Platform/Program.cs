@@ -357,7 +357,53 @@ file static class DatabaseBootstrapper
             logger.LogInformation("Added missing compatibility column users.two_factor_enabled.");
         }
 
+        if (!await ColumnExistsAsync(dbContext, "users", "company_id"))
+        {
+            await ExecuteNonQueryAsync(dbContext, "ALTER TABLE `users` ADD COLUMN `company_id` int NULL");
+            logger.LogInformation("Added missing compatibility column users.company_id.");
+        }
+
+        if (!await ColumnExistsAsync(dbContext, "users", "membership_status"))
+        {
+            await ExecuteNonQueryAsync(dbContext, "ALTER TABLE `users` ADD COLUMN `membership_status` varchar(20) NOT NULL DEFAULT 'active'");
+            logger.LogInformation("Added missing compatibility column users.membership_status.");
+        }
+
+        await EnsureDefaultCompanyMembershipAsync(dbContext, logger);
+
         await EnsureSingleOwnerAsync(dbContext, logger);
+    }
+
+    /// <summary>
+    ///     Assigns legacy users to the first available company profile when old Railway data predates tenancy fields.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to execute compatibility SQL.</param>
+    /// <param name="logger">Startup logger used to report data corrections.</param>
+    /// <returns>A task that completes once legacy membership rows are normalized.</returns>
+    private static async Task EnsureDefaultCompanyMembershipAsync(AppDbContext dbContext, ILogger logger)
+    {
+        const string firstProfileQuery = "SELECT `id` FROM `profiles` ORDER BY `id` LIMIT 1";
+        var firstProfileId = await ExecuteScalarAsync(dbContext, firstProfileQuery);
+        if (firstProfileId is null || firstProfileId == DBNull.Value)
+            return;
+
+        const string assignLegacyUsersCommand = """
+            UPDATE `users`
+            SET `company_id` = @companyId,
+                `membership_status` = COALESCE(NULLIF(`membership_status`, ''), 'active')
+            WHERE `company_id` IS NULL
+            """;
+
+        var affectedRows = await ExecuteNonQueryAsync(dbContext, assignLegacyUsersCommand, command =>
+        {
+            var companyParameter = command.CreateParameter();
+            companyParameter.ParameterName = "@companyId";
+            companyParameter.Value = firstProfileId;
+            command.Parameters.Add(companyParameter);
+        });
+
+        if (affectedRows > 0)
+            logger.LogInformation("Assigned {AffectedRows} legacy user(s) to the default company profile.", affectedRows);
     }
 
     /// <summary>

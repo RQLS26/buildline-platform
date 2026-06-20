@@ -32,6 +32,8 @@ public static class UpdateUserCommandFromResourceAssembler
             resource.Phone ?? currentUser.Phone,
             resource.AvatarColor ?? currentUser.AvatarColor,
             resource.IsActive ?? currentUser.IsActive,
-            resource.TwoFactorEnabled ?? currentUser.TwoFactorEnabled);
+            resource.TwoFactorEnabled ?? currentUser.TwoFactorEnabled,
+            resource.CompanyId ?? currentUser.CompanyId,
+            resource.MembershipStatus ?? currentUser.MembershipStatus);
     }
 }

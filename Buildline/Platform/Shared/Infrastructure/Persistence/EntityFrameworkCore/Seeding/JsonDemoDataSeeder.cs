@@ -111,7 +111,10 @@ public sealed class JsonDemoDataSeeder(
             seed.Phone,
             seed.AvatarColor,
             seed.IsActive,
-            seed.LastLogin)));
+            seed.LastLogin,
+            false,
+            seed.CompanyId,
+            seed.MembershipStatus)));
         return true;
     }
 
@@ -334,7 +337,7 @@ public sealed class JsonDemoDataSeeder(
         IReadOnlyCollection<BudgetSeed> Budgets,
         IReadOnlyCollection<MessageSeed> Messages);
 
-    private sealed record UserSeed(string Name, string Email, string PasswordHash, string Role, string Department, string Phone, string AvatarColor, bool IsActive, string LastLogin);
+    private sealed record UserSeed(string Name, string Email, string PasswordHash, string Role, string Department, string Phone, string AvatarColor, bool IsActive, string LastLogin, int? CompanyId = 1, string MembershipStatus = "active");
     private sealed record ProfileSeed(string CompanyName, string Ruc, string Address, string Phone, string Email);
     private sealed record ProjectSeed(string Name, string Location, decimal Budget, decimal Spent, string Date, string Status, int Progress);
     private sealed record CategorySeed(string Name, string Description);

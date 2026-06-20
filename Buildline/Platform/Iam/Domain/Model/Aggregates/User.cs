@@ -34,6 +34,7 @@ public partial class User : IAuditableEntity
         AvatarColor = string.Empty;
         LastLogin = string.Empty;
         TwoFactorEnabled = false;
+        MembershipStatus = "active";
     }
 
     /// <summary>
@@ -49,6 +50,8 @@ public partial class User : IAuditableEntity
     /// <param name="isActive">Flag that controls whether the account can authenticate.</param>
     /// <param name="lastLogin">Human-readable last-login value expected by the current frontend contract.</param>
     /// <param name="twoFactorEnabled">Two-factor authentication preference stored for the Settings screen.</param>
+    /// <param name="companyId">Identifier of the company profile that owns the user membership.</param>
+    /// <param name="membershipStatus">Current membership state inside the assigned company.</param>
     public User(
         string name,
         string email,
@@ -59,7 +62,9 @@ public partial class User : IAuditableEntity
         string avatarColor,
         bool isActive,
         string lastLogin,
-        bool twoFactorEnabled = false)
+        bool twoFactorEnabled = false,
+        int? companyId = null,
+        string membershipStatus = "active")
     {
         Name = name;
         Email = email;
@@ -71,6 +76,8 @@ public partial class User : IAuditableEntity
         IsActive = isActive;
         LastLogin = lastLogin;
         TwoFactorEnabled = twoFactorEnabled;
+        CompanyId = companyId;
+        MembershipStatus = string.IsNullOrWhiteSpace(membershipStatus) ? "active" : membershipStatus.Trim().ToLowerInvariant();
     }
 
     /// <summary>
@@ -92,8 +99,11 @@ public partial class User : IAuditableEntity
             command.Department,
             command.Phone,
             command.AvatarColor,
-            true,
-            "Never")
+            command.IsActive,
+            "Never",
+            false,
+            command.CompanyId,
+            command.MembershipStatus)
     {
     }
 
@@ -161,6 +171,25 @@ public partial class User : IAuditableEntity
     public bool TwoFactorEnabled { get; private set; }
 
     /// <summary>
+    ///     Gets the company profile identifier that scopes this account's operational data.
+    /// </summary>
+    /// <remarks>
+    ///     Buildline uses a company-based tenancy model. The value lets the frontend show the right
+    ///     company profile and prevents the users module from mixing accounts across companies.
+    /// </remarks>
+    public int? CompanyId { get; private set; }
+
+    /// <summary>
+    ///     Gets the user's membership state inside the assigned company.
+    /// </summary>
+    /// <remarks>
+    ///     Supported values are <c>active</c>, <c>pending</c> and <c>rejected</c>. Pending users can
+    ///     authenticate so the frontend can display a waiting-for-approval screen, but they should
+    ///     not access operational dashboards until an owner accepts the membership.
+    /// </remarks>
+    public string MembershipStatus { get; private set; }
+
+    /// <summary>
     ///     Gets or sets the audit timestamp captured when the aggregate is first persisted.
     /// </summary>
     public DateTimeOffset? CreatedAt { get; set; }
@@ -192,6 +221,8 @@ public partial class User : IAuditableEntity
     /// <param name="avatarColor">Updated frontend avatar color token.</param>
     /// <param name="isActive">Updated access status used by the sign-in command service.</param>
     /// <param name="twoFactorEnabled">Updated two-factor authentication preference.</param>
+    /// <param name="companyId">Updated company profile identifier.</param>
+    /// <param name="membershipStatus">Updated company membership state.</param>
     /// <returns>The same aggregate instance with user-management fields replaced.</returns>
     /// <remarks>
     ///     Password and last-login data are intentionally excluded so role/status maintenance cannot
@@ -205,7 +236,9 @@ public partial class User : IAuditableEntity
         string phone,
         string avatarColor,
         bool isActive,
-        bool twoFactorEnabled)
+        bool twoFactorEnabled,
+        int? companyId,
+        string membershipStatus)
     {
         Name = name;
         Email = email;
@@ -215,6 +248,8 @@ public partial class User : IAuditableEntity
         AvatarColor = avatarColor;
         IsActive = isActive;
         TwoFactorEnabled = twoFactorEnabled;
+        CompanyId = companyId;
+        MembershipStatus = string.IsNullOrWhiteSpace(membershipStatus) ? MembershipStatus : membershipStatus.Trim().ToLowerInvariant();
         return this;
     }
 

@@ -13,6 +13,8 @@ namespace Buildline.Platform.Iam.Interfaces.Rest.Resources;
 /// <param name="IsActive">Flag indicating whether the account can authenticate.</param>
 /// <param name="LastLogin">Last-login display value expected by the frontend table.</param>
 /// <param name="TwoFactorEnabled">Two-factor authentication preference shown in Settings.</param>
+/// <param name="CompanyId">Company profile identifier that scopes the user membership.</param>
+/// <param name="MembershipStatus">Membership state inside the company: active, pending or rejected.</param>
 public record UserResource(
     int Id,
     string Name,
@@ -23,4 +25,6 @@ public record UserResource(
     string AvatarColor,
     bool IsActive,
     string LastLogin,
-    bool TwoFactorEnabled);
+    bool TwoFactorEnabled,
+    int? CompanyId,
+    string MembershipStatus);
