@@ -1,0 +1,46 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    name: Restore and build backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore Buildline.sln
+
+      - name: Build solution
+        run: dotnet build Buildline.sln --configuration Release --no-restore
+
+      - name: Run tests when available
+        shell: bash
+        run: |
+          mapfile -t test_projects < <(find . -type f \( -name '*Tests.csproj' -o -name '*.Tests.csproj' -o -name '*Test.csproj' -o -name '*.Test.csproj' \))
+
+          if [ "${#test_projects[@]}" -eq 0 ]; then
+            echo "No test projects found; skipping dotnet test."
+            exit 0
+          fi
+
+          for project in "${test_projects[@]}"; do
+            dotnet test "$project" --configuration Release --no-restore --verbosity normal
+          done
