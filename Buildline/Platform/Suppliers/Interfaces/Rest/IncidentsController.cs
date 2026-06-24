@@ -16,7 +16,6 @@ namespace Buildline.Platform.Suppliers.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/incidents")]
-[Route("api/v1/incidents")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped incidents endpoints.")]
 public class IncidentsController(

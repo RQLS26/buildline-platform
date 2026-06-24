@@ -27,7 +27,6 @@ namespace Buildline.Platform.Iam.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/users")]
-[Route("api/v1/users")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available User Management endpoints.")]
 public class UsersController(
@@ -68,7 +67,7 @@ public class UsersController(
     /// </summary>
     /// <param name="cancellationToken">Token used to cancel the query when the HTTP request is aborted.</param>
     /// <returns><c>200 OK</c> with the authenticated user resource, or <c>403 Forbidden</c> when the token is invalid.</returns>
-    [HttpGet("me")]
+    [HttpGet("/api/v1/users/me")]
     [SwaggerOperation(
         Summary = "Get current user",
         Description = "Gets the authenticated user's own account and company membership state.",
@@ -196,7 +195,7 @@ public class UsersController(
     /// <param name="resource">Current and new password values.</param>
     /// <param name="cancellationToken">Token used to cancel the command.</param>
     /// <returns><c>200 OK</c> with the updated user resource, or a Problem Details response.</returns>
-    [HttpPatch("{userId:int}/password")]
+    [HttpPatch("/api/v1/users/{userId:int}/password")]
     [SwaggerOperation(
         Summary = "Change user password",
         Description = "Changes the authenticated user's password after validating the current password.",

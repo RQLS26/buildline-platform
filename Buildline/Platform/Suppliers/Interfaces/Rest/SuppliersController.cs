@@ -16,7 +16,6 @@ namespace Buildline.Platform.Suppliers.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/suppliers")]
-[Route("api/v1/suppliers")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped suppliers endpoints.")]
 public class SuppliersController(

@@ -16,7 +16,6 @@ namespace Buildline.Platform.Analytics.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/budgets")]
-[Route("api/v1/budgets")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped budgets endpoints.")]
 public class BudgetsController(

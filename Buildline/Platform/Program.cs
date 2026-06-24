@@ -1,37 +1,25 @@
-using Buildline.Platform.Shared.Infrastructure.Mediator.Cortex.Configuration;
-using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
-using Buildline.Platform.Suppliers.Application.Internal.CommandServices;
-using Buildline.Platform.Suppliers.Application.CommandServices;
-using Buildline.Platform.Procurement.Application.Internal.CommandServices;
-using Buildline.Platform.Procurement.Application.Internal.OutboundServices;
-using Buildline.Platform.Procurement.Application.CommandServices;
-using Buildline.Platform.Inventory.Application.Internal.CommandServices;
-using Buildline.Platform.Inventory.Application.CommandServices;
-using Buildline.Platform.Delivery.Application.Internal.CommandServices;
-using Buildline.Platform.Delivery.Application.Internal.OutboundServices;
-using Buildline.Platform.Delivery.Application.CommandServices;
-using Buildline.Platform.Communication.Application.Internal.CommandServices;
-using Buildline.Platform.Communication.Application.CommandServices;
-using Buildline.Platform.Analytics.Application.Internal.CommandServices;
-using Buildline.Platform.Analytics.Application.CommandServices;
 using System.Reflection;
+using Buildline.Platform.Analytics.Application.Acl;
+using Buildline.Platform.Analytics.Application.CommandServices;
+using Buildline.Platform.Analytics.Application.Internal.CommandServices;
 using Buildline.Platform.Analytics.Application.Internal.QueryServices;
 using Buildline.Platform.Analytics.Application.QueryServices;
 using Buildline.Platform.Analytics.Domain.Repositories;
 using Buildline.Platform.Analytics.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
-using Buildline.Platform.Inventory.Application.Internal.QueryServices;
-using Buildline.Platform.Inventory.Application.QueryServices;
-using Buildline.Platform.Inventory.Domain.Repositories;
-using Buildline.Platform.Inventory.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Analytics.Interfaces.Acl;
+using Buildline.Platform.Communication.Application.CommandServices;
+using Buildline.Platform.Communication.Application.Internal.CommandServices;
 using Buildline.Platform.Communication.Application.Internal.QueryServices;
 using Buildline.Platform.Communication.Application.QueryServices;
 using Buildline.Platform.Communication.Domain.Repositories;
 using Buildline.Platform.Communication.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Delivery.Application.CommandServices;
+using Buildline.Platform.Delivery.Application.Internal.CommandServices;
+using Buildline.Platform.Delivery.Application.Internal.OutboundServices;
 using Buildline.Platform.Delivery.Application.Internal.QueryServices;
 using Buildline.Platform.Delivery.Application.QueryServices;
 using Buildline.Platform.Delivery.Domain.Repositories;
 using Buildline.Platform.Delivery.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Buildline.Platform.Iam.Application.Acl;
 using Buildline.Platform.Iam.Application.CommandServices;
 using Buildline.Platform.Iam.Application.Internal.CommandServices;
@@ -45,13 +33,15 @@ using Buildline.Platform.Iam.Infrastructure.Pipeline.Middleware.Extensions;
 using Buildline.Platform.Iam.Infrastructure.Tokens.Jwt.Configuration;
 using Buildline.Platform.Iam.Infrastructure.Tokens.Jwt.Services;
 using Buildline.Platform.Iam.Interfaces.Acl;
-using Buildline.Platform.Requisition.Application.CommandServices;
-using Buildline.Platform.Requisition.Application.Internal.CommandServices;
-using Buildline.Platform.Requisition.Application.Internal.OutboundServices;
-using Buildline.Platform.Requisition.Application.Internal.QueryServices;
-using Buildline.Platform.Requisition.Application.QueryServices;
-using Buildline.Platform.Requisition.Domain.Repositories;
-using Buildline.Platform.Requisition.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Inventory.Application.CommandServices;
+using Buildline.Platform.Inventory.Application.Internal.CommandServices;
+using Buildline.Platform.Inventory.Application.Internal.QueryServices;
+using Buildline.Platform.Inventory.Application.QueryServices;
+using Buildline.Platform.Inventory.Domain.Repositories;
+using Buildline.Platform.Inventory.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Procurement.Application.CommandServices;
+using Buildline.Platform.Procurement.Application.Internal.CommandServices;
+using Buildline.Platform.Procurement.Application.Internal.OutboundServices;
 using Buildline.Platform.Procurement.Application.Internal.QueryServices;
 using Buildline.Platform.Procurement.Application.QueryServices;
 using Buildline.Platform.Procurement.Domain.Repositories;
@@ -64,26 +54,36 @@ using Buildline.Platform.Profiles.Application.QueryServices;
 using Buildline.Platform.Profiles.Domain.Repositories;
 using Buildline.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Buildline.Platform.Profiles.Interfaces.Acl;
-using Buildline.Platform.Analytics.Application.Acl;
-using Buildline.Platform.Analytics.Interfaces.Acl;
+using Buildline.Platform.Requisition.Application.CommandServices;
+using Buildline.Platform.Requisition.Application.Internal.CommandServices;
+using Buildline.Platform.Requisition.Application.Internal.OutboundServices;
+using Buildline.Platform.Requisition.Application.Internal.QueryServices;
+using Buildline.Platform.Requisition.Application.QueryServices;
+using Buildline.Platform.Requisition.Domain.Repositories;
+using Buildline.Platform.Requisition.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Buildline.Platform.Resources.Errors;
 using Buildline.Platform.Resources.Shared;
 using Buildline.Platform.Shared.Domain.Repositories;
 using Buildline.Platform.Shared.Infrastructure.Interfaces.AspNetCore.Configuration;
+using Buildline.Platform.Shared.Infrastructure.Mediator.Cortex.Configuration;
 using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
 using Buildline.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
+using Buildline.Platform.Suppliers.Application.CommandServices;
+using Buildline.Platform.Suppliers.Application.Internal.CommandServices;
 using Buildline.Platform.Suppliers.Application.Internal.QueryServices;
 using Buildline.Platform.Suppliers.Application.QueryServices;
 using Buildline.Platform.Suppliers.Domain.Repositories;
 using Buildline.Platform.Suppliers.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using Cortex.Mediator.Commands;
 using Cortex.Mediator.DependencyInjection;
-using Microsoft.OpenApi;
-using Microsoft.IdentityModel.Tokens;
 using ProblemDetailsFactory = Buildline.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -369,6 +369,10 @@ file static class DatabaseBootstrapper
             logger.LogInformation("Added missing compatibility column users.membership_status.");
         }
 
+        var defaultCompanyId = await GetFirstProfileIdAsync(dbContext);
+        if (defaultCompanyId is null)
+            logger.LogWarning("No company profile was found while preparing compatibility company scope columns.");
+
         var companyScopedOperationalTables = new[]
         {
             "projects",
@@ -389,27 +393,43 @@ file static class DatabaseBootstrapper
             if (await TableExistsAsync(dbContext, tableName) &&
                 !await ColumnExistsAsync(dbContext, tableName, "company_id"))
             {
-                await ExecuteNonQueryAsync(dbContext, $"ALTER TABLE `{tableName}` ADD COLUMN `company_id` int NOT NULL DEFAULT 1");
-                logger.LogInformation("Added missing compatibility column {TableName}.company_id.", tableName);
+                if (defaultCompanyId is null)
+                    continue;
+
+                await ExecuteNonQueryAsync(dbContext, $"ALTER TABLE `{tableName}` ADD COLUMN `company_id` int NOT NULL DEFAULT {defaultCompanyId.Value}");
+                logger.LogInformation("Added missing compatibility column {TableName}.company_id with default company {CompanyId}.", tableName, defaultCompanyId.Value);
             }
         }
 
-        await EnsureDefaultCompanyMembershipAsync(dbContext, logger);
+        await EnsureDefaultCompanyMembershipAsync(dbContext, logger, defaultCompanyId);
 
         await EnsureSingleOwnerAsync(dbContext, logger);
     }
 
     /// <summary>
-    ///     Assigns legacy users to the first available company profile when old Railway data predates tenancy fields.
+    ///     Resolves the first persisted company profile used to scope legacy rows that predate tenancy.
     /// </summary>
-    /// <param name="dbContext">Application database context used to execute compatibility SQL.</param>
-    /// <param name="logger">Startup logger used to report data corrections.</param>
-    /// <returns>A task that completes once legacy membership rows are normalized.</returns>
-    private static async Task EnsureDefaultCompanyMembershipAsync(AppDbContext dbContext, ILogger logger)
+    /// <param name="dbContext">Application database context used to execute the profile lookup.</param>
+    /// <returns>The first profile identifier when available; otherwise <c>null</c>.</returns>
+    private static async Task<int?> GetFirstProfileIdAsync(AppDbContext dbContext)
     {
         const string firstProfileQuery = "SELECT `id` FROM `profiles` ORDER BY `id` LIMIT 1";
         var firstProfileId = await ExecuteScalarAsync(dbContext, firstProfileQuery);
-        if (firstProfileId is null || firstProfileId == DBNull.Value)
+        return firstProfileId is null || firstProfileId == DBNull.Value
+            ? null
+            : Convert.ToInt32(firstProfileId);
+    }
+
+    /// <summary>
+    ///     Assigns legacy users to the resolved company profile when old Railway data predates tenancy fields.
+    /// </summary>
+    /// <param name="dbContext">Application database context used to execute compatibility SQL.</param>
+    /// <param name="logger">Startup logger used to report data corrections.</param>
+    /// <param name="defaultCompanyId">Resolved company profile identifier used for legacy membership rows.</param>
+    /// <returns>A task that completes once legacy membership rows are normalized.</returns>
+    private static async Task EnsureDefaultCompanyMembershipAsync(AppDbContext dbContext, ILogger logger, int? defaultCompanyId)
+    {
+        if (defaultCompanyId is null)
             return;
 
         const string assignLegacyUsersCommand = """
@@ -423,7 +443,7 @@ file static class DatabaseBootstrapper
         {
             var companyParameter = command.CreateParameter();
             companyParameter.ParameterName = "@companyId";
-            companyParameter.Value = firstProfileId;
+            companyParameter.Value = defaultCompanyId.Value;
             command.Parameters.Add(companyParameter);
         });
 

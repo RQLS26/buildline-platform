@@ -16,7 +16,6 @@ namespace Buildline.Platform.Procurement.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/quotations")]
-[Route("api/v1/quotations")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped quotations endpoints.")]
 public class QuotationsController(
