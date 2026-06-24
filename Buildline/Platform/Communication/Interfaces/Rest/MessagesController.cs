@@ -16,7 +16,6 @@ namespace Buildline.Platform.Communication.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/messages")]
-[Route("api/v1/messages")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped messages endpoints.")]
 public class MessagesController(

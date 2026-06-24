@@ -16,7 +16,6 @@ namespace Buildline.Platform.Delivery.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/deliveries")]
-[Route("api/v1/deliveries")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped deliveries endpoints.")]
 public class DeliveriesController(

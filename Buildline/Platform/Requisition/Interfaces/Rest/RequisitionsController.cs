@@ -16,7 +16,6 @@ namespace Buildline.Platform.Requisition.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/requisitions")]
-[Route("api/v1/requisitions")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped requisitions endpoints.")]
 public class RequisitionsController(

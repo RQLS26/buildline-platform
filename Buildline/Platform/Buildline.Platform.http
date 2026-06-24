@@ -1,11 +1,13 @@
 @BuildlinePlatform_HostAddress = http://localhost:5163
-@AccessToken = paste-jwt-token-here
+@AccessToken = {{signIn.response.body.$.token}}
+@CompanyId = {{signIn.response.body.$.companyId}}
 
 ### Health
 GET {{BuildlinePlatform_HostAddress}}/api/v1/health
 Accept: application/json
 
 ### Sign in
+# @name signIn
 POST {{BuildlinePlatform_HostAddress}}/api/v1/auth/sign-in
 Content-Type: application/json
 
@@ -29,7 +31,7 @@ Content-Type: application/json
 }
 
 ### Users
-GET {{BuildlinePlatform_HostAddress}}/api/v1/users
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/users
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -39,7 +41,7 @@ Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Projects
-GET {{BuildlinePlatform_HostAddress}}/api/v1/projects
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/projects
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -49,17 +51,17 @@ Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Materials
-GET {{BuildlinePlatform_HostAddress}}/api/v1/materials
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/materials
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Requisitions
-GET {{BuildlinePlatform_HostAddress}}/api/v1/requisitions
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/requisitions
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Create requisition
-POST {{BuildlinePlatform_HostAddress}}/api/v1/requisitions
+POST {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/requisitions
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -74,12 +76,12 @@ Authorization: Bearer {{AccessToken}}
 }
 
 ### Purchase orders
-GET {{BuildlinePlatform_HostAddress}}/api/v1/purchaseOrders
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/purchaseOrders
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Patch purchase order status
-PATCH {{BuildlinePlatform_HostAddress}}/api/v1/purchaseOrders/2
+PATCH {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/purchaseOrders/2
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -88,17 +90,17 @@ Authorization: Bearer {{AccessToken}}
 }
 
 ### Quotations
-GET {{BuildlinePlatform_HostAddress}}/api/v1/quotations
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/quotations
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Inventory
-GET {{BuildlinePlatform_HostAddress}}/api/v1/inventory
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/inventory
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Patch inventory stock
-PATCH {{BuildlinePlatform_HostAddress}}/api/v1/inventory/1
+PATCH {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/inventory/1
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -108,32 +110,32 @@ Authorization: Bearer {{AccessToken}}
 }
 
 ### Deliveries
-GET {{BuildlinePlatform_HostAddress}}/api/v1/deliveries
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/deliveries
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Suppliers
-GET {{BuildlinePlatform_HostAddress}}/api/v1/suppliers
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/suppliers
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Incidents
-GET {{BuildlinePlatform_HostAddress}}/api/v1/incidents
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/incidents
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Budgets
-GET {{BuildlinePlatform_HostAddress}}/api/v1/budgets
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/budgets
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Messages
-GET {{BuildlinePlatform_HostAddress}}/api/v1/messages
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/messages
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Mark message as read
-PATCH {{BuildlinePlatform_HostAddress}}/api/v1/messages/2
+PATCH {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/messages/2
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 

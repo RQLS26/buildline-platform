@@ -14,7 +14,6 @@ namespace Buildline.Platform.Analytics.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/projects")]
-[Route("api/v1/projects")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped projects endpoints.")]
 public class ProjectsController(IProjectQueryService projectQueryService) : ControllerBase

@@ -16,7 +16,6 @@ namespace Buildline.Platform.Procurement.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/purchaseOrders")]
-[Route("api/v1/purchaseOrders")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped purchaseOrders endpoints.")]
 public class PurchaseOrdersController(

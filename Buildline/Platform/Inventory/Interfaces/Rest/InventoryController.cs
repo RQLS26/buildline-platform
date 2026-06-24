@@ -16,7 +16,6 @@ namespace Buildline.Platform.Inventory.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/inventory")]
-[Route("api/v1/inventory")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped inventory endpoints.")]
 public class InventoryItemsController(

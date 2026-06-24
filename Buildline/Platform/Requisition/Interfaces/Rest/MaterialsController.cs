@@ -16,7 +16,6 @@ namespace Buildline.Platform.Requisition.Interfaces.Rest;
 [ApiController]
 [Authorize]
 [Route("api/v1/companies/{companyId:int}/materials")]
-[Route("api/v1/materials")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Company-scoped material reference endpoints.")]
 public class MaterialsController(
