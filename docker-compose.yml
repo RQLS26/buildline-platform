@@ -4,10 +4,10 @@ services:
     container_name: buildline-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-buildline_root_2026}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-buildline_platform}
       MYSQL_USER: ${MYSQL_USER:-buildline}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-buildline_pass_2026}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
     ports:
       - "3306:3306"
     volumes:
@@ -35,8 +35,8 @@ services:
       MYSQL_PORT: "3306"
       MYSQL_DATABASE: ${MYSQL_DATABASE:-buildline_platform}
       MYSQL_USER: ${MYSQL_USER:-buildline}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-buildline_pass_2026}
-      BUILDLINE_JWT_SECRET: ${BUILDLINE_JWT_SECRET:-buildline-production-secret-key-with-at-least-32-chars!!}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      BUILDLINE_JWT_SECRET: ${BUILDLINE_JWT_SECRET:?Set BUILDLINE_JWT_SECRET in .env}
     depends_on:
       mysql:
         condition: service_healthy
