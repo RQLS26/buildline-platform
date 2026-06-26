@@ -7,3 +7,5 @@ obj/
 *.suo
 *.rsuser
 appsettings.Local.json
+.env
+.env.local

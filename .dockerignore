@@ -8,4 +8,6 @@
 *.suo
 *.rsuser
 appsettings.Local.json
-Backend/appsettings.Development.json
+Buildline/Platform/appsettings.Development.json
+.env
+.env.local

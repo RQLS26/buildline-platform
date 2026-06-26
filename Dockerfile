@@ -1,113 +1,69 @@
 # syntax=docker/dockerfile:1
 
-################################################################################
-# Buildline Platform API - Production Dockerfile
-# ------------------------------------------------------------------------------
-# Purpose
-#   Builds and runs the ASP.NET Core Web Services backend used by the Buildline
-#   Sprint 3 delivery. The image is designed for Railway and any container host
-#   that provides environment variables for MySQL and JWT configuration.
-#
-# Design
-#   This file uses a two-stage Docker build:
-#   1. build   : restores NuGet packages and publishes the ASP.NET Core project.
-#   2. runtime : runs only the published output on the smaller ASP.NET runtime.
-#
-# Why two stages?
-#   The SDK image contains compilers, restore tooling and build-time assets that
-#   are unnecessary at runtime. Copying only /app/publish into the final image
-#   reduces the deployment surface and keeps the container closer to production
-#   hosting expectations.
-#
-# Runtime contract
-#   The application listens on port 8080 inside the container. Railway maps its
-#   public HTTPS edge to this internal HTTP port, so TLS termination is handled
-#   by Railway and the app itself binds to HTTP.
-#
-# Required environment variables in Railway
-#   ASPNETCORE_ENVIRONMENT = Production
-#   ASPNETCORE_URLS        = http://+:8080
-#   MYSQL_HOST             = MySQL service host from Railway Connect tab
-#   MYSQL_PORT             = 3306
-#   MYSQL_DATABASE         = MySQL database name from Railway Connect tab
-#   MYSQL_USER             = MySQL username from Railway Connect tab
-#   MYSQL_PASSWORD         = MySQL password from Railway Connect tab
-#   BUILDLINE_JWT_SECRET   = Long signing key, at least 32 characters
-#
-# Optional environment variables
-#   ENABLE_SWAGGER         = true/false to override the Production Swagger setting
-#
-# Database startup behavior
-#   Program.cs applies EF Core migrations when possible and then runs the JSON
-#   demo-data seeder. If the database already contains a legacy EnsureCreated
-#   schema with records, startup preserves the data and skips destructive work.
-################################################################################
+# Dockerfile for Buildline Platform API
+# Summary:
+# This Dockerfile builds and runs the Buildline ASP.NET Core Web Services backend.
+# Description:
+# The image uses a multi-stage .NET build. The first stage restores dependencies
+# and publishes the application with the .NET SDK. The second stage runs only the
+# published output on the smaller ASP.NET runtime image. The runtime container is
+# prepared for Railway or any container host that supplies MySQL and JWT settings
+# through environment variables.
+# Version: 1.0
+# Maintainer: RQLS Buildline Team
 
-################################################################################
-# Stage 1: Build and publish
-# ------------------------------------------------------------------------------
-# The .NET SDK image is intentionally used only for compilation. Pinning the
-# major version to 10.0 keeps the container aligned with the project target
-# framework while still receiving patch updates from the Microsoft image stream.
-################################################################################
+# Step 1: Build and publish the application using the .NET SDK.
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
-# All build commands run from /src so relative project paths remain stable in
-# local Docker builds, Railway builds and CI-style builders.
+# Set the working directory used by restore and publish commands.
 WORKDIR /src
 
-# Copy the project file first to maximize Docker layer caching. Dependency
-# restore is invalidated only when the .csproj changes, not on every source edit.
+# Copy the project file first so Docker can cache dependency restore layers.
 COPY Buildline/Platform/Buildline.Platform.csproj Buildline/Platform/
 
-# Restore NuGet dependencies before copying the rest of the repository. This is
-# the standard ASP.NET Core Docker pattern for faster iterative builds.
+# Restore NuGet packages for the API project.
 RUN dotnet restore Buildline/Platform/Buildline.Platform.csproj
 
-# Copy the complete repository after restore so source code, migrations, JSON
-# seed data, resources and XML documentation settings are available to publish.
+# Copy the remaining source files, migrations, resources and seed data.
 COPY . .
 
-# Publish a Release build into /app/publish. UseAppHost=false avoids generating
-# a platform-specific native host executable and keeps the output portable inside
-# the Linux runtime container.
+# Publish a Release build without a platform-specific app host executable.
 RUN dotnet publish Buildline/Platform/Buildline.Platform.csproj \
     --configuration Release \
     --output /app/publish \
     /p:UseAppHost=false
 
-################################################################################
-# Stage 2: Runtime image
-# ------------------------------------------------------------------------------
-# The ASP.NET runtime image contains only the framework/runtime dependencies
-# needed to execute the already-published application.
-################################################################################
+# Step 2: Create the runtime image using the ASP.NET Core runtime.
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
-# /app is the conventional working directory for published ASP.NET Core output.
+# Set the application directory inside the runtime container.
 WORKDIR /app
 
-# Railway expects the containerized process to listen on the port exposed by the
-# service. 8080 is used consistently in Dockerfile, Program.cs documentation and
-# Railway variables. The + binding accepts traffic on all container interfaces.
+# Configure ASP.NET Core for container hosting on port 8080.
 ENV ASPNETCORE_URLS=http://+:8080
-
-# Production is the default container environment. Override only for local
-# diagnostics when Development-only behavior is intentionally needed.
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Swagger is enabled by default in Production for Sprint Review evidence.
-# Set ENABLE_SWAGGER=false in Railway later if the public Swagger UI must be hidden.
+# Keep Swagger available for Sprint Review and deployment evidence.
 ENV ENABLE_SWAGGER=true
 
-# Copy the published output from the build stage. No SDK files, obj folders or
-# source-only build artifacts are copied into the final image.
+# Copy only the published application output from the build stage.
 COPY --from=build /app/publish .
 
-# Document the internal port used by the app. Railway still controls public
-# routing, but EXPOSE makes the image contract clear to humans and tooling.
+# Expose the internal HTTP port used by Railway and local Docker runs.
 EXPOSE 8080
 
-# Start the ASP.NET Core application. Configuration is supplied through
-# appsettings.*.json plus Railway environment variables expanded by Program.cs.
+# Step 3: Run the Buildline Platform API.
 ENTRYPOINT ["dotnet", "Buildline.Platform.dll"]
+
+# Note:
+# The application expects runtime configuration from appsettings.*.json and the
+# hosting provider environment. For production deployment, define:
+# - ASPNETCORE_ENVIRONMENT: Must be Production for production settings.
+# - ASPNETCORE_URLS: Internal binding URL, normally http://+:8080.
+# - MYSQL_HOST: Database host name or address.
+# - MYSQL_PORT: Database port, normally 3306.
+# - MYSQL_DATABASE: Database name used by the API.
+# - MYSQL_USER: Database username.
+# - MYSQL_PASSWORD: Database password.
+# - BUILDLINE_JWT_SECRET: JWT signing secret with at least 32 characters.
+# - ENABLE_SWAGGER: Optional true/false flag to expose or hide Swagger UI.
