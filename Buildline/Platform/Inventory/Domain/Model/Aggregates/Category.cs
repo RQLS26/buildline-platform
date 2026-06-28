@@ -1,4 +1,3 @@
-using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Inventory.Domain.Model.Aggregates;
 
@@ -10,7 +9,7 @@ namespace Buildline.Platform.Inventory.Domain.Model.Aggregates;
 ///     current Sprint 3 API exposes categories as read-only data because the frontend needs stable
 ///     classification values before full reference administration is introduced.
 /// </remarks>
-public partial class Category : IAuditableEntity
+public partial class Category
 {
     /// <summary>
     ///     Initializes an empty category instance for Entity Framework Core materialization.
@@ -51,15 +50,4 @@ public partial class Category : IAuditableEntity
     /// </summary>
     public string Description { get; private set; }
 
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the category is first persisted.
-    /// </summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the category is updated.
-    /// </summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 }
-
-

@@ -1,8 +1,8 @@
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Procurement.Domain.Model.Commands;
 using Buildline.Platform.Procurement.Domain.Model.Events;
 using Buildline.Platform.Procurement.Domain.Model.ValueObjects;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Procurement.Domain.Model.Aggregates;
@@ -10,7 +10,7 @@ namespace Buildline.Platform.Procurement.Domain.Model.Aggregates;
 /// <summary>
 ///     Aggregate root that represents a purchase order emitted by the procurement workflow.
 /// </summary>
-public partial class PurchaseOrder : IAuditableEntity, IHasDomainEvents
+public partial class PurchaseOrder : IHasDomainEvents
 {
     private readonly List<IEvent> _domainEvents = [];
 
@@ -66,12 +66,6 @@ public partial class PurchaseOrder : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the approval status used by the approval inbox.</summary>
     public string Status { get; private set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the order is created.</summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the order is updated.</summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <inheritdoc />
     [NotMapped]

@@ -1,4 +1,3 @@
-using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Profiles.Domain.Model.Aggregates;
 
@@ -10,7 +9,7 @@ namespace Buildline.Platform.Profiles.Domain.Model.Aggregates;
 ///     address, phone and email. The aggregate keeps those concepts explicit
 ///     instead of leaking presentation DTO names into the domain.
 /// </remarks>
-public partial class Profile : IAuditableEntity
+public partial class Profile
 {
     /// <summary>
     ///     Initializes an empty profile instance for Entity Framework Core materialization.
@@ -73,16 +72,6 @@ public partial class Profile : IAuditableEntity
     ///     Gets the company contact email.
     /// </summary>
     public string Email { get; private set; }
-
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the profile is first persisted.
-    /// </summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the profile is updated.
-    /// </summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>
     ///     Updates company profile contact information.

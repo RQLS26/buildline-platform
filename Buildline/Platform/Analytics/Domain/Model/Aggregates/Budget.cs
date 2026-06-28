@@ -1,8 +1,8 @@
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Analytics.Domain.Model.Commands;
 using Buildline.Platform.Analytics.Domain.Model.Events;
 using Buildline.Platform.Analytics.Domain.Model.ValueObjects;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Analytics.Domain.Model.Aggregates;
@@ -10,7 +10,7 @@ namespace Buildline.Platform.Analytics.Domain.Model.Aggregates;
 /// <summary>
 ///     Aggregate root that represents the budget state of a construction project.
 /// </summary>
-public partial class Budget : IAuditableEntity, IHasDomainEvents
+public partial class Budget : IHasDomainEvents
 {
     private readonly List<IEvent> _domainEvents = [];
 
@@ -53,12 +53,6 @@ public partial class Budget : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the calculated budget status displayed by dashboards.</summary>
     public string Status { get; private set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the budget row is created.</summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the budget row is updated.</summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <inheritdoc />
     [NotMapped]

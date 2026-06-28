@@ -1,8 +1,8 @@
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Delivery.Domain.Model.Commands;
 using Buildline.Platform.Delivery.Domain.Model.Events;
 using Buildline.Platform.Delivery.Domain.Model.ValueObjects;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Delivery.Domain.Model.Aggregates;
@@ -10,7 +10,7 @@ namespace Buildline.Platform.Delivery.Domain.Model.Aggregates;
 /// <summary>
 ///     Aggregate root that represents a tracked delivery linked to a purchase order.
 /// </summary>
-public partial class Delivery : IAuditableEntity, IHasDomainEvents
+public partial class Delivery : IHasDomainEvents
 {
     private readonly List<IEvent> _domainEvents = [];
 
@@ -76,12 +76,6 @@ public partial class Delivery : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the item summary shown in tracking lists.</summary>
     public string Items { get; private set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the delivery is created.</summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the delivery is updated.</summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <inheritdoc />
     [NotMapped]

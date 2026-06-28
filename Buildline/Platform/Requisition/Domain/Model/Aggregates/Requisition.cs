@@ -1,8 +1,8 @@
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Requisition.Domain.Model.Commands;
 using Buildline.Platform.Requisition.Domain.Model.Events;
 using Buildline.Platform.Requisition.Domain.Model.ValueObjects;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Requisition.Domain.Model.Aggregates;
@@ -10,7 +10,7 @@ namespace Buildline.Platform.Requisition.Domain.Model.Aggregates;
 /// <summary>
 ///     Aggregate root that represents a material requisition created from a construction site.
 /// </summary>
-public partial class Requisition : IAuditableEntity, IHasDomainEvents
+public partial class Requisition : IHasDomainEvents
 {
     private readonly List<IEvent> _domainEvents = [];
 
@@ -82,12 +82,6 @@ public partial class Requisition : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the employee who created the requisition.</summary>
     public string RequestedBy { get; private set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the requisition is created.</summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the requisition is updated.</summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <inheritdoc />
     [NotMapped]
