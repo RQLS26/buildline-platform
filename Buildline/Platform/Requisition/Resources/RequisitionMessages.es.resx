@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="MaterialsError.MaterialNotFound" xml:space="preserve">
+    <value>Material no encontrado.</value>
+  </data>
+  <data name="MaterialsError.InvalidMaterialData" xml:space="preserve">
+    <value>Datos de material inválidos proporcionados.</value>
+  </data>
+  <data name="MaterialsError.OperationCancelled" xml:space="preserve">
+    <value>La operación de material fue cancelada.</value>
+  </data>
+  <data name="MaterialsError.DatabaseError" xml:space="preserve">
+    <value>Ocurrió un error de base de datos durante la operación de material.</value>
+  </data>
+  <data name="MaterialsError.InternalServerError" xml:space="preserve">
+    <value>Ocurrió un error interno inesperado en Materiales.</value>
+  </data>
+  <data name="RequisitionError.RequisitionNotFound" xml:space="preserve">
+    <value>Requisicion no encontrada.</value>
+  </data>
+  <data name="RequisitionError.DatabaseError" xml:space="preserve">
+    <value>Ocurrio un error de base de datos durante la operacion de requisicion.</value>
+  </data>
+  <data name="RequisitionError.InternalServerError" xml:space="preserve">
+    <value>Ocurrio un error interno inesperado en Requisiciones.</value>
+  </data>
+  <data name="RequisitionError.InvalidRequisitionData" xml:space="preserve">
+    <value>Datos de requisicion invalidos proporcionados.</value>
+  </data>
+  <data name="RequisitionError.OperationCancelled" xml:space="preserve">
+    <value>La operacion de requisicion fue cancelada.</value>
+  </data>
+  <data name="RequisitionError.ProjectReferenceNotFound" xml:space="preserve">
+    <value>El proyecto referenciado por la requisicion no fue encontrado.</value>
+  </data>
+</root>

@@ -7,7 +7,7 @@ using Buildline.Platform.Iam.Domain.Model.Commands;
 using Buildline.Platform.Iam.Domain.Repositories;
 using Buildline.Platform.Profiles.Domain.Model.Aggregates;
 using Buildline.Platform.Profiles.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Iam.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +31,7 @@ public class UserCommandService(
     IHashingService hashingService,
     ITokenService tokenService,
     IUnitOfWork unitOfWork,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<IamMessages> localizer)
     : IUserCommandService
 {
     private static readonly string[] SupportedRoles = ["owner", "admin", "viewer"];

@@ -29,8 +29,8 @@ public class MaterialsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var materials = await materialQueryService.ListAsync(cancellationToken);
-        return Ok(materials.Where(material => material.CompanyId == resolvedCompanyId).Select(MaterialResourceFromEntityAssembler.ToResourceFromEntity));
+        var materials = await materialQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(materials.Select(MaterialResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one material owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class MaterialsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var material = await materialQueryService.FindByIdAsync(materialId, cancellationToken);
-        return material is null || material.CompanyId != resolvedCompanyId
+        var material = await materialQueryService.FindByIdAndCompanyIdAsync(materialId, resolvedCompanyId, cancellationToken);
+        return material is null
             ? this.NotFoundProblem("Material", materialId)
             : Ok(MaterialResourceFromEntityAssembler.ToResourceFromEntity(material));
     }
@@ -63,8 +63,8 @@ public class MaterialsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await materialQueryService.FindByIdAsync(materialId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await materialQueryService.FindByIdAndCompanyIdAsync(materialId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Material", materialId);
 
         var command = UpdateMaterialCommandFromResourceAssembler.ToCommandFromResource(materialId, resource);
@@ -86,8 +86,8 @@ public class MaterialsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await materialQueryService.FindByIdAsync(materialId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await materialQueryService.FindByIdAndCompanyIdAsync(materialId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Material", materialId);
 
         var result = await materialCommandService.HandleDelete(materialId, cancellationToken);

@@ -29,8 +29,8 @@ public class IncidentsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await incidentQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(IncidentResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await incidentQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(IncidentResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one incident owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class IncidentsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await incidentQueryService.FindByIdAsync(incidentId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await incidentQueryService.FindByIdAndCompanyIdAsync(incidentId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Incident", incidentId)
             : Ok(IncidentResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
@@ -63,8 +63,8 @@ public class IncidentsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await incidentQueryService.FindByIdAsync(incidentId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await incidentQueryService.FindByIdAndCompanyIdAsync(incidentId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Incident", incidentId);
 
         var command = UpdateSupplierIncidentCommandFromResourceAssembler.ToCommandFromResource(incidentId, resource);

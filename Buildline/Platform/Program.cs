@@ -243,7 +243,7 @@ var app = builder.Build();
 app.UseGlobalExceptionHandler();
 app.UseRequestLogging();
 
-var supportedCultures = new[] { "en", "es" };
+var supportedCultures = new[] { "en", "en-US", "es", "es-PE" };
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])
     .AddSupportedCultures(supportedCultures)

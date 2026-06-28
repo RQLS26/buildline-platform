@@ -21,4 +21,15 @@ public class SupplierQueryService(ISupplierRepository supplierRepository) : ISup
     {
         return await supplierRepository.FindByIdAsync(id, cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<Supplier>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await supplierRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<Supplier?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await supplierRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }

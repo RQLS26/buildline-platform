@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ProcurementError.QuotationNotFound" xml:space="preserve">
+    <value>Cotizacion no encontrada.</value>
+  </data>
+  <data name="ProcurementError.DatabaseError" xml:space="preserve">
+    <value>Ocurrio un error de base de datos durante la operacion de compras.</value>
+  </data>
+  <data name="ProcurementError.InternalServerError" xml:space="preserve">
+    <value>Ocurrio un error interno inesperado en Compras.</value>
+  </data>
+  <data name="ProcurementError.PurchaseOrderNotFound" xml:space="preserve">
+    <value>Orden de compra no encontrada.</value>
+  </data>
+  <data name="ProcurementError.OperationCancelled" xml:space="preserve">
+    <value>La operacion de compras fue cancelada.</value>
+  </data>
+  <data name="ProcurementError.InvalidQuotationData" xml:space="preserve">
+    <value>Datos de cotizacion invalidos proporcionados.</value>
+  </data>
+  <data name="ProcurementError.InvalidPurchaseOrderData" xml:space="preserve">
+    <value>Datos de orden de compra invalidos proporcionados.</value>
+  </data>
+  <data name="ProcurementError.SupplierReferenceNotSelectable" xml:space="preserve">
+    <value>El proveedor referenciado por la orden de compra no fue encontrado o esta inactivo.</value>
+  </data>
+</root>

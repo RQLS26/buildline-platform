@@ -10,5 +10,4 @@ namespace Buildline.Platform.Requisition.Domain.Repositories;
 ///     The current Materials context uses generic repository operations for list, lookup, create,
 ///     update and delete. The explicit interface preserves the bounded-context dependency boundary.
 /// </remarks>
-public interface IMaterialRepository : IBaseRepository<Material>;
-
+public interface IMaterialRepository : IBaseRepository<Material>, ICompanyScopedRepository<Material>;

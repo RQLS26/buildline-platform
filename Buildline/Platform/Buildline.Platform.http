@@ -99,12 +99,12 @@ Authorization: Bearer {{AccessToken}}
 }
 
 ### Purchase orders
-GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/purchaseOrders
+GET {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/purchase-orders
 Accept: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### Patch purchase order status
-PATCH {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/purchaseOrders/{{PurchaseOrderId}}
+PATCH {{BuildlinePlatform_HostAddress}}/api/v1/companies/{{CompanyId}}/purchase-orders/{{PurchaseOrderId}}
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -165,4 +165,3 @@ Authorization: Bearer {{AccessToken}}
 {
   "isRead": {{MessageRead}}
 }
-

@@ -3,7 +3,7 @@ using Buildline.Platform.Profiles.Domain.Model;
 using Buildline.Platform.Profiles.Domain.Model.Aggregates;
 using Buildline.Platform.Profiles.Domain.Model.Commands;
 using Buildline.Platform.Profiles.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Profiles.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,7 @@ namespace Buildline.Platform.Profiles.Application.Internal.CommandServices;
 public class ProfileCommandService(
     IProfileRepository profileRepository,
     IUnitOfWork unitOfWork,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<ProfilesMessages> localizer)
     : IProfileCommandService
 {
     /// <summary>

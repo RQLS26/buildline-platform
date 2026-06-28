@@ -29,8 +29,8 @@ public class InventoryItemsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await inventoryItemQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(InventoryItemResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await inventoryItemQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(InventoryItemResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one inventory item owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class InventoryItemsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await inventoryItemQueryService.FindByIdAsync(inventoryItemId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await inventoryItemQueryService.FindByIdAndCompanyIdAsync(inventoryItemId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Inventory item", inventoryItemId)
             : Ok(InventoryItemResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
@@ -63,8 +63,8 @@ public class InventoryItemsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await inventoryItemQueryService.FindByIdAsync(inventoryItemId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await inventoryItemQueryService.FindByIdAndCompanyIdAsync(inventoryItemId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Inventory item", inventoryItemId);
 
         var command = UpdateInventoryItemCommandFromResourceAssembler.ToCommandFromResource(inventoryItemId, resource);

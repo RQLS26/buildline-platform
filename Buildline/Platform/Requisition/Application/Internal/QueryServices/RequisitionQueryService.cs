@@ -20,4 +20,15 @@ public class RequisitionQueryService(IRequisitionRepository requisitionRepositor
     {
         return await requisitionRepository.FindByIdAsync(id, cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<Domain.Model.Aggregates.Requisition>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await requisitionRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<Domain.Model.Aggregates.Requisition?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await requisitionRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }

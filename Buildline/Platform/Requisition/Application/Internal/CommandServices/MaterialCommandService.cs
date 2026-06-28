@@ -3,7 +3,7 @@ using Buildline.Platform.Requisition.Domain.Model;
 using Buildline.Platform.Requisition.Domain.Model.Aggregates;
 using Buildline.Platform.Requisition.Domain.Model.Commands;
 using Buildline.Platform.Requisition.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Requisition.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +22,7 @@ namespace Buildline.Platform.Requisition.Application.Internal.CommandServices;
 public class MaterialCommandService(
     IMaterialRepository materialRepository,
     IUnitOfWork unitOfWork,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<RequisitionMessages> localizer)
     : IMaterialCommandService
 {
     /// <summary>
@@ -169,5 +169,3 @@ public class MaterialCommandService(
         }
     }
 }
-
-

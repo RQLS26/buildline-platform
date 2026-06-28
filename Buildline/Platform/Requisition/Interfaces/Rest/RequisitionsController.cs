@@ -29,8 +29,8 @@ public class RequisitionsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await requisitionQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(RequisitionResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await requisitionQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(RequisitionResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one requisition owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class RequisitionsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await requisitionQueryService.FindByIdAsync(requisitionId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await requisitionQueryService.FindByIdAndCompanyIdAsync(requisitionId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Requisition", requisitionId)
             : Ok(RequisitionResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
@@ -63,8 +63,8 @@ public class RequisitionsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await requisitionQueryService.FindByIdAsync(requisitionId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await requisitionQueryService.FindByIdAndCompanyIdAsync(requisitionId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Requisition", requisitionId);
 
         var command = UpdateRequisitionCommandFromResourceAssembler.ToCommandFromResource(requisitionId, resource);

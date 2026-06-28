@@ -27,4 +27,18 @@ public class UserRepository(AppDbContext context) : BaseRepository<User>(context
     {
         return await Context.Set<User>().AnyAsync(user => user.Email == email, cancellationToken);
     }
+    /// <inheritdoc />
+    public new async Task<IEnumerable<User>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<User>()
+            .Where(user => user.CompanyId == companyId)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public new async Task<User?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<User>()
+            .FirstOrDefaultAsync(user => user.Id == id && user.CompanyId == companyId, cancellationToken);
+    }
 }

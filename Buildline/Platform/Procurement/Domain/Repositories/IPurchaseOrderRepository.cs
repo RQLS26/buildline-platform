@@ -6,4 +6,4 @@ namespace Buildline.Platform.Procurement.Domain.Repositories;
 /// <summary>
 ///     Repository contract for purchase order aggregate persistence.
 /// </summary>
-public interface IPurchaseOrderRepository : IBaseRepository<PurchaseOrder>;
+public interface IPurchaseOrderRepository : IBaseRepository<PurchaseOrder>, ICompanyScopedRepository<PurchaseOrder>;

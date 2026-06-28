@@ -30,5 +30,15 @@ public class ProjectQueryService(IProjectRepository projectRepository) : IProjec
     /// <returns>The project aggregate when found; otherwise <c>null</c>.</returns>
     public async Task<Project?> FindByIdAsync(int projectId, CancellationToken cancellationToken = default)
         => await projectRepository.FindByIdAsync(projectId, cancellationToken);
-}
+    /// <inheritdoc />
+    public async Task<IEnumerable<Project>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await projectRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
 
+    /// <inheritdoc />
+    public async Task<Project?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await projectRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
+}

@@ -3,7 +3,7 @@ using Buildline.Platform.Communication.Domain.Model;
 using Buildline.Platform.Communication.Domain.Model.Aggregates;
 using Buildline.Platform.Communication.Domain.Model.Commands;
 using Buildline.Platform.Communication.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Communication.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -24,7 +24,7 @@ public class MessageCommandService(
     IMessageRepository repository,
     IUnitOfWork unitOfWork,
     IMediator mediator,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<CommunicationMessages> localizer)
     : IMessageCommandService
 {
     /// <inheritdoc />

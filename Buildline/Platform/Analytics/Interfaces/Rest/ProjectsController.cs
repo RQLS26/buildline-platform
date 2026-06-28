@@ -24,8 +24,8 @@ public class ProjectsController(IProjectQueryService projectQueryService) : Cont
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await projectQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(ProjectResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await projectQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(ProjectResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one project owned by the route company.</summary>
@@ -34,8 +34,8 @@ public class ProjectsController(IProjectQueryService projectQueryService) : Cont
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await projectQueryService.FindByIdAsync(projectId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await projectQueryService.FindByIdAndCompanyIdAsync(projectId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Project", projectId)
             : Ok(ProjectResourceFromEntityAssembler.ToResourceFromEntity(item));
     }

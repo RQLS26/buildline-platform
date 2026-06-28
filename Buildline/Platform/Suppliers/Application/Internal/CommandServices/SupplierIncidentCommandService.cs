@@ -3,7 +3,7 @@ using Buildline.Platform.Suppliers.Domain.Model;
 using Buildline.Platform.Suppliers.Domain.Model.Aggregates;
 using Buildline.Platform.Suppliers.Domain.Model.Commands;
 using Buildline.Platform.Suppliers.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Suppliers.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -24,7 +24,7 @@ public class SupplierIncidentCommandService(
     ISupplierIncidentRepository repository,
     IUnitOfWork unitOfWork,
     IMediator mediator,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<SuppliersMessages> localizer)
     : ISupplierIncidentCommandService
 {
     /// <inheritdoc />

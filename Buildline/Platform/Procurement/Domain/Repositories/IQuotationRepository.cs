@@ -6,4 +6,4 @@ namespace Buildline.Platform.Procurement.Domain.Repositories;
 /// <summary>
 ///     Repository contract for quotation aggregate persistence.
 /// </summary>
-public interface IQuotationRepository : IBaseRepository<Quotation>;
+public interface IQuotationRepository : IBaseRepository<Quotation>, ICompanyScopedRepository<Quotation>;

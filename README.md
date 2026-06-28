@@ -65,7 +65,7 @@ POST https://buildline-platform.up.railway.app/api/v1/auth/sign-in
 POST https://buildline-platform.up.railway.app/api/v1/auth/sign-up
 ```
 
-Most business endpoints are protected. If Swagger returns `401 Unauthorized` for endpoints such as `/api/v1/messages` or `/api/v1/purchaseorders`, the API is behaving correctly: the request did not include a valid JWT Bearer token.
+Most business endpoints are protected. If Swagger returns `401 Unauthorized` for endpoints such as `/api/v1/companies/{companyId}/messages` or `/api/v1/companies/{companyId}/purchase-orders`, the API is behaving correctly: the request did not include a valid JWT Bearer token.
 
 To execute protected endpoints from Swagger:
 
@@ -92,7 +92,7 @@ The API currently covers the Sprint 2 Vue frontend mock resources with versioned
 | `materials` | `/api/v1/materials` | Requisition reference data | Bearer |
 | `categories` | `/api/v1/categories` | Inventory reference data | Bearer |
 | `requisitions` | `/api/v1/requisitions` | Requisition | Bearer |
-| `purchaseOrders` | `/api/v1/purchaseOrders` | Procurement | Bearer |
+| `purchase-orders` | `/api/v1/companies/{companyId}/purchase-orders` | Procurement | Bearer |
 | `quotations` | `/api/v1/quotations` | Procurement | Bearer |
 | `inventory` | `/api/v1/inventory` | Inventory | Bearer |
 | `deliveries` | `/api/v1/deliveries` | Delivery | Bearer |
@@ -101,7 +101,7 @@ The API currently covers the Sprint 2 Vue frontend mock resources with versioned
 | `budgets` | `/api/v1/budgets` | Analytics | Bearer |
 | `messages` | `/api/v1/messages` | Communication | Bearer |
 
-Because route options enforce lowercase URLs, Swagger and logs may display routes such as `/api/v1/purchaseorders`. This is the same endpoint as the controller route generated from `/api/v1/purchaseOrders`.
+Company-owned operational routes use `/api/v1/companies/{companyId}/...`; multi-word route segments use kebab-case, for example `/api/v1/companies/{companyId}/purchase-orders`.
 
 ## Verification
 

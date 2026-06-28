@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DeliveryError.InvalidDeliveryData" xml:space="preserve">
+    <value>Datos de entrega invalidos proporcionados.</value>
+  </data>
+  <data name="DeliveryError.OperationCancelled" xml:space="preserve">
+    <value>La operacion de entrega fue cancelada.</value>
+  </data>
+  <data name="DeliveryError.DeliveryNotFound" xml:space="preserve">
+    <value>Entrega no encontrada.</value>
+  </data>
+  <data name="DeliveryError.InternalServerError" xml:space="preserve">
+    <value>Ocurrio un error interno inesperado en Entregas.</value>
+  </data>
+  <data name="DeliveryError.DatabaseError" xml:space="preserve">
+    <value>Ocurrio un error de base de datos durante la operacion de entrega.</value>
+  </data>
+  <data name="DeliveryError.PurchaseOrderReferenceNotFound" xml:space="preserve">
+    <value>La orden de compra referenciada por la entrega no fue encontrada.</value>
+  </data>
+</root>

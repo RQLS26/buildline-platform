@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SuppliersError.SupplierIncidentNotFound" xml:space="preserve">
+    <value>Incidente de proveedor no encontrado.</value>
+  </data>
+  <data name="SuppliersError.OperationCancelled" xml:space="preserve">
+    <value>La operacion de proveedores fue cancelada.</value>
+  </data>
+  <data name="SuppliersError.InternalServerError" xml:space="preserve">
+    <value>Ocurrio un error interno inesperado en Proveedores.</value>
+  </data>
+  <data name="SuppliersError.DatabaseError" xml:space="preserve">
+    <value>Ocurrio un error de base de datos durante la operacion de proveedores.</value>
+  </data>
+  <data name="SuppliersError.InvalidSupplierData" xml:space="preserve">
+    <value>Datos de proveedor invalidos proporcionados.</value>
+  </data>
+  <data name="SuppliersError.InvalidSupplierIncidentData" xml:space="preserve">
+    <value>Datos de incidente de proveedor invalidos proporcionados.</value>
+  </data>
+  <data name="SuppliersError.SupplierNotFound" xml:space="preserve">
+    <value>Proveedor no encontrado.</value>
+  </data>
+</root>

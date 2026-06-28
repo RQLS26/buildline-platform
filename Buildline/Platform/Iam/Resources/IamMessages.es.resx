@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="IamError.UserNotFound" xml:space="preserve">
+    <value>Usuario no encontrado.</value>
+  </data>
+  <data name="IamError.EmailAlreadyTaken" xml:space="preserve">
+    <value>La dirección de correo electrónico ya está registrada.</value>
+  </data>
+  <data name="IamError.InvalidCredentials" xml:space="preserve">
+    <value>Correo electrónico o contraseña inválidos.</value>
+  </data>
+  <data name="IamError.OperationCancelled" xml:space="preserve">
+    <value>La operación de usuario fue cancelada.</value>
+  </data>
+  <data name="IamError.DatabaseError" xml:space="preserve">
+    <value>Ocurrió un error de base de datos durante la operación IAM.</value>
+  </data>
+  <data name="IamError.InternalServerError" xml:space="preserve">
+    <value>Ocurrió un error interno inesperado en IAM.</value>
+  </data>
+  <data name="IamError.InvalidCurrentPassword" xml:space="preserve">
+    <value>La contraseña actual es incorrecta.</value>
+  </data>
+  <data name="IamError.WeakPassword" xml:space="preserve">
+    <value>La nueva contraseña debe contener al menos 6 caracteres.</value>
+  </data>
+  <data name="IamError.InvalidRole" xml:space="preserve">
+    <value>El rol solicitado no está permitido.</value>
+  </data>
+  <data name="IamError.ForbiddenOperation" xml:space="preserve">
+    <value>No tiene permisos para ejecutar esta operación IAM.</value>
+  </data>
+</root>

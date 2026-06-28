@@ -68,6 +68,3 @@ public class CategoriesController(
             : Ok(CategoryResourceFromEntityAssembler.ToResourceFromEntity(category));
     }
 }
-
-
-

@@ -29,8 +29,8 @@ public class SuppliersController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await supplierQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(SupplierResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await supplierQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(SupplierResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one supplier owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class SuppliersController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await supplierQueryService.FindByIdAsync(supplierId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await supplierQueryService.FindByIdAndCompanyIdAsync(supplierId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Supplier", supplierId)
             : Ok(SupplierResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
@@ -63,8 +63,8 @@ public class SuppliersController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await supplierQueryService.FindByIdAsync(supplierId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await supplierQueryService.FindByIdAndCompanyIdAsync(supplierId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Supplier", supplierId);
 
         var command = UpdateSupplierCommandFromResourceAssembler.ToCommandFromResource(supplierId, resource);
@@ -79,8 +79,8 @@ public class SuppliersController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await supplierQueryService.FindByIdAsync(supplierId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await supplierQueryService.FindByIdAndCompanyIdAsync(supplierId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Supplier", supplierId);
 
         var result = await supplierCommandService.HandleDelete(supplierId, cancellationToken);

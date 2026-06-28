@@ -4,7 +4,7 @@ using Buildline.Platform.Requisition.Domain.Model;
 using RequisitionAggregate = Buildline.Platform.Requisition.Domain.Model.Aggregates.Requisition;
 using Buildline.Platform.Requisition.Domain.Model.Commands;
 using Buildline.Platform.Requisition.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Requisition.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -32,7 +32,7 @@ public class RequisitionCommandService(
     IProjectReferenceService projectReferenceService,
     IUnitOfWork unitOfWork,
     IMediator mediator,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<RequisitionMessages> localizer)
     : IRequisitionCommandService
 {
     /// <inheritdoc />

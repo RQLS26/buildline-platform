@@ -21,4 +21,15 @@ public class PurchaseOrderQueryService(IPurchaseOrderRepository purchaseOrderRep
     {
         return await purchaseOrderRepository.FindByIdAsync(id, cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<PurchaseOrder>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await purchaseOrderRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<PurchaseOrder?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await purchaseOrderRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }

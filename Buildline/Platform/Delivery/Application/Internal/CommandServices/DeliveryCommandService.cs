@@ -4,7 +4,7 @@ using Buildline.Platform.Delivery.Domain.Model;
 using DeliveryAggregate = Buildline.Platform.Delivery.Domain.Model.Aggregates.Delivery;
 using Buildline.Platform.Delivery.Domain.Model.Commands;
 using Buildline.Platform.Delivery.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Delivery.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -31,7 +31,7 @@ public class DeliveryCommandService(
     IPurchaseOrderReferenceService purchaseOrderReferenceService,
     IUnitOfWork unitOfWork,
     IMediator mediator,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<DeliveryMessages> localizer)
     : IDeliveryCommandService
 {
     /// <inheritdoc />
