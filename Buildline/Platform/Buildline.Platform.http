@@ -1,4 +1,5 @@
 @BuildlinePlatform_HostAddress = http://localhost:5163
+# Replace these placeholders with a seeded/local account before executing protected requests.
 @SignInEmail = user@example.com
 @SignInPassword = change-me
 @NewUserName = Operations User
@@ -33,6 +34,7 @@ Accept: application/json
 # @name signIn
 POST {{BuildlinePlatform_HostAddress}}/api/v1/auth/sign-in
 Content-Type: application/json
+Accept-Language: es-PE
 
 {
   "email": "{{SignInEmail}}",
