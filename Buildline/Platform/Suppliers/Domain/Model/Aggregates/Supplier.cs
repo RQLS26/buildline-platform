@@ -1,4 +1,3 @@
-using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Suppliers.Domain.Model.Commands;
 using Buildline.Platform.Suppliers.Domain.Model.ValueObjects;
 
@@ -12,7 +11,7 @@ namespace Buildline.Platform.Suppliers.Domain.Model.Aggregates;
 ///     commercial identity, SUNAT-facing RUC data and operational performance indicators together so
 ///     Procurement can make decisions without duplicating supplier profile fields.
 /// </remarks>
-public partial class Supplier : IAuditableEntity
+public partial class Supplier
 {
     /// <summary>
     ///     Initializes an empty supplier instance for Entity Framework Core materialization.
@@ -99,16 +98,6 @@ public partial class Supplier : IAuditableEntity
     public int DeliveryRate { get; private set; }
 
     /// <summary>
-    ///     Gets or sets the audit timestamp captured when the supplier is created.
-    /// </summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the supplier is updated.
-    /// </summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
-
-    /// <summary>
     ///     Applies a partial supplier update received from the supplier directory workflow.
     /// </summary>
     /// <param name="command">Command containing only the fields that must change.</param>
@@ -125,7 +114,3 @@ public partial class Supplier : IAuditableEntity
         DeliveryRate = command.DeliveryRate ?? DeliveryRate;
     }
 }
-
-
-
-

@@ -1,12 +1,11 @@
 using Buildline.Platform.Procurement.Domain.Model.Commands;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Procurement.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Aggregate root that represents a supplier quotation received during procurement comparison.
 /// </summary>
-public partial class Quotation : IAuditableEntity
+public partial class Quotation
 {
     /// <summary>Initializes an empty quotation for Entity Framework Core materialization.</summary>
     protected Quotation()
@@ -62,12 +61,6 @@ public partial class Quotation : IAuditableEntity
     /// <summary>Gets the display date when the quotation was received.</summary>
     public string Date { get; private set; }
 
-    /// <summary>Gets or sets the audit timestamp captured when the quotation is created.</summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the quotation is updated.</summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
-
     /// <summary>
     ///     Applies a partial quotation update, including accepted/rejected transitions.
     /// </summary>
@@ -83,6 +76,3 @@ public partial class Quotation : IAuditableEntity
         Date = command.Date is null ? Date : command.Date.Trim();
     }
 }
-
-
-

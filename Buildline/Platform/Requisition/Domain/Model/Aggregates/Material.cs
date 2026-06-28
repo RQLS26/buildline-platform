@@ -1,5 +1,4 @@
 using Buildline.Platform.Requisition.Domain.Model.Commands;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Requisition.Domain.Model.Aggregates;
 
@@ -10,7 +9,7 @@ namespace Buildline.Platform.Requisition.Domain.Model.Aggregates;
 ///     Materials are shared by requisitions and inventory: requisitions select materials to request,
 ///     while inventory views inspect current stock, minimum stock and maximum stock by project.
 /// </remarks>
-public partial class Material : IAuditableEntity
+public partial class Material
 {
     /// <summary>
     ///     Initializes an empty material instance for Entity Framework Core materialization.
@@ -129,16 +128,6 @@ public partial class Material : IAuditableEntity
     public int MaxStock { get; private set; }
 
     /// <summary>
-    ///     Gets or sets the audit timestamp captured when the material is first persisted.
-    /// </summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the material is updated.
-    /// </summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
-
-    /// <summary>
     ///     Replaces reference and stock information for the material.
     /// </summary>
     /// <param name="sku">Updated SKU value.</param>
@@ -173,6 +162,3 @@ public partial class Material : IAuditableEntity
         MaxStock = maxStock;
     }
 }
-
-
-

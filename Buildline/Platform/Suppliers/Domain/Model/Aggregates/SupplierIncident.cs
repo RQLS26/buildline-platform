@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Shared.Domain.Model.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Shared.Domain.Model.Events;
 using Buildline.Platform.Suppliers.Domain.Model.Commands;
 using Buildline.Platform.Suppliers.Domain.Model.Events;
@@ -9,7 +9,7 @@ namespace Buildline.Platform.Suppliers.Domain.Model.Aggregates;
 /// <summary>
 ///     Aggregate root that captures an operational incident reported against a supplier.
 /// </summary>
-public partial class SupplierIncident : IAuditableEntity, IHasDomainEvents
+public partial class SupplierIncident : IHasDomainEvents
 {
     private readonly List<IEvent> _domainEvents = [];
 
@@ -81,12 +81,6 @@ public partial class SupplierIncident : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the frontend display time.</summary>
     public string Time { get; private set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the incident is created.</summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the incident is updated.</summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <inheritdoc />
     [NotMapped]

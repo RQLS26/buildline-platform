@@ -1,4 +1,3 @@
-using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Analytics.Domain.Model.Aggregates;
 
@@ -10,7 +9,7 @@ namespace Buildline.Platform.Analytics.Domain.Model.Aggregates;
 ///     Sprint 3 exposes them as read-only reference data because the current frontend contract needs
 ///     stable project identifiers and budget metadata before richer project administration exists.
 /// </remarks>
-public partial class Project : IAuditableEntity
+public partial class Project
 {
     /// <summary>
     ///     Initializes an empty project instance for Entity Framework Core materialization.
@@ -101,14 +100,4 @@ public partial class Project : IAuditableEntity
     /// </summary>
     public int Progress { get; private set; }
 
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the project is first persisted.
-    /// </summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the project is updated.
-    /// </summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 }
-

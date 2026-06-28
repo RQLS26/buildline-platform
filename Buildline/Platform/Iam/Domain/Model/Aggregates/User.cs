@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Buildline.Platform.Iam.Domain.Model.Commands;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 
 namespace Buildline.Platform.Iam.Domain.Model.Aggregates;
 
@@ -14,7 +13,7 @@ namespace Buildline.Platform.Iam.Domain.Model.Aggregates;
 ///     the operational fields required by the current users API: name, email, role, department,
 ///     phone, avatar color, active flag and last login display value.
 /// </remarks>
-public partial class User : IAuditableEntity
+public partial class User
 {
     /// <summary>
     ///     Initializes an empty user instance for Entity Framework Core materialization.
@@ -188,16 +187,6 @@ public partial class User : IAuditableEntity
     ///     not access operational dashboards until an owner accepts the membership.
     /// </remarks>
     public string MembershipStatus { get; private set; }
-
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the aggregate is first persisted.
-    /// </summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the audit timestamp captured when the aggregate is updated.
-    /// </summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>
     ///     Updates the last-login display value after a successful authentication flow.
