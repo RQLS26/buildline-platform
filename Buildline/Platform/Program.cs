@@ -115,7 +115,7 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         options.EnableSensitiveDataLogging();
 });
 
-builder.Services.AddLocalization(options => options.ResourcesPath = "Shared/Resources");
+builder.Services.AddLocalization();
 builder.Services.AddSingleton<IStringLocalizer<ErrorMessages>, StringLocalizer<ErrorMessages>>();
 builder.Services.AddSingleton<IStringLocalizer<CommonMessages>, StringLocalizer<CommonMessages>>();
 builder.Services.AddSingleton<ProblemDetailsFactory>();
