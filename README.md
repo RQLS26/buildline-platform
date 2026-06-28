@@ -86,20 +86,20 @@ The API currently covers the Sprint 2 Vue frontend mock resources with versioned
 
 | Frontend resource | Backend endpoint | Bounded context | Auth |
 | --- | --- | --- | --- |
-| `users` | `/api/v1/users` | IAM | Bearer |
-| `profiles` | `/api/v1/profiles` | Profiles | Bearer |
-| `projects` | `/api/v1/projects` | Analytics reference data | Bearer |
-| `materials` | `/api/v1/materials` | Requisition reference data | Bearer |
+| `users` | `/api/v1/companies/{companyId}/users`, `/api/v1/users/me`, `/api/v1/users/{userId}/password` | IAM | Bearer |
+| `profiles` | `/api/v1/profiles` | Profiles | Bearer / public listing |
+| `projects` | `/api/v1/companies/{companyId}/projects` | Analytics reference data | Bearer |
+| `materials` | `/api/v1/companies/{companyId}/materials` | Requisition reference data | Bearer |
 | `categories` | `/api/v1/categories` | Inventory reference data | Bearer |
-| `requisitions` | `/api/v1/requisitions` | Requisition | Bearer |
+| `requisitions` | `/api/v1/companies/{companyId}/requisitions` | Requisition | Bearer |
 | `purchase-orders` | `/api/v1/companies/{companyId}/purchase-orders` | Procurement | Bearer |
-| `quotations` | `/api/v1/quotations` | Procurement | Bearer |
-| `inventory` | `/api/v1/inventory` | Inventory | Bearer |
-| `deliveries` | `/api/v1/deliveries` | Delivery | Bearer |
-| `suppliers` | `/api/v1/suppliers` | Suppliers | Bearer |
-| `incidents` | `/api/v1/incidents` | Suppliers | Bearer |
-| `budgets` | `/api/v1/budgets` | Analytics | Bearer |
-| `messages` | `/api/v1/messages` | Communication | Bearer |
+| `quotations` | `/api/v1/companies/{companyId}/quotations` | Procurement | Bearer |
+| `inventory` | `/api/v1/companies/{companyId}/inventory` | Inventory | Bearer |
+| `deliveries` | `/api/v1/companies/{companyId}/deliveries` | Delivery | Bearer |
+| `suppliers` | `/api/v1/companies/{companyId}/suppliers` | Suppliers | Bearer |
+| `incidents` | `/api/v1/companies/{companyId}/incidents` | Suppliers | Bearer |
+| `budgets` | `/api/v1/companies/{companyId}/budgets` | Analytics | Bearer |
+| `messages` | `/api/v1/companies/{companyId}/messages` | Communication | Bearer |
 
 Company-owned operational routes use `/api/v1/companies/{companyId}/...`; multi-word route segments use kebab-case, for example `/api/v1/companies/{companyId}/purchase-orders`.
 

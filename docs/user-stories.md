@@ -142,12 +142,12 @@ Acceptance criteria:
 
 **Branch:** `feature/TS-INV-003-categories-reference-api`
 **Context / module:** inventory / categories reference data
-**Endpoint(s):** `GET /api/v1/companies/{companyId}/categories, GET /api/v1/companies/{companyId}/categories/{id}`
+**Endpoint(s):** `GET /api/v1/categories, GET /api/v1/categories/{id}`
 
 As a frontend developer, I want to provide category reference data for material classification and inventory filters.
 
 Acceptance criteria:
-- Given categories exist, when GET /api/v1/companies/{companyId}/categories is called, then the API returns stable reference data.
+- Given categories exist, when GET /api/v1/categories is called, then the API returns stable reference data.
 - Given an existing category id, when the detail endpoint is called, then the API returns the category resource.
 
 ---
