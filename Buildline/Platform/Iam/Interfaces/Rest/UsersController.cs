@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using System.Security.Claims;
 using Buildline.Platform.Iam.Application.CommandServices;
+using Buildline.Platform.Iam.Application.Internal.Authorization;
 using Buildline.Platform.Iam.Application.QueryServices;
 using Buildline.Platform.Iam.Domain.Model.Commands;
 using Buildline.Platform.Iam.Interfaces.Rest.Resources;
@@ -32,7 +33,8 @@ namespace Buildline.Platform.Iam.Interfaces.Rest;
 public class UsersController(
     IUserCommandService userCommandService,
     IUserQueryService userQueryService,
-    ProblemDetailsFactory problemDetailsFactory)
+    ProblemDetailsFactory problemDetailsFactory,
+    IUserAccessPolicy userAccessPolicy)
     : ControllerBase
 {
     /// <summary>
@@ -56,7 +58,7 @@ public class UsersController(
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
         var actor = await GetCurrentUserAsync(cancellationToken);
-        if (actor is null || actor.CompanyId != resolvedCompanyId) return Forbid();
+        if (!userAccessPolicy.CanListCompanyUsers(actor, resolvedCompanyId)) return Forbid();
         var companyUsers = await userQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
         return Ok(companyUsers.Select(UserResourceFromEntityAssembler.ToResourceFromEntity));
     }
@@ -100,9 +102,13 @@ public class UsersController(
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
         var user = await userQueryService.FindByIdAndCompanyIdAsync(userId, resolvedCompanyId, cancellationToken);
-        return user is null
-            ? this.NotFoundProblem("User", userId)
-            : Ok(UserResourceFromEntityAssembler.ToResourceFromEntity(user));
+        if (user is null)
+            return this.NotFoundProblem("User", userId);
+
+        var actor = await GetCurrentUserAsync(cancellationToken);
+        if (!userAccessPolicy.CanReadUser(actor, user, resolvedCompanyId)) return Forbid();
+
+        return Ok(UserResourceFromEntityAssembler.ToResourceFromEntity(user));
     }
 
     /// <summary>
@@ -132,7 +138,7 @@ public class UsersController(
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
         var actor = await GetCurrentUserAsync(cancellationToken);
-        if (actor is null || actor.CompanyId != resolvedCompanyId) return Forbid();
+        if (!userAccessPolicy.CanCreateUser(actor, resolvedCompanyId)) return Forbid();
         var scopedResource = resource with { CompanyId = resolvedCompanyId, MembershipStatus = "active" };
         var command = CreateUserCommandFromResourceAssembler.ToCommandFromResource(scopedResource);
         var result = await userCommandService.Handle(command, cancellationToken);
@@ -178,7 +184,7 @@ public class UsersController(
             return this.NotFoundProblem("User", userId);
 
         var actor = await GetCurrentUserAsync(cancellationToken);
-        if (actor is null || !CanPatchUser(userId, currentUser, actor, resource))
+        if (!userAccessPolicy.CanUpdateUser(actor, currentUser, userId, resource))
             return Forbid();
 
         var command = UpdateUserCommandFromResourceAssembler.ToCommandFromResource(userId, currentUser, resource);
@@ -207,7 +213,7 @@ public class UsersController(
         [FromBody] ChangePasswordResource resource,
         CancellationToken cancellationToken)
     {
-        if (!IsSelf(userId)) return Forbid();
+        if (!userAccessPolicy.CanChangePassword(CurrentUserId, userId)) return Forbid();
 
         var command = new ChangePasswordCommand(userId, resource.CurrentPassword, resource.NewPassword);
         var result = await userCommandService.Handle(command, cancellationToken);
@@ -217,26 +223,10 @@ public class UsersController(
 
     private int? CurrentUserId => int.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var id) ? id : null;
 
-    private bool IsSelf(int userId) => CurrentUserId == userId;
-
-    private bool IsOwner => User.IsInRole("owner");
-
     private async Task<UserAggregate?> GetCurrentUserAsync(CancellationToken cancellationToken)
     {
         return CurrentUserId is null
             ? null
             : await userQueryService.FindByIdAsync(CurrentUserId.Value, cancellationToken);
     }
-
-    private bool CanPatchUser(int userId, UserAggregate targetUser, UserAggregate actor, UpdateUserResource resource)
-    {
-        var changesRoleOrStatus = resource.Role is not null || resource.IsActive is not null;
-        var changesMembership = resource.CompanyId is not null || resource.MembershipStatus is not null;
-        if (targetUser.CompanyId != actor.CompanyId && !IsSelf(userId)) return false;
-        if (changesMembership && (!IsOwner || IsSelf(userId))) return false;
-        if (changesRoleOrStatus) return IsOwner && !IsSelf(userId);
-
-        return IsSelf(userId) || IsOwner;
-    }
-
 }
