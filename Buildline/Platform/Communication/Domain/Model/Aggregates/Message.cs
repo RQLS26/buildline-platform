@@ -1,8 +1,8 @@
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Communication.Domain.Model.Commands;
 using Buildline.Platform.Communication.Domain.Model.Events;
 using Buildline.Platform.Communication.Domain.Model.ValueObjects;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Communication.Domain.Model.Aggregates;
@@ -10,7 +10,7 @@ namespace Buildline.Platform.Communication.Domain.Model.Aggregates;
 /// <summary>
 ///     Aggregate root that represents an internal notification or message.
 /// </summary>
-public partial class Message : IAuditableEntity, IHasDomainEvents
+public partial class Message : IHasDomainEvents
 {
     private readonly List<IEvent> _domainEvents = [];
 
@@ -90,12 +90,6 @@ public partial class Message : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the message date.</summary>
     public string Date { get; private set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the message is created.</summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the message is updated.</summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <inheritdoc />
     [NotMapped]

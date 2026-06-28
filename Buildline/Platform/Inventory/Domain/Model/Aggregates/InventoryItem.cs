@@ -1,8 +1,8 @@
+using Buildline.Platform.Shared.Domain.Model.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using Buildline.Platform.Inventory.Domain.Model.Commands;
 using Buildline.Platform.Inventory.Domain.Model.Events;
 using Buildline.Platform.Inventory.Domain.Model.ValueObjects;
-using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Model.Events;
 
 namespace Buildline.Platform.Inventory.Domain.Model.Aggregates;
@@ -10,7 +10,7 @@ namespace Buildline.Platform.Inventory.Domain.Model.Aggregates;
 /// <summary>
 ///     Aggregate root that represents a stock item controlled by the Inventory bounded context.
 /// </summary>
-public partial class InventoryItem : IAuditableEntity, IHasDomainEvents
+public partial class InventoryItem : IHasDomainEvents
 {
     private readonly List<IEvent> _domainEvents = [];
 
@@ -69,12 +69,6 @@ public partial class InventoryItem : IAuditableEntity, IHasDomainEvents
 
     /// <summary>Gets the last stock update date.</summary>
     public string LastUpdated { get; private set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the stock item is created.</summary>
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    /// <summary>Gets or sets the audit timestamp captured when the stock item is updated.</summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <inheritdoc />
     [NotMapped]
