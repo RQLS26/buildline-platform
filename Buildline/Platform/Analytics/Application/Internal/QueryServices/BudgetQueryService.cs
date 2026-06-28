@@ -19,4 +19,15 @@ public class BudgetQueryService(IBudgetRepository budgetRepository) : IBudgetQue
     {
         return await budgetRepository.FindByIdAsync(id, cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<Budget>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await budgetRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<Budget?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await budgetRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }

@@ -21,4 +21,15 @@ public class QuotationQueryService(IQuotationRepository quotationRepository) : I
     {
         return await quotationRepository.FindByIdAsync(id, cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<Quotation>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await quotationRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<Quotation?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await quotationRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }

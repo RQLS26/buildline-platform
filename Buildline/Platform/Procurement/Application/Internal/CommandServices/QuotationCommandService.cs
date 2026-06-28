@@ -3,7 +3,7 @@ using Buildline.Platform.Procurement.Domain.Model;
 using Buildline.Platform.Procurement.Domain.Model.Aggregates;
 using Buildline.Platform.Procurement.Domain.Model.Commands;
 using Buildline.Platform.Procurement.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Procurement.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,7 @@ namespace Buildline.Platform.Procurement.Application.Internal.CommandServices;
 public class QuotationCommandService(
     IQuotationRepository repository,
     IUnitOfWork unitOfWork,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<ProcurementMessages> localizer)
     : IQuotationCommandService
 {
     /// <inheritdoc />
@@ -95,4 +95,3 @@ public class QuotationCommandService(
         }
     }
 }
-

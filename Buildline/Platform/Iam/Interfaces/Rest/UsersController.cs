@@ -57,8 +57,7 @@ public class UsersController(
 
         var actor = await GetCurrentUserAsync(cancellationToken);
         if (actor is null || actor.CompanyId != resolvedCompanyId) return Forbid();
-        var users = await userQueryService.ListAsync(cancellationToken);
-        var companyUsers = users.Where(user => user.CompanyId == resolvedCompanyId);
+        var companyUsers = await userQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
         return Ok(companyUsers.Select(UserResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
@@ -100,8 +99,8 @@ public class UsersController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var user = await userQueryService.FindByIdAsync(userId, cancellationToken);
-        return user is null || user.CompanyId != resolvedCompanyId
+        var user = await userQueryService.FindByIdAndCompanyIdAsync(userId, resolvedCompanyId, cancellationToken);
+        return user is null
             ? this.NotFoundProblem("User", userId)
             : Ok(UserResourceFromEntityAssembler.ToResourceFromEntity(user));
     }
@@ -174,8 +173,8 @@ public class UsersController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var currentUser = await userQueryService.FindByIdAsync(userId, cancellationToken);
-        if (currentUser is null || currentUser.CompanyId != resolvedCompanyId)
+        var currentUser = await userQueryService.FindByIdAndCompanyIdAsync(userId, resolvedCompanyId, cancellationToken);
+        if (currentUser is null)
             return this.NotFoundProblem("User", userId);
 
         var actor = await GetCurrentUserAsync(cancellationToken);

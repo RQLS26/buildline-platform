@@ -226,7 +226,7 @@ Acceptance criteria:
 
 **Branch:** `feature/TS-PROC-003-purchase-orders-api`
 **Context / module:** procurement
-**Endpoint(s):** `GET /api/v1/companies/{companyId}/purchaseOrders, POST /api/v1/companies/{companyId}/purchaseOrders`
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/purchase-orders, POST /api/v1/companies/{companyId}/purchase-orders`
 
 As a frontend developer, I want to formalize approved purchases and show purchase history.
 
@@ -240,7 +240,7 @@ Acceptance criteria:
 
 **Branch:** `feature/TS-PROC-004-purchase-order-update-api`
 **Context / module:** procurement
-**Endpoint(s):** `GET /api/v1/companies/{companyId}/purchaseOrders/{id}, PATCH /api/v1/companies/{companyId}/purchaseOrders/{id}`
+**Endpoint(s):** `GET /api/v1/companies/{companyId}/purchase-orders/{id}, PATCH /api/v1/companies/{companyId}/purchase-orders/{id}`
 
 As a frontend developer, I want to query purchase order details and approve or reject orders.
 

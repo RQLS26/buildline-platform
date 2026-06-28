@@ -6,4 +6,4 @@ namespace Buildline.Platform.Suppliers.Domain.Repositories;
 /// <summary>
 ///     Repository contract for Supplier aggregate persistence.
 /// </summary>
-public interface ISupplierRepository : IBaseRepository<Supplier>;
+public interface ISupplierRepository : IBaseRepository<Supplier>, ICompanyScopedRepository<Supplier>;

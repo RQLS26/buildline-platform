@@ -29,8 +29,8 @@ public class DeliveriesController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await deliveryQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(DeliveryResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await deliveryQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(DeliveryResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one delivery owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class DeliveriesController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await deliveryQueryService.FindByIdAsync(deliveryId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await deliveryQueryService.FindByIdAndCompanyIdAsync(deliveryId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Delivery", deliveryId)
             : Ok(DeliveryResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
@@ -63,8 +63,8 @@ public class DeliveriesController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await deliveryQueryService.FindByIdAsync(deliveryId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await deliveryQueryService.FindByIdAndCompanyIdAsync(deliveryId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Delivery", deliveryId);
 
         var command = UpdateDeliveryCommandFromResourceAssembler.ToCommandFromResource(deliveryId, resource);

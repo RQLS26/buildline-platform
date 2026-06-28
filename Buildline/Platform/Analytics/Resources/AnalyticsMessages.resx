@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="AnalyticsError.DatabaseError" xml:space="preserve">
+    <value>A database error occurred during analytics operation.</value>
+  </data>
+  <data name="AnalyticsError.InvalidBudgetData" xml:space="preserve">
+    <value>Invalid budget data provided.</value>
+  </data>
+  <data name="AnalyticsError.InternalServerError" xml:space="preserve">
+    <value>An unexpected internal error occurred in Analytics.</value>
+  </data>
+  <data name="AnalyticsError.BudgetNotFound" xml:space="preserve">
+    <value>Budget not found.</value>
+  </data>
+  <data name="AnalyticsError.OperationCancelled" xml:space="preserve">
+    <value>Analytics operation was cancelled.</value>
+  </data>
+</root>

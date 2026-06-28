@@ -29,8 +29,8 @@ public class MessagesController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await messageQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(MessageResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await messageQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(MessageResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one message owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class MessagesController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await messageQueryService.FindByIdAsync(messageId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await messageQueryService.FindByIdAndCompanyIdAsync(messageId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Message", messageId)
             : Ok(MessageResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
@@ -63,8 +63,8 @@ public class MessagesController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await messageQueryService.FindByIdAsync(messageId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await messageQueryService.FindByIdAndCompanyIdAsync(messageId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Message", messageId);
 
         var command = UpdateMessageCommandFromResourceAssembler.ToCommandFromResource(messageId, resource);
@@ -79,8 +79,8 @@ public class MessagesController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await messageQueryService.FindByIdAsync(messageId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await messageQueryService.FindByIdAndCompanyIdAsync(messageId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Message", messageId);
 
         var result = await messageCommandService.HandleDelete(messageId, cancellationToken);

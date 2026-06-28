@@ -58,26 +58,42 @@ public static class ApplicationResultActionResultAssembler
     }
 
     /// <summary>
-    ///     Maps bounded-context error names to REST status codes using a suffix convention.
-    ///     Each application error enum value SHOULD end with one of the recognised suffixes so that
-    ///     the controller layer can produce appropriate HTTP Problem Details without per-context wiring.
+    ///     Maps bounded-context error names to REST status codes using semantic tokens instead of a
+    ///     fragile single-suffix convention.
     /// </summary>
     /// <param name="error">Error enum emitted by the application layer.</param>
     /// <returns>The HTTP status code that best represents the failure.</returns>
     private static int ToStatusCodeFromError(Enum? error)
     {
-        return error?.ToString() switch
-        {
-            { } name when name.EndsWith("NotFound", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status404NotFound,
-            { } name when name.EndsWith("Invalid", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status400BadRequest,
-            { } name when name.EndsWith("AlreadyTaken", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status409Conflict,
-            { } name when name.EndsWith("AlreadyExists", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status409Conflict,
-            { } name when name.EndsWith("Cancelled", StringComparison.OrdinalIgnoreCase) => 499,
-            { } name when name.EndsWith("DatabaseError", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status500InternalServerError,
-            { } name when name.EndsWith("InternalServerError", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status500InternalServerError,
-            { } name when name.EndsWith("Unauthorized", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status401Unauthorized,
-            { } name when name.EndsWith("Forbidden", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status403Forbidden,
-            _ => StatusCodes.Status400BadRequest
-        };
+        if (error is null) return StatusCodes.Status400BadRequest;
+
+        var name = error.ToString();
+        if (Contains(name, "InternalServerError") || Contains(name, "DatabaseError"))
+            return StatusCodes.Status500InternalServerError;
+        if (Contains(name, "OperationCancelled"))
+            return 499;
+        if (Contains(name, "Forbidden"))
+            return StatusCodes.Status403Forbidden;
+        if (Contains(name, "Unauthorized") || Contains(name, "InvalidCredentials"))
+            return StatusCodes.Status401Unauthorized;
+        if (Contains(name, "AlreadyTaken") || Contains(name, "AlreadyRegistered") || Contains(name, "AlreadyExists"))
+            return StatusCodes.Status409Conflict;
+        if (Contains(name, "NotFound"))
+            return StatusCodes.Status404NotFound;
+        if (Contains(name, "Invalid") || Contains(name, "WeakPassword") || Contains(name, "NotSelectable"))
+            return StatusCodes.Status400BadRequest;
+
+        return StatusCodes.Status400BadRequest;
+    }
+
+    /// <summary>
+    ///     Performs ordinal, case-insensitive token matching for error names.
+    /// </summary>
+    /// <param name="value">Error enum name to inspect.</param>
+    /// <param name="token">Semantic token expected in the enum name.</param>
+    /// <returns><c>true</c> when the token appears in the value; otherwise <c>false</c>.</returns>
+    private static bool Contains(string value, string token)
+    {
+        return value.Contains(token, StringComparison.OrdinalIgnoreCase);
     }
 }

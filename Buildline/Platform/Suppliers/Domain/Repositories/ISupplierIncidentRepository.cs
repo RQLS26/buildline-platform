@@ -6,4 +6,4 @@ namespace Buildline.Platform.Suppliers.Domain.Repositories;
 /// <summary>
 ///     Repository contract for supplier incident aggregate persistence.
 /// </summary>
-public interface ISupplierIncidentRepository : IBaseRepository<SupplierIncident>;
+public interface ISupplierIncidentRepository : IBaseRepository<SupplierIncident>, ICompanyScopedRepository<SupplierIncident>;

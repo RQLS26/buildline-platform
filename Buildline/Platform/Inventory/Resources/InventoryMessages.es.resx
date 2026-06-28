@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="CategoriesError.CategoryNotFound" xml:space="preserve">
+    <value>Categoría no encontrada.</value>
+  </data>
+  <data name="CategoriesError.InvalidCategoryData" xml:space="preserve">
+    <value>Datos de categoría inválidos proporcionados.</value>
+  </data>
+  <data name="CategoriesError.OperationCancelled" xml:space="preserve">
+    <value>La operación de categoría fue cancelada.</value>
+  </data>
+  <data name="CategoriesError.DatabaseError" xml:space="preserve">
+    <value>Ocurrió un error de base de datos durante la operación de categoría.</value>
+  </data>
+  <data name="CategoriesError.InternalServerError" xml:space="preserve">
+    <value>Ocurrió un error interno inesperado en Categorías.</value>
+  </data>
+  <data name="InventoryError.InventoryItemNotFound" xml:space="preserve">
+    <value>Item de inventario no encontrado.</value>
+  </data>
+  <data name="InventoryError.InternalServerError" xml:space="preserve">
+    <value>Ocurrio un error interno inesperado en Inventario.</value>
+  </data>
+  <data name="InventoryError.DatabaseError" xml:space="preserve">
+    <value>Ocurrio un error de base de datos durante la operacion de inventario.</value>
+  </data>
+  <data name="InventoryError.InvalidInventoryItemData" xml:space="preserve">
+    <value>Datos de inventario invalidos proporcionados.</value>
+  </data>
+  <data name="InventoryError.OperationCancelled" xml:space="preserve">
+    <value>La operacion de inventario fue cancelada.</value>
+  </data>
+</root>

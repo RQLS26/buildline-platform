@@ -29,6 +29,15 @@ public class MaterialQueryService(IMaterialRepository materialRepository) : IMat
     /// <returns>The material aggregate when found; otherwise <c>null</c>.</returns>
     public async Task<Material?> FindByIdAsync(int materialId, CancellationToken cancellationToken = default)
         => await materialRepository.FindByIdAsync(materialId, cancellationToken);
+    /// <inheritdoc />
+    public async Task<IEnumerable<Material>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await materialRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<Material?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await materialRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }
-
-

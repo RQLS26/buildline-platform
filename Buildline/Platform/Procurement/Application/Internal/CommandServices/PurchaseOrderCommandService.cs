@@ -4,7 +4,7 @@ using Buildline.Platform.Procurement.Domain.Model;
 using Buildline.Platform.Procurement.Domain.Model.Aggregates;
 using Buildline.Platform.Procurement.Domain.Model.Commands;
 using Buildline.Platform.Procurement.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Procurement.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -31,7 +31,7 @@ public class PurchaseOrderCommandService(
     ISupplierDirectoryService supplierDirectoryService,
     IUnitOfWork unitOfWork,
     IMediator mediator,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<ProcurementMessages> localizer)
     : IPurchaseOrderCommandService
 {
     /// <inheritdoc />

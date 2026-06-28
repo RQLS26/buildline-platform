@@ -14,7 +14,7 @@ namespace Buildline.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCo
 /// <typeparam name="TEntity">
 ///     The entity type for the repository
 /// </typeparam>
-public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
+public class BaseRepository<TEntity> : IBaseRepository<TEntity>, ICompanyScopedRepository<TEntity> where TEntity : class
 {
     /// <summary>
     ///     Gets the shared application database context used by concrete repositories.
@@ -57,5 +57,22 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public async Task<IEnumerable<TEntity>> ListAsync(CancellationToken cancellationToken = default)
     {
         return await Context.Set<TEntity>().ToListAsync(cancellationToken);
+    }
+    /// <inheritdoc />
+    public async Task<IEnumerable<TEntity>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<TEntity>()
+            .Where(entity => EF.Property<int>(entity, "CompanyId") == companyId)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<TEntity?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<TEntity>()
+            .FirstOrDefaultAsync(entity =>
+                EF.Property<int>(entity, "Id") == id &&
+                EF.Property<int>(entity, "CompanyId") == companyId,
+                cancellationToken);
     }
 }

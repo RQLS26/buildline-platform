@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DeliveryError.InvalidDeliveryData" xml:space="preserve">
+    <value>Invalid delivery data provided.</value>
+  </data>
+  <data name="DeliveryError.OperationCancelled" xml:space="preserve">
+    <value>Delivery operation was cancelled.</value>
+  </data>
+  <data name="DeliveryError.DeliveryNotFound" xml:space="preserve">
+    <value>Delivery not found.</value>
+  </data>
+  <data name="DeliveryError.InternalServerError" xml:space="preserve">
+    <value>An unexpected internal error occurred in Delivery.</value>
+  </data>
+  <data name="DeliveryError.DatabaseError" xml:space="preserve">
+    <value>A database error occurred during delivery operation.</value>
+  </data>
+  <data name="DeliveryError.PurchaseOrderReferenceNotFound" xml:space="preserve">
+    <value>The purchase order referenced by the delivery was not found.</value>
+  </data>
+</root>

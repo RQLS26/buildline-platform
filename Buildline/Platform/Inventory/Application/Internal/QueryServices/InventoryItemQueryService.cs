@@ -19,4 +19,15 @@ public class InventoryItemQueryService(IInventoryItemRepository inventoryItemRep
     {
         return await inventoryItemRepository.FindByIdAsync(id, cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<InventoryItem>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await inventoryItemRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<InventoryItem?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await inventoryItemRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }

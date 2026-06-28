@@ -6,4 +6,4 @@ namespace Buildline.Platform.Requisition.Domain.Repositories;
 /// <summary>
 ///     Repository contract for material requisition aggregate persistence.
 /// </summary>
-public interface IRequisitionRepository : IBaseRepository<Domain.Model.Aggregates.Requisition>;
+public interface IRequisitionRepository : IBaseRepository<Domain.Model.Aggregates.Requisition>, ICompanyScopedRepository<Domain.Model.Aggregates.Requisition>;

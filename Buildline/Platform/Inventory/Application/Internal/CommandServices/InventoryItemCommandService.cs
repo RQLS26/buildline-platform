@@ -3,7 +3,7 @@ using Buildline.Platform.Inventory.Domain.Model;
 using Buildline.Platform.Inventory.Domain.Model.Aggregates;
 using Buildline.Platform.Inventory.Domain.Model.Commands;
 using Buildline.Platform.Inventory.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Inventory.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -24,7 +24,7 @@ public class InventoryItemCommandService(
     IInventoryItemRepository repository,
     IUnitOfWork unitOfWork,
     IMediator mediator,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<InventoryMessages> localizer)
     : IInventoryItemCommandService
 {
     /// <inheritdoc />

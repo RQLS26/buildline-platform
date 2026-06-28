@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="CommunicationError.DatabaseError" xml:space="preserve">
+    <value>Ocurrio un error de base de datos durante la operacion de comunicacion.</value>
+  </data>
+  <data name="CommunicationError.OperationCancelled" xml:space="preserve">
+    <value>La operacion de comunicacion fue cancelada.</value>
+  </data>
+  <data name="CommunicationError.InternalServerError" xml:space="preserve">
+    <value>Ocurrio un error interno inesperado en Comunicacion.</value>
+  </data>
+  <data name="CommunicationError.MessageNotFound" xml:space="preserve">
+    <value>Mensaje no encontrado.</value>
+  </data>
+  <data name="CommunicationError.InvalidMessageData" xml:space="preserve">
+    <value>Datos de mensaje invalidos proporcionados.</value>
+  </data>
+</root>

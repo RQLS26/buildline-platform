@@ -3,7 +3,7 @@ using Buildline.Platform.Analytics.Domain.Model;
 using Buildline.Platform.Analytics.Domain.Model.Aggregates;
 using Buildline.Platform.Analytics.Domain.Model.Commands;
 using Buildline.Platform.Analytics.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Analytics.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Model.Entities;
 using Buildline.Platform.Shared.Domain.Repositories;
@@ -24,7 +24,7 @@ public class BudgetCommandService(
     IBudgetRepository repository,
     IUnitOfWork unitOfWork,
     IMediator mediator,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<AnalyticsMessages> localizer)
     : IBudgetCommandService
 {
     /// <inheritdoc />

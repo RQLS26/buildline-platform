@@ -3,7 +3,7 @@ using Buildline.Platform.Suppliers.Domain.Model;
 using Buildline.Platform.Suppliers.Domain.Model.Aggregates;
 using Buildline.Platform.Suppliers.Domain.Model.Commands;
 using Buildline.Platform.Suppliers.Domain.Repositories;
-using Buildline.Platform.Resources.Errors;
+using Buildline.Platform.Suppliers.Resources;
 using Buildline.Platform.Shared.Application.Model;
 using Buildline.Platform.Shared.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,7 @@ namespace Buildline.Platform.Suppliers.Application.Internal.CommandServices;
 public class SupplierCommandService(
     ISupplierRepository repository,
     IUnitOfWork unitOfWork,
-    IStringLocalizer<ErrorMessages> localizer)
+    IStringLocalizer<SuppliersMessages> localizer)
     : ISupplierCommandService
 {
     /// <inheritdoc />

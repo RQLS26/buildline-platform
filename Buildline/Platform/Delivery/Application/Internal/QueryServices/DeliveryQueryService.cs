@@ -18,4 +18,15 @@ public class DeliveryQueryService(IDeliveryRepository deliveryRepository) : IDel
     {
         return await deliveryRepository.FindByIdAsync(id, cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<Domain.Model.Aggregates.Delivery>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await deliveryRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<Domain.Model.Aggregates.Delivery?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await deliveryRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }

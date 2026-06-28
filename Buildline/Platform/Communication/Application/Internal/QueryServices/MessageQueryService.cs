@@ -19,4 +19,15 @@ public class MessageQueryService(IMessageRepository messageRepository) : IMessag
     {
         return await messageRepository.FindByIdAsync(id, cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<Message>> ListByCompanyIdAsync(int companyId, CancellationToken cancellationToken = default)
+    {
+        return await messageRepository.ListByCompanyIdAsync(companyId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<Message?> FindByIdAndCompanyIdAsync(int id, int companyId, CancellationToken cancellationToken = default)
+    {
+        return await messageRepository.FindByIdAndCompanyIdAsync(id, companyId, cancellationToken);
+    }
 }

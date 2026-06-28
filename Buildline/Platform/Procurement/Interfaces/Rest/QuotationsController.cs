@@ -29,8 +29,8 @@ public class QuotationsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await quotationQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(QuotationResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await quotationQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(QuotationResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one quotation owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class QuotationsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await quotationQueryService.FindByIdAsync(quotationId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await quotationQueryService.FindByIdAndCompanyIdAsync(quotationId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Quotation", quotationId)
             : Ok(QuotationResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
@@ -63,8 +63,8 @@ public class QuotationsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await quotationQueryService.FindByIdAsync(quotationId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await quotationQueryService.FindByIdAndCompanyIdAsync(quotationId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Quotation", quotationId);
 
         var command = UpdateQuotationCommandFromResourceAssembler.ToCommandFromResource(quotationId, resource);

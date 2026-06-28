@@ -11,5 +11,4 @@ namespace Buildline.Platform.Analytics.Domain.Repositories;
 ///     <see cref="IBaseRepository{TEntity}"/>. The explicit interface keeps the bounded context ready
 ///     for future project administration commands without leaking EF Core details upward.
 /// </remarks>
-public interface IProjectRepository : IBaseRepository<Project>;
-
+public interface IProjectRepository : IBaseRepository<Project>, ICompanyScopedRepository<Project>;

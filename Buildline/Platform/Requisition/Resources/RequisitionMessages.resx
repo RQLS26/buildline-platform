@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="MaterialsError.MaterialNotFound" xml:space="preserve">
+    <value>Material not found.</value>
+  </data>
+  <data name="MaterialsError.InvalidMaterialData" xml:space="preserve">
+    <value>Invalid material data provided.</value>
+  </data>
+  <data name="MaterialsError.OperationCancelled" xml:space="preserve">
+    <value>Material operation was cancelled.</value>
+  </data>
+  <data name="MaterialsError.DatabaseError" xml:space="preserve">
+    <value>A database error occurred during material operation.</value>
+  </data>
+  <data name="MaterialsError.InternalServerError" xml:space="preserve">
+    <value>An unexpected internal error occurred in Materials.</value>
+  </data>
+  <data name="RequisitionError.RequisitionNotFound" xml:space="preserve">
+    <value>Requisition not found.</value>
+  </data>
+  <data name="RequisitionError.DatabaseError" xml:space="preserve">
+    <value>A database error occurred during requisition operation.</value>
+  </data>
+  <data name="RequisitionError.InternalServerError" xml:space="preserve">
+    <value>An unexpected internal error occurred in Requisition.</value>
+  </data>
+  <data name="RequisitionError.InvalidRequisitionData" xml:space="preserve">
+    <value>Invalid requisition data provided.</value>
+  </data>
+  <data name="RequisitionError.OperationCancelled" xml:space="preserve">
+    <value>Requisition operation was cancelled.</value>
+  </data>
+  <data name="RequisitionError.ProjectReferenceNotFound" xml:space="preserve">
+    <value>The project referenced by the requisition was not found.</value>
+  </data>
+</root>

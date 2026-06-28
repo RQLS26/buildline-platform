@@ -29,8 +29,8 @@ public class BudgetsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var items = await budgetQueryService.ListAsync(cancellationToken);
-        return Ok(items.Where(item => item.CompanyId == resolvedCompanyId).Select(BudgetResourceFromEntityAssembler.ToResourceFromEntity));
+        var items = await budgetQueryService.ListByCompanyIdAsync(resolvedCompanyId, cancellationToken);
+        return Ok(items.Select(BudgetResourceFromEntityAssembler.ToResourceFromEntity));
     }
 
     /// <summary>Gets one budget owned by the route company.</summary>
@@ -39,8 +39,8 @@ public class BudgetsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var item = await budgetQueryService.FindByIdAsync(budgetId, cancellationToken);
-        return item is null || item.CompanyId != resolvedCompanyId
+        var item = await budgetQueryService.FindByIdAndCompanyIdAsync(budgetId, resolvedCompanyId, cancellationToken);
+        return item is null
             ? this.NotFoundProblem("Budget", budgetId)
             : Ok(BudgetResourceFromEntityAssembler.ToResourceFromEntity(item));
     }
@@ -63,8 +63,8 @@ public class BudgetsController(
     {
         if (!this.TryResolveCompanyRoute(companyId, out var resolvedCompanyId)) return Forbid();
 
-        var existing = await budgetQueryService.FindByIdAsync(budgetId, cancellationToken);
-        if (existing is null || existing.CompanyId != resolvedCompanyId)
+        var existing = await budgetQueryService.FindByIdAndCompanyIdAsync(budgetId, resolvedCompanyId, cancellationToken);
+        if (existing is null)
             return this.NotFoundProblem("Budget", budgetId);
 
         var command = UpdateBudgetCommandFromResourceAssembler.ToCommandFromResource(budgetId, resource);

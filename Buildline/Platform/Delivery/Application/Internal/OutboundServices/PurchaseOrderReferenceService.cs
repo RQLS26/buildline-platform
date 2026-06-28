@@ -22,7 +22,7 @@ public class PurchaseOrderReferenceService(IPurchaseOrderRepository purchaseOrde
         if (string.IsNullOrWhiteSpace(command.PurchaseOrder))
             return false;
 
-        var purchaseOrders = await purchaseOrderRepository.ListAsync(cancellationToken);
+        var purchaseOrders = await purchaseOrderRepository.ListByCompanyIdAsync(command.CompanyId, cancellationToken);
         return purchaseOrders.Any(order =>
             string.Equals(order.OrderId, command.PurchaseOrder.Trim(), StringComparison.OrdinalIgnoreCase));
     }
